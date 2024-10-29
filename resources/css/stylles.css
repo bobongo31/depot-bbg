@@ -1,0 +1,28 @@
+/* public/css/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #b4b4b4;
+    padding: 8px;
+}
+
+th {
+    background-color: #2c47e3;
+}
+
+.container {
+    margin: auto;
+    max-width: 800px;
+}
+
+button {
+    margin: 5px;
+}
