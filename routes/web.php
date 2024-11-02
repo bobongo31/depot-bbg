@@ -9,6 +9,7 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\RedevanceController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdminController;
 
 // Route pour définir la route home
@@ -19,6 +20,8 @@ Route::get('/', [AccueilController::class, 'index'])->name('accueil')->middlewar
 
 // Route pour afficher la page de connexion
 Route::get('/login', [AuthenticatedSessionController::class, 'showLoginForm'])->name('login');
+
+Route::resource('roles', RoleController::class);
 
 // Route pour traiter la soumission du formulaire de connexion
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.submit');

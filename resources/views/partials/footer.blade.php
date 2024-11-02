@@ -12,8 +12,8 @@
 
 <!-- Footer -->
 <footer class="footer">
-    <p>© 2024 Gestion des Redevances - Tous droits réservés</p>
-    <p>Contactez-nous : email@example.com | +33 1 23 45 67 89</p>
+    <p>© 2024 LogMob - Tous droits réservés</p>
+    <p> Design by Keynsoft | +243 970 712 280</p>
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

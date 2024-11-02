@@ -22,7 +22,6 @@ class Paiement extends Model
         'retard_de_paiement',
         'nom_ordonanceur',
         'status',            // Ajoutez status pour le champ de statut
-        'avis'               // Ajoutez avis pour le champ d'avis
     ];
 
     /**

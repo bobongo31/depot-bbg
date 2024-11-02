@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Paiement; 
@@ -13,13 +14,15 @@ class PaiementController extends Controller
     // Afficher la liste des paiements
     public function index()
     {
-        // Vérifiez si l'utilisateur est authentifié
-        if (!auth()->check() || (auth()->user()->role !== 'superadmin' && auth()->user()->role !== 'payment_validator')) {
+        // Vérifiez si l'utilisateur est authentifié et possède les rôles requis
+        if (!auth()->check() || (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('payment_validator'))) {
             return redirect()->route('home')->with('error', 'Accès refusé.');
         }
 
-        // Récupérer tous les paiements
+        // Récupérer tous les paiements avec pagination
         $paiements = Paiement::paginate(10); 
+
+        // Passer la variable $paiements à la vue
         return view('web.paiements.index', compact('paiements'));
     }
 
@@ -32,13 +35,13 @@ class PaiementController extends Controller
         }
 
         // Vérifiez si l'utilisateur a les rôles nécessaires
-        if (!auth()->user()->hasRole('payment_validator') && !auth()->user()->hasRole('superadmin')) {
+        if (!auth()->user()->hasRole('payment_validator') && !auth()->user()->hasRole('admin')) {
             return redirect()->route('home')->with('error', 'Accès refusé.');
         }
 
         // Récupérer tous les clients
         $clients = Client::all(); 
-        return view('paiements.create', compact('clients'));
+        return view('web.paiements.create', compact('clients'));
     }
 
     // Stocker le paiement dans la base de données
@@ -99,13 +102,13 @@ class PaiementController extends Controller
     public function show($id)
     {
         $paiement = Paiement::findOrFail($id);
-        return view('paiements.show', compact('paiement'));
+        return view('web.paiements.show', compact('paiement'));
     }
 
     // Afficher le formulaire d'édition d'un paiement
     public function edit($id)
     {
-        if (!auth()->user()->hasRole('payment_validator')) {
+        if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
             return response()->json(['error' => 'Accès refusé.'], 403);
         }
         $paiement = Paiement::findOrFail($id);
@@ -159,7 +162,7 @@ class PaiementController extends Controller
     // Confirmer le paiement
     public function confirm(Request $request, $id)
     {
-        if (!auth()->user()->hasRole('payment_validator')) {
+        if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
             return response()->json(['error' => 'Accès refusé.'], 403);
         }
 

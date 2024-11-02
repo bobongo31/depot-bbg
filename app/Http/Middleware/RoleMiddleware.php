@@ -3,21 +3,25 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
-    public function handle($request, Closure $next, ...$roles)
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string  $roles
+     * @return mixed
+     */
+    public function handle(Request $request, Closure $next, $roles)
     {
-        if (!Auth::check()) {
-            return redirect('/login'); // Rediriger vers la page de connexion si non authentifié
-        }
+        $rolesArray = explode(',', $roles);
 
-        $userRole = Auth::user()->role;
-
-        // Vérifier si l'utilisateur a l'un des rôles requis
-        if (!in_array($userRole, $roles)) {
-            abort(403); // Accès refusé
+        // Vérifier si l'utilisateur est authentifié et a l'un des rôles
+        if (!auth()->check() || !auth()->user()->hasAnyRole($rolesArray)) {
+            return redirect()->route('home')->with('error', 'Accès refusé.');
         }
 
         return $next($request);
