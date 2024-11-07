@@ -45,7 +45,7 @@ class PaiementController extends Controller
         }
 
         // Vérifiez si l'utilisateur a les rôles nécessaires
-        if (!auth()->user()->hasRole('payment_validator') && !auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('admin')) {
             return redirect()->route('home')->with('error', 'Accès refusé.');
         }
 
@@ -188,46 +188,54 @@ class PaiementController extends Controller
 
         return redirect()->route('web.paiements.index')->with('success', 'Paiement mis à jour avec succès.');
     }
-    // Confirmer le paiement
-    public function confirm(Request $request, $id)
+        public function confirm(Request $request, $id)
     {
-    // Vérification de l'authentification et des rôles
-    if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
+        // Vérification de l'authentification et des rôles
+        if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
         return redirect('/')
             ->with('error', 'Accès refusé.');
+        }
+
+        try {
+        // Trouver le paiement ou renvoyer une erreur 404
+        $paiement = Paiement::findOrFail($id);
+
+        // Validation des données d'entrée
+        $request->validate([
+            'avis' => 'required|in:validé,rejeté',
+            // Optionnel : retirer ou conserver si vous attendez un statut du client
+            // 'status' => 'required|in:confirmé,pending',
+        ]);
+
+        // Ajouter des logs pour vérifier les valeurs reçues
+        Log::info('Avis reçu : ' . $request->input('avis'));
+
+        // Calculer le statut basé sur l'avis
+        $status = ($request->input('avis') === 'validé') ? 'validé' : 'rejeté';
+        Log::info('Statut calculé : ' . $status);
+
+        // Mettre à jour le paiement avec le nouvel état
+        $paiement->update([
+            'status' => $status,
+            'avis' => $request->input('avis'),
+        ]);
+
+        // Vérification de l'état après mise à jour
+        Log::info('Paiement après mise à jour : ', $paiement->toArray());
+
+        // Retourner une réponse JSON après mise à jour
+        return response()->json([
+            'message' => 'Le paiement a été validé.',
+            'paiement' => $paiement,
+        ]);
+        
+    } catch (\Exception $e) {
+        // En cas d'erreur, on logue l'exception et on renvoie une réponse d'erreur
+        Log::error('Erreur lors de la confirmation du paiement : ' . $e->getMessage());
+        return response()->json([
+            'error' => 'Une erreur est survenue lors de la validation du paiement.',
+        ], 500);
     }
-
-    // Trouver le paiement ou renvoyer une erreur 404
-    $paiement = Paiement::findOrFail($id);
-
-    // Validation des données d'entrée
-    $request->validate([
-        'avis' => 'required|in:validé,rejeté',
-        // Optionnel : retirer ou conserver si vous attendez un status du client
-        // 'status' => 'required|in:confirmé,pending', 
-    ]);
-
-    // Ajouter des logs pour vérifier les valeurs reçues
-    Log::info('Avis reçu : ' . $request->input('avis'));
-
-    // Calculer le statut basé sur l'avis
-    $status = ($request->input('avis') === 'validé') ? 'validé' : 'rejeté';
-    Log::info('Statut calculé : ' . $status);
-
-    // Mettre à jour le paiement avec le nouvel état
-    $paiement->update([
-        'status' => $status,
-        'avis' => $request->input('avis'),
-    ]);
-
-    // Vérification de l'état après mise à jour
-    Log::info('Paiement après mise à jour : ', $paiement->toArray());
-
-    // Retourner une réponse JSON après mise à jour
-    return response()->json([
-        'message' => 'Le paiement a été validé.',
-        'paiement' => $paiement,
-    ]);
     }
 
     // Supprimer un paiement

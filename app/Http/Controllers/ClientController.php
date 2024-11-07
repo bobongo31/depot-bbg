@@ -17,8 +17,9 @@ class ClientController extends Controller
     public function create()
     {
         // Vérifiez si l'utilisateur est authentifié
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('error', 'Veuillez vous connecter pour accéder à cette page.');
+         if (!auth()->check() || !auth()->user()->hasRole('read_write')) {
+            return redirect('/')
+                ->with('error', 'Accès refusé.');
         }
 
         return view('clients.create');
@@ -63,6 +64,10 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
+        if (!auth()->check() || !auth()->user()->hasRole('read_write')) {
+            return redirect('/')
+                ->with('error', 'Accès refusé.');
+        }
         return view('clients.edit', compact('client'));
     }
 
@@ -92,6 +97,10 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
+        if (!auth()->check() || !auth()->user()->hasRole('read_write')) {
+            return redirect('/')
+                ->with('error', 'Accès refusé.');
+        }
         $client->delete();
 
         // Redirigez après la suppression

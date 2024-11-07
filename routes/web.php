@@ -54,9 +54,10 @@ Route::middleware('auth')->group(function () {
             });
         
         // Les paiements ne peuvent être validés ou modifiés que par les validateurs
-            Route::middleware('role:payment_validator')->group(function () {
-            Route::put('paiements/{id}/confirm', [PaiementController::class, 'confirm']);
-            Route::put('/{paiement}', [PaiementController::class, 'update'])->name('update'); // Mise à jour d'un paiement
+            Route::middleware('auth')->group(function () {
+            Route::put('paiements/{id}/confirm', [PaiementController::class, 'confirm'])->name('paiements.confirm');
+            Route::put('/{paiement/{id}', [PaiementController::class, 'update'])->name('update'); // Mise à jour d'un paiement
+            Route::put('/paiements/{id}/updateStatus', [PaiementController::class, 'updateStatus']);
             Route::delete('/{paiement}', [PaiementController::class, 'destroy'])->name('destroy');
         });
     });

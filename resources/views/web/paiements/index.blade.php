@@ -155,11 +155,12 @@
                             </td>
                             <td>
                             @if (auth()->user()->hasRole('payment_validator'))
-                                <button type="button" class="btn btn-success btn-sm confirm-button" data-toggle="modal" data-target="#visaModal" data-id="{{ $paiement->id }}">
-                                    VISA
+                                <!-- Bouton pour afficher le modal -->
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#visaModal" data-id="{{ $paiement->id }}">
+                                 VISA
                                 </button>
                             @endif
-                            </td>
+                        </td>
                         </tr>
                         @if ($paiement->status === 'rejeté')
                             <tr>
@@ -236,40 +237,47 @@
         updatePaiements();
 
         // Gestion de la modal
-        let PaiementId;
-        $('.confirm-button').on('click', function() {
-            console.log('Bouton confirmé cliqué');
-            PaiementId = $(this).data('id');
-            $('#visaModal').modal('show');
-        });
+    let PaiementId;
 
-        $('#confirm-paiement-button').on('click', function() {
-            const PaiementId = $(this).data('id'); // Récupérer l'ID du paiement
-            const avis = $('#avis').val().trim(); // Utiliser trim() pour enlever les espaces
-            console.log('Avis sélectionné :', avis);
-            console.log(avis); // Pour vérifier ce que vous obtenez
-            if (avis && PaiementId) {
-                $.ajax({
-                    url: '/paiements/' + PaiementId + '/confirm', // Remplacer par votre route Laravel
-                    method: 'PUT',
-                    data: {
-                        status: avis,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        // Mettre à jour l'affichage
-                        $(`#paiement-row-${PaiementId} td:last-child`).html(`<span class="badge badge-${avis === 'validé' ? 'success' : 'danger'}">${avis.charAt(0).toUpperCase() + avis.slice(1)}</span>`);
-                        $('#visaModal').modal('hide');
-                    },
-                    error: function(xhr) {
-                        console.error(xhr);
-                        alert('Une erreur est survenue. Veuillez réessayer.');
-                    }
-                });
-            } else {
-                alert('Veuillez sélectionner un avis.');
-            }
-        });
+    // Ouvrir le modal lors du clic sur "VISA"
+    $('.btn-success').on('click', function() {
+        // Récupérer l'ID du paiement
+        PaiementId = $(this).data('id');
+        // Afficher le modal
+        $('#visaModal').modal('show');
     });
+
+    // Gestion de la soumission du formulaire après confirmation
+    $('#confirm-paiement-button').on('click', function(event) {
+        event.preventDefault(); // Empêche la soumission par défaut
+        const avis = $('#avis').val().trim(); // Utiliser trim() pour enlever les espaces
+
+        if (avis && PaiementId) {
+            // Envoyer une requête PUT pour mettre à jour le paiement
+            $.ajax({
+                url: '/paiements/' + PaiementId + '/confirm', // Remplacer par votre route Laravel
+                method: 'PUT',
+                data: {
+                    avis: avis,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    // Mettre à jour l'affichage dans le tableau
+                    $(`#paiement-row-${PaiementId} td:last-child`).html(`<span class="badge badge-${avis === 'validé' ? 'success' : 'danger'}">${avis.charAt(0).toUpperCase() + avis.slice(1)}</span>`);
+                    // Fermer le modal
+                    $('#visaModal').modal('hide');
+                    // Recharger la page après la validation
+                    location.reload(); // Rechargement de la page
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    alert('Une erreur est survenue. Veuillez réessayer.');
+                }
+            });
+        } else {
+            alert('Veuillez sélectionner un avis.');
+        }
+    });
+});
 </script>
 @endsection
