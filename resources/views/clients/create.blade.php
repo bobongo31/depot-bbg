@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app') 
 
 @section('content')
     <div class="container mt-1">
@@ -14,6 +14,7 @@
             </div>
         @endif
 
+        <!-- Formulaire d'enregistrement pour tous les utilisateurs -->
         <form action="{{ route('web.clients.store') }}" method="POST" class="bg-light p-4 rounded shadow">
             @csrf
 
@@ -23,16 +24,16 @@
                 <input type="text" name="nom_redevable" class="form-control" id="nom_redevable" placeholder="Entrez le nom du redevable" required>
             </div>
 
-            <!-- Téléphone -->
-            <div class="form-group">
-                <label for="telephone">Téléphone</label>
-                <input type="tel" name="telephone" class="form-control" id="telephone" placeholder="Entrez le numéro de téléphone" required>
-            </div>
-
             <!-- Adresse -->
             <div class="form-group">
                 <label for="adresse">Adresse</label>
                 <input type="text" name="adresse" class="form-control" id="adresse" placeholder="Entrez l'adresse" required>
+            </div>
+
+            <!-- Téléphone -->
+            <div class="form-group">
+                <label for="telephone">Téléphone</label>
+                <input type="tel" name="telephone" class="form-control" id="telephone" placeholder="Entrez le numéro de téléphone" required>
             </div>
 
             <!-- Nom Liquidateur -->
@@ -43,22 +44,38 @@
 
             <!-- Matière Taxable -->
             <div class="form-group">
-                <label for="matieres_taxables">Matière Taxable</label>
-                <input type="text" name="matieres_taxables" class="form-control" id="matieres_taxables" placeholder="Entrez la matière taxable" required>
+                <label for="matiere_taxable">Matière Taxable</label>
+                <input type="text" name="matiere_taxable" class="form-control" id="matiere_taxable" placeholder="Entrez la matière taxable" required>
+            </div>
+
+            <!-- Prix de la Matière -->
+            <div class="form-group">
+                <label for="prix_matiere">Prix de la Matière</label>
+                <input type="number" name="prix_matiere" class="form-control" id="prix_matiere" placeholder="Entrez le prix de la matière" required step="0.01" oninput="calculatePrice()">
+            </div>
+
+            <!-- Prix à Payer -->
+            <div class="form-group">
+                <label for="prix_a_payer">Prix à Payer (5% du prix de la matière)</label>
+                <input type="text" name="prix_a_payer" class="form-control" id="prix_a_payer" placeholder="Prix à payer" readonly>
+            </div>
+
+            <!-- Nom Taxateur -->
+            <div class="form-group">
+                <label for="nom_taxateur">Nom Taxateur</label>
+                <input type="text" name="nom_taxateur" class="form-control" id="nom_taxateur" placeholder="Entrez le nom du taxateur" required>
             </div>
 
             <button type="submit" class="btn btn-success">Enregistrer</button>
             <a href="{{ route('web.clients.index') }}" class="btn btn-secondary">Retour</a>
         </form>
     </div>
-@endsection
 
-@section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const matiereInput = document.getElementById('matieres_taxables');
-
-            // Si nécessaire, vous pouvez ajouter des événements spécifiques ici pour d'autres champs
-        });
+        function calculatePrice() {
+            const prixMatiere = parseFloat(document.getElementById('prix_matiere').value);
+            const prixAPayer = prixMatiere ? (prixMatiere * 0.05).toFixed(2) : 0;
+            document.getElementById('prix_a_payer').value = prixAPayer;
+        }
     </script>
 @endsection

@@ -32,12 +32,12 @@ Route::middleware('auth')->group(function () {
     // Routes pour les clients
     Route::prefix('clients')->name('web.clients.')->group(function () {
         Route::get('/', [ClientController::class, 'index'])->name('index');
-        Route::get('/create', [ClientController::class, 'create'])->name('create')->middleware('role:read_write'); // Utilisateur avec permissions d'écriture
-        Route::post('/', [ClientController::class, 'store'])->name('store')->middleware('role:read_write'); // Utilisateur avec permissions d'écriture
+        Route::get('/create', [ClientController::class, 'create'])->name('create'); // Utilisateur avec permissions d'écriture
+        Route::post('/', [ClientController::class, 'store'])->name('store'); // Utilisateur avec permissions d'écriture
         Route::get('/{client}', [ClientController::class, 'show'])->name('show');
-        Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('edit')->middleware('role:read_write'); // Utilisateur avec permissions d'écriture
-        Route::put('/{client}', [ClientController::class, 'update'])->name('update')->middleware('role:read_write'); // Utilisateur avec permissions d'écriture
-        Route::delete('/{client}', [ClientController::class, 'destroy'])->name('destroy')->middleware('role:read_write'); // Utilisateur avec permissions d'écriture
+        Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('edit'); // Utilisateur avec permissions d'écriture
+        Route::put('/{client}', [ClientController::class, 'update'])->name('update'); // Utilisateur avec permissions d'écriture
+        Route::delete('/{client}', [ClientController::class, 'destroy'])->name('destroy'); // Utilisateur avec permissions d'écriture
 
         // Route pour récupérer les matières d'un client spécifique via AJAX
         Route::get('/clients/{clientId}/data', [ClientController::class, 'getClientData']);        
@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
         
         // Les paiements ne peuvent être validés ou modifiés que par les validateurs
             Route::middleware('role:payment_validator')->group(function () {
-            Route::put('/{paiement}/confirm', [PaiementController::class, 'confirm'])->name('confirm');
+            Route::put('paiements/{id}/confirm', [PaiementController::class, 'confirm']);
             Route::put('/{paiement}', [PaiementController::class, 'update'])->name('update'); // Mise à jour d'un paiement
             Route::delete('/{paiement}', [PaiementController::class, 'destroy'])->name('destroy');
         });

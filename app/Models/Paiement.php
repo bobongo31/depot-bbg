@@ -12,7 +12,7 @@ class Paiement extends Model
 
     protected $fillable = [
         'client_id',          // Ajouté client_id pour permettre l'association avec le client
-        'matieres_taxables',
+        'matiere_taxable',
         'prix_matiere',
         'prix_a_payer',
         'date_ordonancement',

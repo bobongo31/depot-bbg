@@ -7,8 +7,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
     <style>
+        /* Styles personnalisés */
         body {
-            background: url('images/fpc.jpg') no-repeat center center fixed;
+            background: url('{{ asset('images/fpc.jpg') }}') no-repeat center center fixed;
             background-size: cover;
             opacity: 0.9;
         }
@@ -92,7 +93,17 @@
             </div>
         </div>
 
-        <!-- Affichage des messages de succès ou d'erreur -->
+        <div class="mb-3">
+        <!-- Bouton de tri -->
+        <form method="GET" action="{{ route('web.paiements.index') }}" class="d-inline">
+            <select name="sort" onchange="this.form.submit()" class="form-control form-control-sm d-inline" style="width: auto;">
+                <option value="">Trier par</option>
+                <option value="date_paiement" {{ request('sort') == 'date_paiement' ? 'selected' : '' }}>Date de Paiement</option>
+                <option value="status" {{ request('sort') == 'status' ? 'selected' : '' }}>Statut</option>
+            </select>
+        </form>
+    </div>  
+        
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -143,9 +154,11 @@
                                 @endif
                             </td>
                             <td>
+                            @if (auth()->user()->hasRole('payment_validator'))
                                 <button type="button" class="btn btn-success btn-sm confirm-button" data-toggle="modal" data-target="#visaModal" data-id="{{ $paiement->id }}">
                                     VISA
                                 </button>
+                            @endif
                             </td>
                         </tr>
                         @if ($paiement->status === 'rejeté')
@@ -196,92 +209,66 @@
 
 <script>
     $(document).ready(function() {
-        let paiementId;
-
-        // Fonction de mise à jour des prix à payer et des dates
         function updatePaiements() {
-            const currentDate = moment(); // Récupère la date actuelle
+            const currentDate = moment();
             $('tbody tr').each(function() {
                 const $row = $(this);
-                const prixMatiere = parseFloat($row.find('.prix-matiere').text().replace(',', '.').replace(' €', '').trim());
-
-                // Calcul du prix à payer (5 % du prix de la matière)
-                const prixAPayer = prixMatiere * 0.05;
-                $row.find('.prix-a-payer').text(number_format(prixAPayer, 2, ',', ' ') + ' €');
-
-                const dateOrdonnancement = moment($row.find('td:nth-child(4)').text(), 'DD/MM/YYYY');
                 const dateAccuseReception = moment($row.find('td:nth-child(5)').text(), 'DD/MM/YYYY');
 
-                // Coût d'Opportunité (jours)
-                const coutOpportunite = dateAccuseReception.diff(dateOrdonnancement, 'days');
-                $row.find('.cout-opportunite').text(coutOpportunite);
+                // Calcul du coût d'opportunité
+                const coutOpportunite = currentDate.diff(dateAccuseReception, 'days');
+                $row.find('.cout-opportunite').text(coutOpportunite + ' jours');
 
-                // Date de Paiement
-                const datePaiement = moment($row.find('td:nth-child(7)').text(), 'DD/MM/YYYY');
+                // Calcul de la date de paiement
+                let datePaiement = dateAccuseReception.clone().add(10, 'days');
+                if (datePaiement.day() === 0) { // Si c'est dimanche
+                    datePaiement.add(1, 'day'); // Report au lundi
+                }
                 $row.find('.date-paiement').text(datePaiement.format('DD/MM/YYYY'));
 
-                // Retard de Paiement
+                // Calcul du retard de paiement
                 const retardPaiement = currentDate.diff(datePaiement, 'days');
                 $row.find('.retard-paiement').text(retardPaiement > 0 ? `${retardPaiement} jours` : 'Aucun retard');
             });
         }
 
-        // Fonction pour formater les nombres avec des séparateurs
-        function number_format(number, decimals, dec_point, thousands_sep) {
-            number = (number + '').replace(',', '').replace(' ', '');
-            const n = !isFinite(+number) ? 0 : +number;
-            const prec = !isFinite(+decimals) ? 0 : Math.abs(decimals);
-            const sep = typeof thousands_sep === 'undefined' ? ',' : thousands_sep;
-            const dec = typeof dec_point === 'undefined' ? '.' : dec_point;
-            let toFixedFix = function(n, prec) {
-                const k = Math.pow(10, prec);
-                return '' + Math.round(n * k) / k;
-            };
-            const s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-            if (s[0].length > 3) {
-                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-            }
-            if ((s[1] || '').length < prec) {
-                s[1] = s[1] || '';
-                s[1] += new Array(prec - s[1].length + 1).join('0');
-            }
-            return s.join(dec);
-        }
-
-        // Initialisation de l'affichage des paiements
+        // Mettre à jour les paiements lors du chargement de la page
         updatePaiements();
 
-        // Gestionnaire de clics pour le bouton de confirmation
+        // Gestion de la modal
+        let PaiementId;
         $('.confirm-button').on('click', function() {
-            paiementId = $(this).data('id'); // Récupération de l'ID du paiement
+            console.log('Bouton confirmé cliqué');
+            PaiementId = $(this).data('id');
+            $('#visaModal').modal('show');
         });
 
-        // Gestionnaire de clics pour le bouton de confirmation dans le modal
         $('#confirm-paiement-button').on('click', function() {
-            const avis = $('#avis').val();
-            if (!avis) {
+            const PaiementId = $(this).data('id'); // Récupérer l'ID du paiement
+            const avis = $('#avis').val().trim(); // Utiliser trim() pour enlever les espaces
+            console.log('Avis sélectionné :', avis);
+            console.log(avis); // Pour vérifier ce que vous obtenez
+            if (avis && PaiementId) {
+                $.ajax({
+                    url: '/paiements/' + PaiementId + '/confirm', // Remplacer par votre route Laravel
+                    method: 'PUT',
+                    data: {
+                        status: avis,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        // Mettre à jour l'affichage
+                        $(`#paiement-row-${PaiementId} td:last-child`).html(`<span class="badge badge-${avis === 'validé' ? 'success' : 'danger'}">${avis.charAt(0).toUpperCase() + avis.slice(1)}</span>`);
+                        $('#visaModal').modal('hide');
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                        alert('Une erreur est survenue. Veuillez réessayer.');
+                    }
+                });
+            } else {
                 alert('Veuillez sélectionner un avis.');
-                return;
             }
-
-            $.ajax({
-                url: '/paiements/' + paiementId + '/visa',
-                method: 'POST',
-                data: {
-                    avis: avis,
-                    _token: '{{ csrf_token() }}' // Ajout du token CSRF
-                },
-                success: function(response) {
-                    // Mettez à jour l'interface utilisateur en fonction de la réponse
-                    $('#visaModal').modal('hide');
-                    alert('Mise à jour réussie : ' + response.message);
-                    location.reload(); // Recharger la page pour voir les modifications
-                },
-                error: function(xhr) {
-                    $('#visaModal').modal('hide');
-                    alert('Erreur : ' + xhr.responseJSON.message);
-                }
-            });
         });
     });
 </script>

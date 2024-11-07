@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LoginController extends Controller
+class AuthenticatedSessionController extends Controller
 {
     // Afficher le formulaire de connexion
     public function showLoginForm()

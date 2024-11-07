@@ -1,17 +1,22 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Paiement; // Assurez-vous que le modèle est importé
+use App\Models\Paiement;
 
 class HomeController extends Controller
 {
-    // Méthode index
     public function index()
     {
-        // Récupérer tous les paiements depuis la base de données
-        $paiements = Paiement::all(); // Assurez-vous que votre modèle et table existent;
-        return view('home', compact('paiements')); // Passer la variable à la vue
+        // Vérifiez si l'utilisateur est authentifié
+        if (!auth()->check()) {
+            return redirect()->route('login'); // Redirigez vers la page de connexion si l'utilisateur n'est pas authentifié
+        }
+
+        // Récupérer les paiements pour la page d'accueil
+        $sort = request('sort'); // Récupère le paramètre de tri de la requête
+        $paiements = Paiement::orderBy($sort ?? 'created_at', 'desc')->paginate(6); // Paginer les paiements
+
+        return view('home', compact('paiements')); // Assurez-vous que 'home' est la vue d'accueil
     }
 }
+

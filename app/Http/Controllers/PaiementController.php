@@ -12,15 +12,25 @@ use Illuminate\Support\Facades\Log;
 class PaiementController extends Controller
 {
     // Afficher la liste des paiements
-    public function index()
+    public function index(Request $request)
     {
         // Vérifiez si l'utilisateur est authentifié et possède les rôles requis
         if (!auth()->check() || (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('payment_validator'))) {
             return redirect()->route('home')->with('error', 'Accès refusé.');
         }
 
-        // Récupérer tous les paiements avec pagination
-        $paiements = Paiement::paginate(10); 
+        $query = Paiement::query();
+
+     // Vérifier si un tri est demandé et si la colonne est valide
+     $sort = $request->input('sort');
+     $validColumns = ['date_paiement', 'status']; // Les colonnes autorisées pour le tri
+ 
+     if (in_array($sort, $validColumns)) {
+         $query = $query->orderBy($sort);
+     }
+
+    // Pagination (6 paiements par page)
+    $paiements = $query->paginate(6);
 
         // Passer la variable $paiements à la vue
         return view('web.paiements.index', compact('paiements'));
@@ -52,7 +62,7 @@ class PaiementController extends Controller
 
         // Validez les données du formulaire
         $validatedData = $request->validate([
-            'matieres_taxables' => 'required|string|max:255',
+            'matiere_taxable' => 'required|string|max:255',
             'prix_matiere' => 'required|numeric|min:0',
             'date_ordonancement' => 'required|date',
             'date_accuse_reception' => 'required|date|after_or_equal:date_ordonancement',
@@ -64,19 +74,28 @@ class PaiementController extends Controller
         Log::info('Données validées : ', $validatedData);
 
         try {
-            // Calculez le prix à payer et le coût d'opportunité
+            // Calculez le prix à payer
             $prix_a_payer = $validatedData['prix_matiere'] * 0.05;
             $date_ordonancement = Carbon::parse($validatedData['date_ordonancement']);
             $date_accuse_reception = Carbon::parse($validatedData['date_accuse_reception']);
-            $cout_opportunite = $date_ordonancement->diffInDays($date_accuse_reception);
-            $date_paiement = $date_accuse_reception->copy()->addDays(10);
-            if ($date_paiement->isSunday()) {
-                $date_paiement->addDay(); 
+
+            // Calculez la date de paiement en ajoutant 10 jours ouvrables
+            $joursAjoutes = 0;
+            $date_paiement = $date_accuse_reception->copy();
+
+            while ($joursAjoutes < 10) {
+                $date_paiement->addDay(); // Ajoute un jour
+                if (!$date_paiement->isSunday()) {
+                    $joursAjoutes++; // Incrémente le compteur seulement si ce n'est pas un dimanche
+                }
             }
+
+            // Calculez le coût d'opportunité
+            $cout_opportunite = $date_ordonancement->diffInDays($date_accuse_reception);
 
             // Créez l'enregistrement dans la base de données
             $paiement = Paiement::create([
-                'matieres_taxables' => $validatedData['matieres_taxables'],
+                'matiere_taxable' => $validatedData['matiere_taxable'],
                 'prix_matiere' => $validatedData['prix_matiere'],
                 'prix_a_payer' => $prix_a_payer,
                 'date_ordonancement' => $date_ordonancement,
@@ -109,8 +128,9 @@ class PaiementController extends Controller
     public function edit($id)
     {
         if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
-            return response()->json(['error' => 'Accès refusé.'], 403);
-        }
+            return redirect('/')
+            ->with('error', 'Accès refusé.');
+                }
         $paiement = Paiement::findOrFail($id);
         return view('web.paiements.edit', compact('paiement'));
     }
@@ -118,9 +138,12 @@ class PaiementController extends Controller
     // Mettre à jour le paiement
     public function update(Request $request, $id)
     {
-        // Validez les données du formulaire
-        $request->validate([
-            'matieres_taxables' => 'string',
+        if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
+            return redirect()->route('home')->with('error', 'Accès refusé.');
+        }
+        // Validation des données du formulaire
+        $validatedData = $request->validate([
+            'matiere_taxable' => 'string',
             'prix_matiere' => 'required|numeric',
             'date_ordonancement' => 'required|date',
             'date_accuse_reception' => 'date|after_or_equal:date_ordonancement',
@@ -132,75 +155,91 @@ class PaiementController extends Controller
         $paiement = Paiement::findOrFail($id);
 
         // Calculez le prix à payer et le coût d'opportunité
-        $prix_a_payer = $request->prix_matiere * 0.05;
-        $date_ordonancement = Carbon::parse($request->date_ordonancement);
-        $date_accuse_reception = Carbon::parse($request->date_accuse_reception);
+        $prix_a_payer = $validatedData['prix_matiere'] * 0.05;
+        $date_ordonancement = Carbon::parse($validatedData['date_ordonancement']);
+        $date_accuse_reception = Carbon::parse($validatedData['date_accuse_reception']);
         $cout_opportunite = $date_ordonancement->diffInDays($date_accuse_reception);
-        $date_paiement = $date_accuse_reception->copy()->addDays(10);
-        if ($date_paiement->isSunday()) {
-            $date_paiement->addDay();
+
+        // Calculez la date de paiement en ajoutant 10 jours ouvrables
+        $joursAjoutes = 0;
+        $date_paiement = $date_accuse_reception->copy();
+
+        while ($joursAjoutes < 10) {
+            $date_paiement->addDay(); // Ajoute un jour
+            if (!$date_paiement->isSunday()) {
+                $joursAjoutes++; // Incrémente le compteur seulement si ce n'est pas un dimanche
+            }
         }
 
         // Mettre à jour le paiement
         $paiement->update([
-            'matieres_taxables' => $request->matieres_taxables,
-            'prix_matiere' => $request->prix_matiere,
+            'matiere_taxable' => $validatedData['matiere_taxable'],
+            'prix_matiere' => $validatedData['prix_matiere'],
             'prix_a_payer' => $prix_a_payer,
             'date_ordonancement' => $date_ordonancement,
             'date_accuse_reception' => $date_accuse_reception,
             'cout_opportunite' => $cout_opportunite,
             'date_paiement' => $date_paiement,
             'retard_de_paiement' => $date_paiement->isPast(),
-            'nom_ordonanceur' => $request->nom_ordonanceur,
-            'client_id' => $request->client_id,
+            'nom_ordonanceur' => $validatedData['nom_ordonanceur'],
+            'client_id' => $validatedData['client_id'],
             'status' => 'en attente'
         ]);
 
         return redirect()->route('web.paiements.index')->with('success', 'Paiement mis à jour avec succès.');
     }
-
     // Confirmer le paiement
     public function confirm(Request $request, $id)
     {
-        if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
+    // Vérification de l'authentification et des rôles
+    if (!auth()->check() || !auth()->user()->hasRole('payment_validator')) {
+        return redirect('/')
+            ->with('error', 'Accès refusé.');
+    }
+
+    // Trouver le paiement ou renvoyer une erreur 404
+    $paiement = Paiement::findOrFail($id);
+
+    // Validation des données d'entrée
+    $request->validate([
+        'avis' => 'required|in:validé,rejeté',
+        // Optionnel : retirer ou conserver si vous attendez un status du client
+        // 'status' => 'required|in:confirmé,pending', 
+    ]);
+
+    // Ajouter des logs pour vérifier les valeurs reçues
+    Log::info('Avis reçu : ' . $request->input('avis'));
+
+    // Calculer le statut basé sur l'avis
+    $status = ($request->input('avis') === 'validé') ? 'validé' : 'rejeté';
+    Log::info('Statut calculé : ' . $status);
+
+    // Mettre à jour le paiement avec le nouvel état
+    $paiement->update([
+        'status' => $status,
+        'avis' => $request->input('avis'),
+    ]);
+
+    // Vérification de l'état après mise à jour
+    Log::info('Paiement après mise à jour : ', $paiement->toArray());
+
+    // Retourner une réponse JSON après mise à jour
+    return response()->json([
+        'message' => 'Le paiement a été validé.',
+        'paiement' => $paiement,
+    ]);
+    }
+
+    // Supprimer un paiement
+    public function destroy($id)
+    {
+        if (!auth()->check() || !auth()->user()->hasRole('admin')) {
             return response()->json(['error' => 'Accès refusé.'], 403);
         }
 
         $paiement = Paiement::findOrFail($id);
-
-        $request->validate([
-            'avis' => 'required|in:validé,rejeté',
-            'status' => 'required|in:confirmé,pending',
-        ]);
-
-        // Ajouter des logs pour vérifier les valeurs reçues
-        Log::info('Avis reçu : ' . $request->avis);
-
-        $status = ($request->avis === 'validé') ? 'confirmé' : 'rejeté';
-        Log::info('Statut calculé : ' . $status);
-
-        $paiement->update([
-            'status' => $status,
-            'avis' => $request->avis,
-        ]);
-
-        // Vérification de l'état après mise à jour
-        Log::info('Paiement mis à jour : ', $paiement->toArray());
-
-        return redirect()->route('web.paiements.index')->with('success', 'Paiement ' . $status . ' avec succès.');
-    }
-
-    // Annuler le paiement
-    public function destroy($id)
-    {
-        $paiement = Paiement::findOrFail($id);
         $paiement->delete();
-        return redirect()->route('web.paiements.index')->with('success', 'Paiement supprimé avec succès.');
-    }
 
-    // Méthode pour valider le paiement (ajouter les vérifications ici)
-    private function validerPaiement($id)
-    {
-        // Implémentez la logique de validation ici
+        return redirect()->route('web.paiements.index')->with('success', 'Paiement supprimé avec succès.');
     }
 }

@@ -121,7 +121,7 @@
                     <th>Nom Redevable</th>
                     <th>Nom Taxateur</th>
                     <th>Nom Liquidateur</th>
-                    <th>Matières Taxables</th>
+                    <th>Matière Taxable</th>
                     <th>Prix de la Matière</th>
                     <th>Prix à Payer</th>
                     <th>Actions</th>
@@ -136,12 +136,12 @@
                         <td>{{ $client->nom_redevable }}</td>
                         <td>{{ $client->nom_taxateur }}</td>
                         <td>{{ $client->nom_liquidateur }}</td>
-                        <td>{{ $client->matieres_taxables }}</td>
+                        <td>{{ $client->matiere_taxable }}</td>
                         <td>{{ $client->prix_matiere }} €</td>
                         <td>{{ $client->prix_a_payer }} €</td>
                         <td>
                             <a href="{{ route('web.clients.edit', $client->id) }}" class="btn btn-warning btn-sm">Modifier</a>
-                            <form action="{{ route('clients.destroy', $client->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('web.clients.destroy', $client->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>

@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles; // Importez le trait HasRoles
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles; // Ajoutez le trait HasRoles
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +19,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',  // Ajoutez le champ 'role' ici
     ];
 
     /**
@@ -46,24 +46,26 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user has a specific role.
+     * Vérifiez si l'utilisateur a un rôle spécifique.
      *
      * @param string $role
      * @return bool
      */
     public function hasRole($role)
     {
-        return $this->roles()->where('name', $role)->exists();
+        // Vérifier le rôle de l'utilisateur en comparant avec la colonne 'role'
+        return $this->role === $role;
     }
 
     /**
-     * Check if the user has any of the given roles.
+     * Vérifiez si l'utilisateur a l'un des rôles spécifiés.
      *
      * @param array $roles
      * @return bool
      */
     public function hasAnyRole(array $roles)
     {
-        return $this->roles()->whereIn('name', $roles)->exists();
+        // Vérifiez si l'utilisateur a un des rôles dans l'array
+        return in_array($this->role, $roles);
     }
 }

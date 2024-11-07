@@ -1,8 +1,7 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers;
 
-use Spatie\Permission\Models\Role;  // Assurez-vous d'importer le modèle Role
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -10,6 +9,7 @@ class ClientController extends Controller
 {
     public function index()
     {
+        // Récupération de tous les clients
         $clients = Client::all();
         return view('clients.index', compact('clients'));
     }
@@ -21,33 +21,38 @@ class ClientController extends Controller
             return redirect()->route('login')->with('error', 'Veuillez vous connecter pour accéder à cette page.');
         }
 
-        // Vérifiez si l'utilisateur a le rôle nécessaire
-        if (!auth()->user()->hasRole('read_write')) {
-            return redirect()->route('home')->with('error', 'Accès refusé.');
-        }
-
         return view('clients.create');
     }
 
     public function store(Request $request)
     {
+        // Validation des données d'entrée
         $validatedData = $request->validate([
             'nom_redevable' => 'required|string|max:255',
             'adresse' => 'required|string|max:255',
             'telephone' => 'required|string|max:20',
             'nom_taxateur' => 'required|string|max:255',
             'nom_liquidateur' => 'required|string|max:255',
-            'matiere_taxable' => 'required|numeric',
+            'matiere_taxable' => 'required|string|max:255',
+            'prix_matiere' => 'required|numeric|min:0',
         ]);
 
-        // Créez le client
-        $client = Client::create($validatedData);
+        // Calculer le prix à payer (5% du prix de la matière)
+        $prix_a_payer = $validatedData['prix_matiere'] * 0.05;
 
-        // Assignez le rôle (si nécessaire)
-        if ($client && Role::where('name', 'read_write')->exists()) {
-            $client->assignRole('read_write');
-        }
+        // Créer le client avec les données validées
+        Client::create([
+            'nom_redevable' => $validatedData['nom_redevable'],
+            'adresse' => $validatedData['adresse'],
+            'telephone' => $validatedData['telephone'],
+            'nom_taxateur' => $validatedData['nom_taxateur'],
+            'nom_liquidateur' => $validatedData['nom_liquidateur'],
+            'matiere_taxable' => $validatedData['matiere_taxable'],
+            'prix_matiere' => $validatedData['prix_matiere'],
+            'prix_a_payer' => $prix_a_payer, // Stockez le prix à payer
+        ]);
 
+        // Redirigez après la création
         return redirect()->route('web.clients.index')->with('success', 'Client créé avec succès.');
     }
 
@@ -58,24 +63,30 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        // Récupération de tous les rôles pour le formulaire d'édition
-        $roles = Role::all();
-        return view('clients.edit', compact('client', 'roles'));
+        return view('clients.edit', compact('client'));
     }
 
     public function update(Request $request, Client $client)
     {
+        // Validation des données d'entrée
         $validatedData = $request->validate([
             'nom_redevable' => 'required|string|max:255',
             'adresse' => 'required|string|max:255',
             'telephone' => 'required|string|max:20',
             'nom_taxateur' => 'required|string|max:255',
             'nom_liquidateur' => 'required|string|max:255',
-            'matiere_taxable' => 'required|numeric',
+            'matiere_taxable' => 'required|string|max:255',
+            'prix_matiere' => 'required|numeric|min:0',
         ]);
 
+        // Mettez à jour le client avec les nouvelles données
         $client->update($validatedData);
 
+        // Calculer à nouveau le prix à payer après mise à jour
+        $prix_a_payer = $validatedData['prix_matiere'] * 0.05;
+        $client->update(['prix_a_payer' => $prix_a_payer]); // Mettre à jour le prix à payer
+
+        // Redirigez après la mise à jour
         return redirect()->route('web.clients.index')->with('success', 'Client mis à jour avec succès.');
     }
 
@@ -83,6 +94,7 @@ class ClientController extends Controller
     {
         $client->delete();
 
+        // Redirigez après la suppression
         return redirect()->route('web.clients.index')->with('success', 'Client supprimé avec succès.');
     }
 }

@@ -23,15 +23,15 @@
                 <select name="client_id" class="form-control" id="client_id" required>
                     <option value="">Sélectionnez un client</option>
                     @foreach ($clients as $client)
-                        <option value="{{ $client->id }}">{{ $client->nom }}</option>
+                        <option value="{{ $client->id }}">{{ $client->nom_redevable }}</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Matière Taxable -->
             <div class="form-group">
-                <label for="matieres_taxables">Matière Taxable</label>
-                <input type="text" name="matieres_taxables" class="form-control" id="matieres_taxables" placeholder="Entrez la matière taxable" required>
+                <label for="matiere_taxable">Matière Taxable</label>
+                <input type="text" name="matiere_taxable" class="form-control" id="matiere_taxable" placeholder="Entrez la matière taxable" required>
             </div>
 
             <!-- Prix de la Matière -->

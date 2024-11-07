@@ -13,7 +13,8 @@ class Client extends Model
         'nom_taxateur',
         'nom_liquidateur',
         'matiere_taxable',
-        'prix_à_payer',
+        'prix_matiere',
+        'prix_a_payer',
     ];
 
     // Ajoutez d'autres méthodes ou relations si nécessaire
