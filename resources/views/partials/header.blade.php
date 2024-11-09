@@ -25,7 +25,7 @@
 <nav class="navbar navbar-expand-lg navbar-light navbar-custom shadow-sm">
     <div class="container">
         <a class="navbar-brand font-weight-bold" href="#">
-            <img src="{{ asset('images/icone.jpg') }}" alt="Icône"> LogMob
+            <alt="Icône"> LogMob
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -36,10 +36,10 @@
                     <a class="nav-link" href="{{ route('home') }}">Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('home') }}">Gestion des redevables</a>
+                    <a class="nav-link" href="{{ route('web.clients.index') }}">Gestion des redevables</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('web.paiements.index') }}">Contact</a>
+                    <a class="nav-link" href="{{ route('web.paiements.index') }}">Gestion des paiements</a>
                 </li>
                 <!-- Ajoutez d'autres liens si nécessaire -->
             </ul>

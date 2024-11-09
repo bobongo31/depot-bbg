@@ -20,7 +20,7 @@
 
             <!-- Nom Redevable -->
             <div class="form-group">
-                <label for="nom_redevable">Nom Redevable</label>
+                <label for="nom_redevable">Nom de Redevable</label>
                 <input type="text" name="nom_redevable" class="form-control" id="nom_redevable" placeholder="Entrez le nom du redevable" required>
             </div>
 
@@ -38,7 +38,7 @@
 
             <!-- Nom Liquidateur -->
             <div class="form-group">
-                <label for="nom_liquidateur">Nom Liquidateur</label>
+                <label for="nom_liquidateur">Nom de Liquidateur</label>
                 <input type="text" name="nom_liquidateur" class="form-control" id="nom_liquidateur" placeholder="Entrez le nom du liquidateur" required>
             </div>
 
@@ -62,7 +62,7 @@
 
             <!-- Nom Taxateur -->
             <div class="form-group">
-                <label for="nom_taxateur">Nom Taxateur</label>
+                <label for="nom_taxateur">Nom de Taxateur</label>
                 <input type="text" name="nom_taxateur" class="form-control" id="nom_taxateur" placeholder="Entrez le nom du taxateur" required>
             </div>
 

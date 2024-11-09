@@ -26,8 +26,8 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light navbar-custom shadow-sm">
     <div class="container">
-        <a class="navbar-brand font-weight-bold" href="#">
-            <img src="{{ asset('images/icone.jpg') }}" alt="Icône"> LogMob
+        <a class="navbar-brand font-weight-bold" href="">
+            <alt="Icône"> LogMob
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

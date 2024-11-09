@@ -116,11 +116,11 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Nom de Redevable</th>
                     <th>Téléphone</th>
                     <th>Adresse</th>
-                    <th>Nom Redevable</th>
-                    <th>Nom Taxateur</th>
-                    <th>Nom Liquidateur</th>
+                    <th>Nom de Taxateur</th>
+                    <th>Nom de Liquidateur</th>
                     <th>Matière Taxable</th>
                     <th>Prix de la Matière</th>
                     <th>Prix à Payer</th>
@@ -131,14 +131,14 @@
                 @foreach ($clients as $client)
                     <tr>
                         <td>{{ $client->id }}</td>
+                        <td>{{ $client->nom_redevable }}</td>
                         <td>{{ $client->telephone }}</td>
                         <td>{{ $client->adresse }}</td>
-                        <td>{{ $client->nom_redevable }}</td>
                         <td>{{ $client->nom_taxateur }}</td>
                         <td>{{ $client->nom_liquidateur }}</td>
                         <td>{{ $client->matiere_taxable }}</td>
-                        <td>{{ $client->prix_matiere }} €</td>
-                        <td>{{ $client->prix_a_payer }} €</td>
+                        <td>{{ $client->prix_matiere }} FC</td>
+                        <td>{{ $client->prix_a_payer }} FC</td>
                         <td>
                             <a href="{{ route('web.clients.edit', $client->id) }}" class="btn btn-warning btn-sm">Modifier</a>
                             <form action="{{ route('web.clients.destroy', $client->id) }}" method="POST" style="display:inline;">
@@ -153,8 +153,8 @@
             <tfoot>
                 <tr>
                     <th colspan="7" class="text-right">Total</th>
-                    <th>{{ $clients->sum('prix_matiere') }} €</th>
-                    <th>{{ $clients->sum('prix_a_payer') }} €</th>
+                    <th>{{ $clients->sum('prix_matiere') }} FC</th>
+                    <th>{{ $clients->sum('prix_a_payer') }} FC</th>
                     <th></th>
                 </tr>
             </tfoot>

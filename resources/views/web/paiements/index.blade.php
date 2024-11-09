@@ -79,9 +79,9 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-12">
-                <h3 class="text-center display-2 text-dark mb-2">Liste des Débits</h3>
+                <h3 class="text-center display-2 text-dark mb-2">Liste des notes des Débits</h3>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <a href="{{ route('web.paiements.create') }}" class="btn btn-primary">Ajouter un Débit</a>
+                    <a href="{{ route('web.paiements.create') }}" class="btn btn-primary">Ajouter une note Débit</a>
                     <form action="{{ route('web.paiements.index') }}" method="GET" class="d-flex w-50">
                         <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ request('search') }}">
                         <button type="submit" class="btn btn-secondary ml-2">Rechercher</button>
@@ -135,9 +135,9 @@
                 <tbody>
                     @foreach ($paiements as $paiement)
                         <tr id="paiement-row-{{ $paiement->id }}">
-                            <td>{{ $paiement->matieres_taxables }}</td>
-                            <td class="prix-matiere">{{ number_format($paiement->prix_matiere, 2, ',', ' ') }} €</td>
-                            <td class="prix-a-payer">{{ number_format($paiement->prix_a_payer, 2, ',', ' ') }} €</td>
+                            <td>{{ $paiement->matiere_taxable }}</td>
+                            <td class="prix-matiere">{{ number_format($paiement->prix_matiere, 2, ',', ' ') }} FC</td>
+                            <td class="prix-a-payer">{{ number_format($paiement->prix_a_payer, 2, ',', ' ') }} FC</td>
                             <td>{{ \Carbon\Carbon::parse($paiement->date_ordonancement)->format('d/m/Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($paiement->date_accuse_reception)->format('d/m/Y') }}</td>
                             <td class="cout-opportunite"></td>
@@ -172,6 +172,33 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <!-- Modal pour modifier la date d'accusé de réception -->
+        <div class="modal fade" id="accuseModal" tabindex="-1" role="dialog" aria-labelledby="accuseModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="accuseModalLabel">Modifier la Date d'Accusé de Réception</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="accuse-form">
+                            <div class="form-group">
+                                <label for="date_accuse_reception">Nouvelle Date d'Accusé de Réception</label>
+                                <input type="text" class="form-control" id="date_accuse_reception" name="date_accuse_reception" required>
+                            </div>
+                            <input type="hidden" id="paiement-id" name="paiement_id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-primary" id="update-accuse">Mettre à jour</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="modal fade" id="visaModal" tabindex="-1" role="dialog" aria-labelledby="visaModalLabel" aria-hidden="true">

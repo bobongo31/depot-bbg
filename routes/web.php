@@ -26,6 +26,10 @@ Route::resource('roles', RoleController::class);
 // Route pour traiter la soumission du formulaire de connexion
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.submit');
 
+Route::get('/rapport/rapport_tous_paiements', [PaiementController::class, 'genererRapportTousPaiements']);
+Route::get('/rapport/rapport_tous_clients', [ClientController::class, 'genererRapportTousClients']);
+Route::get('/rapport/rapport_paiement/{id}', [PaiementController::class, 'genererRapportPaiement']);
+Route::get('/rapport/rapport_client/{id}', [ClientController::class, 'genererRapportClient']);
 
 // Middleware pour les utilisateurs authentifiés
 Route::middleware('auth')->group(function () {
@@ -40,7 +44,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{client}', [ClientController::class, 'destroy'])->name('destroy'); // Utilisateur avec permissions d'écriture
 
         // Route pour récupérer les matières d'un client spécifique via AJAX
-        Route::get('/clients/{clientId}/data', [ClientController::class, 'getClientData']);        
+        Route::get('/{client}/data', [ClientController::class, 'getClientData'])->name('data');
+        
     });
 
             // Routes pour les paiements
@@ -52,11 +57,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/{paiement}/edit', [PaiementController::class, 'edit'])->name('edit');           
             Route::post('/', [PaiementController::class, 'store'])->name('store'); // Enregistrement d'un paiement
             });
+
+            Route::put('/paiements/{paiement}/update-accuse-reception', [PaiementController::class, 'updateAccuseReception'])->name('web.paiements.updateAccuseReception');
         
         // Les paiements ne peuvent être validés ou modifiés que par les validateurs
             Route::middleware('auth')->group(function () {
             Route::put('paiements/{id}/confirm', [PaiementController::class, 'confirm'])->name('paiements.confirm');
-            Route::put('/{paiement/{id}', [PaiementController::class, 'update'])->name('update'); // Mise à jour d'un paiement
+            Route::put('/{paiement}/{id}', [PaiementController::class, 'update'])->name('update');
             Route::put('/paiements/{id}/updateStatus', [PaiementController::class, 'updateStatus']);
             Route::delete('/{paiement}', [PaiementController::class, 'destroy'])->name('destroy');
         });

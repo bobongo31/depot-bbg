@@ -4,9 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use PDF;
 
 class ClientController extends Controller
 {
+
+
+    public function genererRapportTousClients()
+    {
+        $clients = Client::all();
+        $pdf = PDF::loadView('rapport.rapport_tous_clients', compact('clients'))->setPaper('A4', 'landscape');
+        return $pdf->download('rapport.rapport_tous_clients.pdf');
+    }
+
+    public function genererRapportClient($id)
+    {
+        $client = Client::with('paiements')->findOrFail($id);
+        $pdf = PDF::loadView('rapport.rapport_client', compact('client'))->setPaper('A4', 'portrait');
+        return $pdf->download("rapport.rapport_client_{$id}.pdf");
+    }
+
     public function index()
     {
         // Récupération de tous les clients
@@ -95,6 +112,19 @@ class ClientController extends Controller
         return redirect()->route('web.clients.index')->with('success', 'Client mis à jour avec succès.');
     }
 
+      // Méthode pour récupérer les données du client
+    public function getClientData($clientId)
+    {
+        $client = Client::find($clientId);
+        if ($client) {
+            return response()->json([
+                'matiere_taxable' => $client->matiere_taxable,
+                'prix_matiere' => $client->prix_matiere,
+                'prix_a_payer' => $client->prix_a_payer,
+            ]);
+        }
+        return response()->json([], 404); // Si le client n'est pas trouvé
+    }  
     public function destroy(Client $client)
     {
         if (!auth()->check() || !auth()->user()->hasRole('read_write')) {

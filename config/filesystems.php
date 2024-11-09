@@ -75,3 +75,16 @@ return [
     ],
 
 ];
+
+return [
+    'providers' => [
+        // Fournisseurs existants
+        // Ajoutez Barryvdh\DomPDF\ServiceProvider::class à la fin de la liste
+    ],
+
+    'aliases' => [
+        // Alias existants
+        // Ajoutez 'PDF' => Barryvdh\DomPDF\Facade\Pdf::class à la fin de la liste
+    ],
+];
+

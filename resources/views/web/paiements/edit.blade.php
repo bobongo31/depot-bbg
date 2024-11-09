@@ -9,8 +9,8 @@
         @method('PUT')
 
         <div class="form-group">
-            <label for="matieres_taxables">Matière Taxable</label>
-            <input type="text" name="matieres_taxables" class="form-control" value="{{ old('matieres_taxables', $paiement->matieres_taxables) }}" required>
+            <label for="matiere_taxable">Matière Taxable</label>
+            <input type="text" name="matiere_taxable" class="form-control" value="{{ old('matiere_taxable', $paiement->matiere_taxable) }}" required>
         </div>
 
         <div class="form-group">

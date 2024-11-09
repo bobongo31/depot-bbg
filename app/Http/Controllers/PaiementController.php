@@ -7,10 +7,40 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB; 
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
+use PDF; 
 
 class PaiementController extends Controller
 {
+    
+
+    public function genererRapportTousPaiements()
+    {
+        // Récupérer tous les paiements avec leurs clients
+        $paiements = Paiement::with('client')->get();
+
+        // Charger la vue pour tous les paiements
+        $pdf = PDF::loadView('rapport.rapport_tous_paiements', compact('paiements'))
+                ->setPaper('A4', 'landscape'); // Format A4, orientation portrait
+
+        // Retourner le PDF pour le téléchargement
+        return $pdf->download('rapport.rapport_tous_paiements.pdf');
+    }
+
+
+    public function genererRapportPaiement($id)
+    {
+        // Trouver le paiement avec son client associé
+        $paiements = Paiement::where('client_id', $id)->get();
+        // Charger la vue pour un paiement spécifique
+        $pdf = PDF::loadView('rapport.rapport_paiement', compact('paiements'))
+                ->setPaper('A4', 'landscape'); // Format A4
+
+        // Retourner le PDF pour le téléchargement
+        return $pdf->download("rapport.rapport_paiement_{$id}.pdf");
+    } 
+
+
     // Afficher la liste des paiements
     public function index(Request $request)
     {
@@ -53,6 +83,23 @@ class PaiementController extends Controller
         $clients = Client::all(); 
         return view('web.paiements.create', compact('clients'));
     }
+    public function getClientData($clientId)
+    {
+        // Récupérer les données du client par son ID
+        $client = Client::find($clientId);
+        
+        if ($client) {
+            // Retourner les informations du client sous forme de JSON
+            return response()->json([
+                'matiere_taxable' => $client->matiere_taxable,
+                'prix_matiere' => $client->prix_matiere
+            ]);
+        }
+    
+        // Si le client n'est pas trouvé
+        return response()->json([], 404);
+    }
+    
 
     // Stocker le paiement dans la base de données
     public function store(Request $request)
@@ -65,7 +112,7 @@ class PaiementController extends Controller
             'matiere_taxable' => 'required|string|max:255',
             'prix_matiere' => 'required|numeric|min:0',
             'date_ordonancement' => 'required|date',
-            'date_accuse_reception' => 'required|date|after_or_equal:date_ordonancement',
+            'date_accuse_reception' => 'nullable|date|after_or_equal:date_ordonancement',
             'nom_ordonanceur' => 'required|string|max:255',
             'client_id' => 'required|exists:clients,id',
         ]);
@@ -146,7 +193,7 @@ class PaiementController extends Controller
             'matiere_taxable' => 'string',
             'prix_matiere' => 'required|numeric',
             'date_ordonancement' => 'required|date',
-            'date_accuse_reception' => 'date|after_or_equal:date_ordonancement',
+            'date_accuse_reception' => 'nullable|date|after_or_equal:date_ordonancement',
             'nom_ordonanceur' => 'required|string',
             'client_id' => 'required|exists:clients,id'
         ]);
@@ -249,5 +296,25 @@ class PaiementController extends Controller
         $paiement->delete();
 
         return redirect()->route('web.paiements.index')->with('success', 'Paiement supprimé avec succès.');
+    }
+
+    public function updateAccuseReception(Request $request, $id)
+    {
+    // Validation de la date d'accusé de réception
+    $request->validate([
+        'date_accuse_reception' => 'required|date',
+    ]);
+
+    // Trouver le paiement à mettre à jour
+    $paiement = Paiement::findOrFail($id);
+
+    // Mise à jour de la date d'accusé de réception
+    $paiement->date_accuse_reception = $request->date_accuse_reception;
+
+    // Sauvegarde des modifications dans la base de données
+    $paiement->save();
+
+    // Rediriger vers la liste des paiements avec un message de succès
+    return redirect()->route('web.paiements.index')->with('success', 'La date d\'accusé de réception a été mise à jour avec succès.');
     }
 }
