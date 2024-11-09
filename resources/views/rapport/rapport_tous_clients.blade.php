@@ -13,9 +13,34 @@
         body {
             border: 10px solid transparent;
             padding: 10px;
-            background-image: linear-gradient(to right, yellow, red, blue);
-            background-origin: border-box;
-            background-clip: content-box, border-box;
+            background-color: #fff; /* Couleur de fond */
+            position: relative;
+        }
+
+        /* Filigrane d'image */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            z-index: -1; /* Place le filigrane en arrière-plan */
+        }
+
+        .watermark img {
+            max-width: 300px;
+        }
+
+        /* Filigrane textuel */
+        .watermark-text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+            font-size: 50px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.1);
+            z-index: -1;
         }
 
         /* Style du logo */
@@ -33,6 +58,7 @@
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
+            margin-top: 10px;
         }
 
         /* Style de la table */
@@ -51,19 +77,52 @@
             text-align: left;
         }
 
+        th {
+            background-color: #4086c2;
+        }
+
+        /* Style des titres */
+        h2, h3 {
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Pied de page */
+        @page {
+            margin: 20px;
+            @bottom-center {
+                content: "Page " counter(page) " sur " counter(pages);
+                font-size: 0.9em;
+                color: #666;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Filigrane d'image -->
+    <div class="watermark">
+        <img src="{{ public_path('images/filigrame.png') }}" alt="Filigrane">
+    </div>
+    
+    <!-- Filigrane textuel -->
+    <div class="watermark-text">
+        CONFIDENTIEL
+    </div>
+
     <!-- Logo et nom de l'entreprise -->
     <div class="logo">
-        <img src="{{ asset('images/icon.jpg') }}" alt="Logo de l'entreprise">
+        <img src="{{ public_path('images/icone.png') }}" alt="Logo de l'entreprise">
     </div>
     <div class="company-info">
-        Nom de l'Entreprise
+        REPUBLIQUE DEMOCRATIQUE DU CONGO
+    </div>
+    <div class="company-info">
+        FONDS DE PROMOTION CULTURELlE
+        <p>ETABLISSEMENT PUBLIC</P>
     </div>
 
     <!-- Détail de tous les clients -->
-    <h2>Tableau des Clients</h2>
+    <h2>LISTE DES PV DE TAXATION</h2>
     <table>
         <thead>
             <tr>
@@ -98,5 +157,9 @@
             @endforeach
         </tbody>
     </table>
+     <!-- Date d'impression et localisation -->
+     <p style="text-align: right; margin-top: 40px;">
+        Fait à Kinshasa, le {!! date('d/m/Y') !!}
+    </p>
 </body>
 </html>

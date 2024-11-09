@@ -67,16 +67,18 @@
     <p class="lead" style="color: #2ecc71;">Visualisez et gérez vos paiements.</p>
 
     <!-- Bouton pour ouvrir le modal -->
+    <div style="text-align: right;">
     <button type="button" onclick="openModal()" class="btn btn-info mb-3">Générer un Rapport PDF</button>
+    </div>
 
     <!-- Modal pour choix de type de rapport -->
     <div id="rapportModal" style="display: none;" class="modal-overlay">
         <div class="modal-content">
-            <h2>Choisissez le Type de Rapport</h2>
+        <h2 style="color: white;">Choisissez le Type de Rapport</h2>
             <button onclick="generateReport('all')" class="btn btn-primary mb-2">Tous les Paiements</button>
             <button onclick="openSpecificReport()" class="btn btn-secondary mb-2">Paiement Spécifique</button>
-            <button onclick="generateReport('clients')" class="btn btn-success mb-2">Tous les Clients</button>
-            <button onclick="openClientSpecificReport()" class="btn btn-secondary mb-2">Client Spécifique</button>
+            <button onclick="generateReport('clients')" class="btn btn-success mb-2">Tous les Redevables</button>
+            <button onclick="openClientSpecificReport()" class="btn btn-secondary mb-2">Redevables Spécifique</button>
             <button onclick="closeModal()" class="btn btn-danger">Fermer</button>
         </div>
     </div>

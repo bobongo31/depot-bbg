@@ -80,6 +80,16 @@
             color: #333;
             font-family: Arial, sans-serif;
         }
+
+        /* Pied de page */
+        @page {
+            margin: 20px;
+            @bottom-center {
+                content: "Page " counter(page) " sur " counter(pages);
+                font-size: 0.9em;
+                color: #666;
+            }
+        }
     </style>
 </head>
 <body>
@@ -101,7 +111,8 @@
         REPUBLIQUE DEMOCRATIQUE DU CONGO
     </div>
     <div class="company-info">
-        FONDS DE PROMOTION CULTURELE
+        FONDS DE PROMOTION CULTURELlE
+        <p>ETABLISSEMENT PUBLIC</P>
     </div>
 
     <!-- Détail du client -->
@@ -112,9 +123,9 @@
     <p><strong>Nom de Taxateur :</strong> {{ $client->nom_taxateur }}</p>
     <p><strong>Nom de Liquidateur :</strong> {{ $client->nom_liquidateur }}</p>
     <p><strong>Matière Taxable :</strong> {{ $client->matiere_taxable }}</p>
-    <p><strong>Prix à Payer :</strong> {{ $client->prix_a_payer }}</p>
+    <p><strong>Prix à Payer :</strong> {{ number_format($client->prix_a_payer, 2, ',', ' ') }} FC</p>
 
-    <h3>EXTRAIT DE NOTE DE DEBIT</h3>
+    <h3>EXTRAIT DES NOTES DES DEBITS</h3>
     <table>
         <thead>
             <tr>
@@ -130,12 +141,17 @@
             <tr>
                 <td>{{ $paiement->id }}</td>
                 <td>{{ $paiement->matiere_taxable }}</td>
-                <td>{{ $paiement->prix_a_payer }}</td>
+                <td>{{ number_format($paiement->prix_a_payer, 2, ',', ' ') }} FC</td>
                 <td>{{ $paiement->date_paiement }}</td>
                 <td>{{ $paiement->status }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
+    
+    <!-- Date d'impression et localisation -->
+    <p style="text-align: right; margin-top: 40px;">
+        Fait à Kinshasa, le {!! date('d/m/Y') !!}
+    </p>
 </body>
 </html>
