@@ -126,6 +126,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>ID Client</th>
                 <th>Matière Taxable</th>
                 <th>Prix de la Matière</th>
                 <th>Date d'Ordonnancement</th>
@@ -136,13 +137,17 @@
                 <th>Status</th>
                 <th>Prix à Payer</th>
                 <th>Nom de l'Ordonnanceur</th>
-                <th>ID Client</th>
             </tr>
         </thead>
         <tbody>
+            @php
+                $totalPrixMatiere = 0;
+                $totalPrixAPayer = 0;
+            @endphp
             @foreach($paiements as $paiement)
             <tr>
                 <td>{{ $paiement->id }}</td>
+                <td>{{ $paiement->client_id }}</td>
                 <td>{{ $paiement->matiere_taxable }}</td>
                 <td>{{ $paiement->prix_matiere }}</td>
                 <td>{{ $paiement->date_ordonancement }}</td>
@@ -153,9 +158,20 @@
                 <td>{{ $paiement->status }}</td>
                 <td>{{ $paiement->prix_a_payer }}</td>
                 <td>{{ $paiement->nom_ordonanceur }}</td>
-                <td>{{ $paiement->client_id }}</td>
             </tr>
+            @php
+                $totalPrixMatiere += $paiement->prix_matiere;
+                $totalPrixAPayer += $paiement->prix_a_payer;
+            @endphp
             @endforeach
+            <!-- Ligne du total -->
+            <tr>
+                <td colspan="3" style="font-weight: bold; text-align: right;">Total</td>
+                <td style="font-weight: bold;">{{ $totalPrixMatiere }}</td>
+                <td colspan="6"></td>
+                <td style="font-weight: bold;">{{ $totalPrixAPayer }}</td>
+                <td></td>
+            </tr>
         </tbody>
     </table>
     <!-- Date d'impression et localisation -->

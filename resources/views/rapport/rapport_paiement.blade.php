@@ -7,7 +7,7 @@
         body {
             border: 10px solid transparent;
             padding: 10px;
-            background-color: #fff; /* Couleur de fond */
+            background-color: #fff;
             position: relative;
         }
 
@@ -18,7 +18,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             opacity: 0.1;
-            z-index: -1; /* Place le filigrane en arrière-plan */
+            z-index: -1;
         }
 
         .watermark img {
@@ -73,6 +73,7 @@
 
         th {
             background-color: #4086c2;
+            color: #fff;
         }
 
         /* Style des titres */
@@ -111,8 +112,8 @@
         REPUBLIQUE DEMOCRATIQUE DU CONGO
     </div>
     <div class="company-info">
-        FONDS DE PROMOTION CULTURELlE
-        <p>ETABLISSEMENT PUBLIC</P>
+        FONDS DE PROMOTION CULTURELLE
+        <p>ETABLISSEMENT PUBLIC</p>
     </div>
 
     <!-- Détail des paiements -->
@@ -135,27 +136,44 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $totalPrixMatiere = 0;
+                $totalPrixAPayer = 0;
+            @endphp
             @foreach($paiements as $paiement)
             <tr>
                 <td>{{ $paiement->id }}</td>
                 <td>{{ $paiement->client_id }}</td>
                 <td>{{ $paiement->matiere_taxable }}</td>
-                <td>{{ $paiement->prix_matiere }}</td>
+                <td>{{ number_format($paiement->prix_matiere, 2, ',', ' ') }} $</td>
                 <td>{{ $paiement->date_ordonancement }}</td>
                 <td>{{ $paiement->date_accuse_reception }}</td>
-                <td>{{ $paiement->cout_opportunite }}</td>
+                <td>{{ number_format($paiement->cout_opportunite, 2, ',', ' ') }} $</td>
                 <td>{{ $paiement->date_paiement }}</td>
                 <td>{{ $paiement->retard_de_paiement ? 'Oui' : 'Non' }}</td>
-                <td>{{ $paiement->prix_a_payer }}</td>
+                <td>{{ number_format($paiement->prix_a_payer, 2, ',', ' ') }} $</td>
                 <td>{{ $paiement->nom_ordonanceur }}</td>
                 <td>{{ $paiement->status }}</td>
             </tr>
+            @php
+                $totalPrixMatiere += $paiement->prix_matiere;
+                $totalPrixAPayer += $paiement->prix_a_payer;
+            @endphp
             @endforeach
+            <!-- Ligne de total -->
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td><strong>{{ number_format($totalPrixMatiere, 2, ',', ' ') }} $</strong></td>
+                <td colspan="5"></td>
+                <td><strong>{{ number_format($totalPrixAPayer, 2, ',', ' ') }} $</strong></td>
+                <td colspan="2"></td>
+            </tr>
         </tbody>
     </table>
+    
     <!-- Date d'impression et localisation -->
     <p style="text-align: right; margin-top: 40px;">
-        Fait à Kinshasa, le {!! date('d/m/Y') !!}
+        Fait à Kinshasa, le {{ date('d/m/Y') }}
     </p>
 </body>
 </html>

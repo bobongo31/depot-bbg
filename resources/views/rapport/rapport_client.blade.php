@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* Bordure de page */
+        /* Styles de la page */
         body {
             border: 10px solid transparent;
             padding: 10px;
-            background-color: #fff; /* Couleur de fond */
+            background-color: #fff;
             position: relative;
         }
 
@@ -18,7 +18,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             opacity: 0.1;
-            z-index: -1; /* Place le filigrane en arrière-plan */
+            z-index: -1;
         }
 
         .watermark img {
@@ -37,23 +37,10 @@
             z-index: -1;
         }
 
-        /* Style du logo */
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo img {
-            max-width: 150px;
-        }
-
-        /* Style de l'en-tête */
-        .company-info {
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+        /* Style du logo et des titres */
+        .logo { text-align: center; margin-bottom: 20px; }
+        .logo img { max-width: 150px; }
+        .company-info { text-align: center; font-size: 1.5em; font-weight: bold; margin-top: 10px; }
 
         /* Style de la table */
         table {
@@ -61,62 +48,30 @@
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         table, th, td {
             border: 1px solid black;
         }
-
         th, td {
             padding: 8px;
             text-align: left;
         }
-
         th {
             background-color: #4086c2;
-        }
-
-        /* Style des titres */
-        h2, h3 {
-            color: #333;
-            font-family: Arial, sans-serif;
-        }
-
-        /* Pied de page */
-        @page {
-            margin: 20px;
-            @bottom-center {
-                content: "Page " counter(page) " sur " counter(pages);
-                font-size: 0.9em;
-                color: #666;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Filigrane d'image -->
     <div class="watermark">
         <img src="{{ public_path('images/filigrame.png') }}" alt="Filigrane">
     </div>
     
-    <!-- Filigrane textuel -->
-    <div class="watermark-text">
-        CONFIDENTIEL
-    </div>
+    <div class="watermark-text">CONFIDENTIEL</div>
 
-    <!-- Logo et nom de l'entreprise -->
     <div class="logo">
         <img src="{{ public_path('images/icone.png') }}" alt="Logo de l'entreprise">
     </div>
-    <div class="company-info">
-        REPUBLIQUE DEMOCRATIQUE DU CONGO
-    </div>
-    <div class="company-info">
-        FONDS DE PROMOTION CULTURELlE
-        <p>ETABLISSEMENT PUBLIC</P>
-    </div>
-
-    <!-- Détail du client -->
-    <h2>PV DE TAXATION</h2>
+    <div class="company-info">REPUBLIQUE DEMOCRATIQUE DU CONGO</div>
+    <div class="company-info">FONDS DE PROMOTION CULTURELlE</div>
     <p><strong>Nom de redevable :</strong> {{ $client->nom_redevable }}</p>
     <p><strong>Adresse :</strong> {{ $client->adresse }}</p>
     <p><strong>Téléphone :</strong> {{ $client->telephone }}</p>
@@ -137,6 +92,7 @@
             </tr>
         </thead>
         <tbody>
+            @php $totalPrixAPayer = 0; @endphp
             @foreach($client->paiements as $paiement)
             <tr>
                 <td>{{ $paiement->id }}</td>
@@ -145,11 +101,17 @@
                 <td>{{ $paiement->date_paiement }}</td>
                 <td>{{ $paiement->status }}</td>
             </tr>
+            @php $totalPrixAPayer += $paiement->prix_a_payer; @endphp
             @endforeach
+            <!-- Ligne de total -->
+            <tr>
+                <td colspan="2"><strong>Total</strong></td>
+                <td><strong>{{ number_format($totalPrixAPayer, 2, ',', ' ') }} FC</strong></td>
+                <td colspan="2"></td>
+            </tr>
         </tbody>
     </table>
     
-    <!-- Date d'impression et localisation -->
     <p style="text-align: right; margin-top: 40px;">
         Fait à Kinshasa, le {!! date('d/m/Y') !!}
     </p>
