@@ -2,29 +2,7 @@
 
 @section('content')
 <style>
-    /* Styles pour le modal */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .modal-content {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        width: 300px;
-        text-align: center;
-    }
-
-    /* Styles pour la page */
+    /* Styles globaux */
     body {
         background-image: url('{{ asset('images/fpc.jpg') }}');
         background-size: cover;
@@ -54,6 +32,50 @@
         font-size: 14px;
         padding: 5px 15px;
     }
+
+    .chart-container {
+        position: relative;
+        margin: auto;
+        width: 80%;
+        max-width: 800px;
+        margin-bottom: 20px;
+    }
+
+    .btn-legend {
+        font-size: 8px; /* Taille du texte plus grande */
+        padding: 4px 10px; /* Plus d'espace autour du texte */
+        margin: 5px; /* Espacement autour des boutons */
+        width: auto; /* Largeur automatique en fonction du contenu */
+    }
+
+    .badge-warning {
+        background-color: #f1c40f !important; /* Jaune plus éclatant */
+        color: #fff !important; /* Texte en blanc pour contraste */
+    }
+
+
+
+    /* Styles pour le modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        text-align: center;
+    }
 </style>
 
 <div class="container mt-5">
@@ -63,54 +85,70 @@
         </div>
     @endif
 
-    <h1 class="display-4" style="color: #3498db;">Tableau de Bord</h1>
-    <p class="lead" style="color: #2ecc71;">Visualisez et gérez vos paiements.</p>
+    <h1 style="color: white; font-weight: bold; text-align: center;">Tableau de Bord</h1>
+    <p class="lead text-center" style="color: #2ecc71;">Visualisez et gérez vos paiements.</p>
 
-    <!-- Bouton pour ouvrir le modal -->
-    <div style="text-align: right;">
-    <button type="button" onclick="openModal()" class="btn btn-info mb-3">Générer un Rapport PDF</button>
+    <!-- Grid Layout: Boutons à gauche et Graphique à droite -->
+    <div class="row">
+        <!-- Colonne des boutons (à gauche) -->
+        <div class="col-md-4">
+            <div style="text-align: left;">
+                @if (auth()->user()->hasRole('payment_validator'))
+                <button type="button" onclick="openModal()" class="btn btn-info mb-3">Générer un Rapport PDF</button>
+                @endif          
+            </div>
+
+            <div class="text-left mb-3">
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm">Déconnexion</button>
+                </form>
+            </div>
+
+            <div class="mb-3">
+                <a href="{{ route('web.clients.index') }}" class="btn btn-primary btn-sm">Gérer les redevables</a>
+                @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
+                    <a href="{{ route('web.paiements.index') }}" class="btn btn-success btn-sm">Gérer les paiements</a>
+                @else
+                    <p class="text-danger">Vous n'avez pas les permissions nécessaires pour gérer les paiements.</p>
+                @endif
+            </div>
+        </div>
+
+        <!-- Colonne du graphique (à droite) -->
+        <div class="col-md-8">
+            <!-- Graphique des paiements -->
+            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
+                <div class="chart-container">
+                    <canvas id="paymentBarChart"></canvas>
+                </div>
+
+                <!-- Légende sous forme de boutons -->
+                <div style="text-align: center;">
+                    <button id="toggleValid" class="btn btn-info btn-legend">Afficher/Masquer Validé</button>
+                    <button id="toggleRejet" class="btn btn-danger btn-legend">Afficher/Masquer Rejeté</button>
+                    <button id="toggleEntente" class="btn btn-warning btn-legend">Afficher/Masquer En Entente</button>
+                </div>
+            @else
+                <p class="text-danger">Vous n'avez pas les permissions nécessaires pour afficher le graphique.</p>
+            @endif
+        </div>
     </div>
 
     <!-- Modal pour choix de type de rapport -->
     <div id="rapportModal" style="display: none;" class="modal-overlay">
         <div class="modal-content">
-        <h2 style="color: white;">Choisissez le Type de Rapport</h2>
-            <button onclick="generateReport('all')" class="btn btn-primary mb-2">Tous les Paiements</button>
+            <h2 style="color: white; font-weight: bold;">Choisissez le Type de Rapport</h2>
+            <button onclick="generateReport('tous_paiements')" class="btn btn-primary mb-2">Tous les Paiements</button>
             <button onclick="openSpecificReport()" class="btn btn-secondary mb-2">Paiement Spécifique</button>
-            <button onclick="generateReport('clients')" class="btn btn-success mb-2">Tous les Redevables</button>
+            <button onclick="generateReport('tous_clients')" class="btn btn-success mb-2">Tous les Redevables</button>
             <button onclick="openClientSpecificReport()" class="btn btn-secondary mb-2">Redevables Spécifique</button>
             <button onclick="closeModal()" class="btn btn-danger">Fermer</button>
         </div>
     </div>
 
-    <div class="text-left mb-3">
-        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-            @csrf
-            <button type="submit" class="btn btn-danger btn-sm">Déconnexion</button>
-        </form>
-    </div>
-
-    <div class="mb-3">
-        <a href="{{ route('web.clients.index') }}" class="btn btn-primary btn-sm">Gérer les redevables</a>
-        @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
-            <a href="{{ route('web.paiements.index') }}" class="btn btn-success btn-sm">Gérer les paiements</a>
-        @else
-            <p class="text-danger">Vous n'avez pas les permissions nécessaires pour gérer les paiements.</p>
-        @endif
-    </div>
-
-    @if (!auth()->user()->hasRole('read_write'))
-        <div class="mb-3">
-            <!-- Filtrage et tri des paiements -->
-            <form method="GET" action="{{ route('web.paiements.index') }}" class="d-inline">
-                <select name="sort" onchange="this.form.submit()" class="form-control form-control-sm d-inline" style="width: auto;">
-                    <option value="">Trier par</option>
-                    <option value="date_paiement" {{ request('sort') == 'date_paiement' ? 'selected' : '' }}>Date de Paiement</option>
-                    <option value="status" {{ request('sort') == 'status' ? 'selected' : '' }}>Statut</option>
-                </select>
-            </form>
-        </div>
-
+    <!-- Liste des paiements -->
+    @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
         <div class="row">
             @foreach ($paiements as $paiement)
                 <div class="col-md-4">
@@ -148,7 +186,69 @@
     @endif
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    const paymentData = {
+        labels: ['Validé', 'Rejeté', 'En Entente'],
+        datasets: [{
+            label: 'État des Paiements',
+            data: [
+                {{ $paiements->where('status', 'validé')->count() }},
+                {{ $paiements->where('status', 'rejeté')->count() }},
+                {{ $paiements->where('status', 'en entente')->count() }}
+            ],
+            backgroundColor: ['rgba(46, 204, 113, 0.8)', 'rgba(231, 76, 60, 0.8)', 'rgba(241, 196, 15, 0.8)'],
+            borderColor: ['rgba(46, 204, 113, 1)', 'rgba(231, 76, 60, 1)', 'rgba(241, 196, 15, 1)'],
+            borderWidth: 1
+        }]
+    };
+
+        const config = {
+        type: 'bar',
+        data: paymentData,
+        options: { 
+            responsive: true, 
+            scales: { y: { beginAtZero: true } },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'red'
+                    }
+                }
+            },
+            elements: {
+                bar: {
+                    backgroundColor: 'rgba(255, 255, 255, 1)' // Arrière-plan des barres en blanc
+                }
+            },
+            backgroundColor: 'white', // Arrière-plan global du graphique en blanc
+        }
+    };
+
+
+    const paymentBarChart = new Chart(document.getElementById('paymentBarChart'), config);
+    document.getElementById('paymentBarChart').style.backgroundColor = 'white';
+
+    document.getElementById('toggleValid').addEventListener('click', function() {
+        paymentBarChart.data.datasets[0].data[0] = paymentBarChart.data.datasets[0].data[0] === null ? {{ $paiements->where('status', 'validé')->count() }} : null;
+        paymentBarChart.update();
+    });
+
+    document.getElementById('toggleRejet').addEventListener('click', function() {
+        paymentBarChart.data.datasets[0].data[1] = paymentBarChart.data.datasets[0].data[1] === null ? {{ $paiements->where('status', 'rejeté')->count() }} : null;
+        paymentBarChart.update();
+    });
+
+    document.getElementById('toggleEntente').addEventListener('click', function() {
+        // Vérification de la présence de données pour "En Entente"
+        const ententeCount = {{ $paiements->where('status', 'en entente')->count() }};
+        // Si la donnée est actuellement masquée (null), on la remet avec la valeur de count
+        paymentBarChart.data.datasets[0].data[2] = paymentBarChart.data.datasets[0].data[2] === null ? ententeCount : null;
+        paymentBarChart.update();
+    });
+    console.log('Validé:', validData, 'Rejeté:', rejetData, 'Entente:', ententeData);
+
+
     function openModal() {
         document.getElementById('rapportModal').style.display = 'flex';
     }
@@ -158,27 +258,22 @@
     }
 
     function generateReport(type) {
-        if (type === 'all') {
-            window.location.href = '/rapport/rapport_tous_paiements';  // URL pour tous les rapports (pouvant inclure paiements et clients)
-        } else if (type === 'clients') {
-            window.location.href = '/rapport/rapport_tous_clients';  // URL pour les rapports des clients
-        } else if (type === 'paiements') {
-            window.location.href = '/rapport/rapport_tous_paiements';  // URL pour les rapports des paiements
-        }
+        window.location.href = `/rapport/rapport_${type}`;
     }
 
     function openSpecificReport() {
-        let paiementId = prompt("Veuillez entrer l'ID du paiement :");
+        let paiementId = prompt("Entrez l'ID du paiement:");
         if (paiementId) {
-            window.location.href = `/rapport/rapport_paiement/${paiementId}`;  // URL pour un rapport de paiement spécifique
+            window.location.href = `/rapport/rapport_paiement/${paiementId}`;
         }
     }
 
     function openClientSpecificReport() {
-        let clientId = prompt("Veuillez entrer l'ID du client :");
+        let clientId = prompt("Entrez l'ID du redevable:");
         if (clientId) {
-            window.location.href = `/rapport/rapport_client/${clientId}`;  // URL pour un rapport de client spécifique
+            window.location.href = `/rapport/rapport_client/${clientId}`;
         }
     }
 </script>
+
 @endsection

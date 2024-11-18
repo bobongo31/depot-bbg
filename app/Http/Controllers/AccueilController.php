@@ -10,7 +10,7 @@ class AccueilController extends Controller
     {
             // Récupérer les paiements pour la page d'accueil
         $sort = request('sort'); // Récupère le paramètre de tri de la requête
-        $paiements = Paiement::orderBy($sort ?? 'created_at', 'desc')->paginate(6); // Paginer les paiements
+        $paiements = Paiement::orderBy($sort ?? 'created_at', 'desc')->paginate(50); // Paginer les paiements
     
         return view('home', compact('paiements')); // Passer la variable $paiements à la vue
     }

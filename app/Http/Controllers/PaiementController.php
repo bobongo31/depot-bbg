@@ -190,7 +190,7 @@ class PaiementController extends Controller
         }
         // Validation des données du formulaire
         $validatedData = $request->validate([
-            'matiere_taxable' => 'string',
+            'matiere_taxable' => 'required|string',
             'prix_matiere' => 'required|numeric',
             'date_ordonancement' => 'required|date',
             'date_accuse_reception' => 'nullable|date|after_or_equal:date_ordonancement',

@@ -72,6 +72,7 @@
     </div>
     <div class="company-info">REPUBLIQUE DEMOCRATIQUE DU CONGO</div>
     <div class="company-info">FONDS DE PROMOTION CULTURELlE</div>
+    <h3>PV DE TAXATION</h3>
     <p><strong>Nom de redevable :</strong> {{ $client->nom_redevable }}</p>
     <p><strong>Adresse :</strong> {{ $client->adresse }}</p>
     <p><strong>Téléphone :</strong> {{ $client->telephone }}</p>

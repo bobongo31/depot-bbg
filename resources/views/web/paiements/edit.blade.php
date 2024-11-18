@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h3 class="text-center text-dark mb-4">Éditer un Paiement</h3>
 
-    <form action="{{ route('update', $paiement->id) }}" method="POST">
+    <form action="{{ route('web.paiements.update', $paiement->id) }}" method="POST">
         @csrf
         @method('PUT')
 

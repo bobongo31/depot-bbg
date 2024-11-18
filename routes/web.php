@@ -54,7 +54,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [PaiementController::class, 'index'])->name('index'); // Liste des paiements
             Route::get('/create', [PaiementController::class, 'create'])->name('create');
             Route::get('/{paiement}', [PaiementController::class, 'show'])->name('show'); // Détails d'un paiement
-            Route::get('/{paiement}/edit', [PaiementController::class, 'edit'])->name('edit');           
             Route::post('/', [PaiementController::class, 'store'])->name('store'); // Enregistrement d'un paiement
             });
 
@@ -63,7 +62,8 @@ Route::middleware('auth')->group(function () {
         // Les paiements ne peuvent être validés ou modifiés que par les validateurs
             Route::middleware('auth')->group(function () {
             Route::put('paiements/{id}/confirm', [PaiementController::class, 'confirm'])->name('paiements.confirm');
-            Route::put('/{paiement}/{id}', [PaiementController::class, 'update'])->name('update');
+            Route::get('/paiements/{id}/edit', [PaiementController::class, 'edit'])->name('web.paiements.edit');
+            Route::put('/{paiement/{id}', [PaiementController::class, 'update'])->name('web.paiements.update');
             Route::put('/paiements/{id}/updateStatus', [PaiementController::class, 'updateStatus']);
             Route::delete('/{paiement}', [PaiementController::class, 'destroy'])->name('destroy');
         });
