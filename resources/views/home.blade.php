@@ -53,6 +53,25 @@
         color: #fff !important; /* Texte en blanc pour contraste */
     }
 
+     /* Alignement horizontal des boutons */
+     .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Espacement entre les boutons */
+        flex-wrap: wrap; /* Permet de passer à la ligne si nécessaire */
+        margin: 20px 0;
+    }
+
+    /* Interaction au survol */
+    .btn-container .btn {
+        transition: background-color 0.3s ease, color 0.3s ease; /* Animation douce */
+    }
+
+    .btn-container .btn:hover {
+        background-color: #007bff !important; /* Fond blanc au survol */
+        color: #fff !important; /* Texte noir au survol */
+    }
+
 
 
     /* Styles pour le modal */
@@ -86,54 +105,50 @@
     @endif
 
     <h1 style="color: white; font-weight: bold; text-align: center;">Tableau de Bord</h1>
-    <p class="lead text-center" style="color: #2ecc71;">Visualisez et gérez vos paiements.</p>
+    <p class="lead text-center" style="color: white; font-weight: bold; text-align: center;">Visualisez et gérez vos paiements.</p>
 
-    <!-- Grid Layout: Boutons à gauche et Graphique à droite -->
-    <div class="row">
-        <!-- Colonne des boutons (à gauche) -->
-        <div class="col-md-4">
-            <div style="text-align: left;">
-                @if (auth()->user()->hasRole('payment_validator'))
-                <button type="button" onclick="openModal()" class="btn btn-info mb-3">Générer un Rapport PDF</button>
-                @endif          
-            </div>
 
-            <div class="text-left mb-3">
-                <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-sm">Déconnexion</button>
-                </form>
-            </div>
 
-            <div class="mb-3">
-                <a href="{{ route('web.clients.index') }}" class="btn btn-primary btn-sm">Gérer les redevables</a>
+    <div class="btn-container">
+    @if (auth()->user()->hasRole('payment_validator'))
+        <button type="button" onclick="openModal()" class="btn" style="background-color: #6d7474; color: white; border: none;">Générer un Rapport PDF</button>
+    @endif
+
+    <a href="{{ route('web.clients.index') }}" class="btn" style="background-color: #6d7474; color: white; border: none;">Gérer les redevables</a>
+
+    @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
+        <a href="{{ route('web.paiements.index') }}" class="btn" style="background-color: #6d7474; color: white; border: none;">Gérer les paiements</a>
+        <button type="button" class="btn" style="background-color: #6d7474; color: white; border: none;" onclick="toggleGraph()">Afficher/Masquer le graphique</button>
+        <button type="button" class="btn" style="background-color: #6d7474; color: white; border: none;" onclick="togglePaymentTable()">Afficher/Masquer le tableau des paiements</button>
+    @else
+        <p class="text-danger">Vous n'avez pas les permissions nécessaires pour effectuer ces actions.</p>
+    @endif
+
+    <!-- Formulaire pour la déconnexion avec la méthode POST -->
+    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+        @csrf
+        <button type="submit" class="btn" style="background-color: #dc3545; color: white; border: none;">Déconnexion</button>
+    </form>
+</div>
+
+
+
+
+            <!-- Colonne du graphique (à droite) -->
+            <div class="col-md-8">
+                <!-- Graphique des paiements -->
                 @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
-                    <a href="{{ route('web.paiements.index') }}" class="btn btn-success btn-sm">Gérer les paiements</a>
-                @else
-                    <p class="text-danger">Vous n'avez pas les permissions nécessaires pour gérer les paiements.</p>
-                @endif
-            </div>
-        </div>
-
-        <!-- Colonne du graphique (à droite) -->
-        <div class="col-md-8">
-            <!-- Graphique des paiements -->
-            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
-                <div class="chart-container">
+                    <div id="graph-container" class="chart-container" style="display: none;">
                     <canvas id="paymentBarChart"></canvas>
                 </div>
 
-                <!-- Légende sous forme de boutons -->
-                <div style="text-align: center;">
-                    <button id="toggleValid" class="btn btn-info btn-legend">Afficher/Masquer Validé</button>
-                    <button id="toggleRejet" class="btn btn-danger btn-legend">Afficher/Masquer Rejeté</button>
-                    <button id="toggleEntente" class="btn btn-warning btn-legend">Afficher/Masquer En Entente</button>
-                </div>
-            @else
-                <p class="text-danger">Vous n'avez pas les permissions nécessaires pour afficher le graphique.</p>
-            @endif
+                @else
+                    <p class="text-danger">Vous n'avez pas les permissions nécessaires pour afficher le graphique.</p>
+                @endif
+            </div>
         </div>
     </div>
+
 
     <!-- Modal pour choix de type de rapport -->
     <div id="rapportModal" style="display: none;" class="modal-overlay">
@@ -148,43 +163,42 @@
     </div>
 
     <!-- Liste des paiements -->
-    @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
-        <div class="row">
-            @foreach ($paiements as $paiement)
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title">{{ $paiement->client->nom_redevable }}</h5>
-                            <a href="{{ route('web.paiements.edit', $paiement->id) }}" class="btn btn-warning btn-modifier">Modifier</a>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Matière Taxable:</strong> {{ $paiement->matiere_taxable }}</p>
-                            <p><strong>Prix à Payer:</strong> {{ number_format($paiement->prix_a_payer) }} FC</p>
-                            <p><strong>Date de Paiement:</strong> {{ \Carbon\Carbon::parse($paiement->date_paiement)->format('d/m/Y') }}</p>
-                            <p><strong>Statut:</strong> 
-                                <span class="badge 
-                                    @if ($paiement->status === 'validé') badge-success
-                                    @elseif ($paiement->status === 'rejeté') badge-danger
-                                    @elseif ($paiement->status === 'en entente') badge-warning
-                                    @else badge-secondary
-                                    @endif">
-                                    {{ ucfirst($paiement->status) }}
-                                </span>
-                            </p>
-                        </div>
+@if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('payment_validator'))
+        <div id="payment-table" class="row" style="display: none;">
+        @foreach ($paiements as $paiement)
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">{{ $paiement->client->nom_redevable }}</h5>
+                        <a href="{{ route('web.paiements.edit', $paiement->id) }}" class="btn btn-warning btn-modifier">Modifier</a>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Matière Taxable:</strong> {{ $paiement->matiere_taxable }}</p>
+                        <p><strong>Prix à Payer:</strong> {{ number_format($paiement->prix_a_payer) }} FC</p>
+                        <p><strong>Date de Paiement:</strong> {{ \Carbon\Carbon::parse($paiement->date_paiement)->format('d/m/Y') }}</p>
+                        <p><strong>Statut:</strong> 
+                            <span class="badge 
+                                @if ($paiement->status === 'validé') badge-success
+                                @elseif ($paiement->status === 'rejeté') badge-danger
+                                @elseif ($paiement->status === 'en entente') badge-warning
+                                @else badge-secondary
+                                @endif">
+                                {{ ucfirst($paiement->status) }}
+                            </span>
+                        </p>
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
+    </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            {{ $paiements->links() }}
-        </div>
-    @else
-        <p class="text-warning">Les détails des paiements ne sont pas accessibles pour votre rôle.</p>
-    @endif
-</div>
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        {{ $paiements->links() }}
+    </div>
+@else
+    <p class="text-warning">Les détails des paiements ne sont pas accessibles pour votre rôle.</p>
+@endif
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -257,9 +271,29 @@
         document.getElementById('rapportModal').style.display = 'none';
     }
 
+        function toggleGraph() {
+        const graphContainer = document.getElementById('graph-container');
+        if (graphContainer.style.display === 'none' || graphContainer.style.display === '') {
+            graphContainer.style.display = 'block'; // Affiche le graphique
+        } else {
+            graphContainer.style.display = 'none'; // Masque le graphique
+        }
+    }
+
+
     function generateReport(type) {
         window.location.href = `/rapport/rapport_${type}`;
     }
+
+        function togglePaymentTable() {
+        const paymentTable = document.getElementById('payment-table');
+        if (paymentTable.style.display === 'none' || paymentTable.style.display === '') {
+            paymentTable.style.display = 'flex'; // Affiche la table (flex utilisé pour les colonnes Bootstrap)
+        } else {
+            paymentTable.style.display = 'none'; // Masque la table
+        }
+    }
+
 
     function openSpecificReport() {
         let paiementId = prompt("Entrez l'ID du paiement:");
