@@ -154,7 +154,7 @@
                 <td>{{ $paiement->date_accuse_reception }}</td>
                 <td>{{ $paiement->cout_opportunite }}</td>
                 <td>{{ $paiement->date_paiement }}</td>
-                <td>{{ $paiement->retard_de_paiement ? 'Oui' : 'Non' }}</td>
+                <td>{{ $paiement->retard_de_paiement }}</td>  <!-- Affiche 1 ou 0 directement -->
                 <td>{{ $paiement->status }}</td>
                 <td>{{ $paiement->prix_a_payer }}</td>
                 <td>{{ $paiement->nom_ordonanceur }}</td>

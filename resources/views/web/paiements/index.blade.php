@@ -237,33 +237,34 @@
 
 <script>
     $(document).ready(function() {
-    function updatePaiements() {
+     function updatePaiements() {
         const currentDate = moment(); // La date actuelle
         $('tbody tr').each(function() {
             const $row = $(this);
+            const status = $row.find('td:nth-child(10) .badge').text().toLowerCase(); // Récupérer le statut
 
             // Récupérer les dates depuis les colonnes du tableau
             const dateAccuseReception = moment($row.find('td:nth-child(5)').text(), 'DD/MM/YYYY');
             const dateOrdonnancement = moment($row.find('td:nth-child(4)').text(), 'DD/MM/YYYY');
 
-            // Calcul du coût d'opportunité : La différence entre dateAccuseReception et dateOrdonnancement
+            // Calcul du coût d'opportunité
             const coutOpportunite = dateAccuseReception.diff(dateOrdonnancement, 'days');
             $row.find('.cout-opportunite').text(coutOpportunite + ' jours');
 
-            // Calcul de la date de paiement : 10 jours après la date d'accusé de réception
+            // Calcul de la date de paiement
             let datePaiement = dateAccuseReception.clone().add(10, 'days');
-
-            // Si la date de paiement tombe un dimanche (jour 0), on reporte au lundi (jour 1)
             if (datePaiement.day() === 0) { 
-                datePaiement.add(1, 'day'); // Passer au lundi
+                datePaiement.add(1, 'day');
             }
-
-            // Afficher la date de paiement dans le tableau
             $row.find('.date-paiement').text(datePaiement.format('DD/MM/YYYY'));
 
-            // Calcul du retard de paiement : différence entre la date actuelle et la date de paiement
-            const retardPaiement = currentDate.diff(datePaiement, 'days');
-            $row.find('.retard-paiement').text(retardPaiement > 0 ? `${retardPaiement} jours` : 'Aucun retard');
+            // Calcul du retard de paiement si le statut n'est pas "validé"
+            if (status !== 'validé') {
+                const retardPaiement = currentDate.diff(datePaiement, 'days');
+                $row.find('.retard-paiement').text(retardPaiement > 0 ? `${retardPaiement} jours` : 'Aucun retard');
+            } else {
+                $row.find('.retard-paiement').text('Aucun retard'); // Ou laissez vide
+            }
         });
     }
 
