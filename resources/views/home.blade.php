@@ -296,7 +296,7 @@
 
 
     function openSpecificReport() {
-        let paiementId = prompt("Entrez l'ID du paiement:");
+        let paiementId = prompt("Entrez l'ID du client:");
         if (paiementId) {
             window.location.href = `/rapport/rapport_paiement/${paiementId}`;
         }
