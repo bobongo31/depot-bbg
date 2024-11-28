@@ -218,8 +218,6 @@ class PaiementController extends Controller
             }
         }
 
-        Log::info('Retard de paiement: ', ['retard_de_paiement' => $date_paiement->isPast()]);
-
         // Mettre à jour le paiement
         $paiement->update([
             'matiere_taxable' => $validatedData['matiere_taxable'],
@@ -229,7 +227,7 @@ class PaiementController extends Controller
             'date_accuse_reception' => $date_accuse_reception,
             'cout_opportunite' => $cout_opportunite,
             'date_paiement' => $date_paiement,
-            'retard_de_paiement' => $date_paiement->isPast() ? 1 : 0,
+            'retard_de_paiement' => $date_paiement->isPast(),
             'nom_ordonanceur' => $validatedData['nom_ordonanceur'],
             'client_id' => $validatedData['client_id'],
             'status' => 'en attente'
