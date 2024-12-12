@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="{{ asset('js/script.js') }}"></script>
     <style>
         /* Styles personnalisés */
@@ -13,6 +14,47 @@
             background-size: cover;
             opacity: 0.9;
         }
+
+
+        /* Boutons avec effet hover */
+        .btn-hover-effect {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-hover-effect:hover {
+            background-color: #5a6363; /* Couleur foncée au survol */
+            transform: scale(1.05); /* Agrandissement léger au survol */
+        }
+
+        .btn-hover-effect i {
+            margin-right: 5px; /* Espacement entre l'icône et le texte */
+            transition: transform 0.3s ease;
+        }
+
+        .btn-hover-effect:hover i {
+            transform: scale(1.2); /* Agrandir l'icône au survol */
+        }
+
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* Style des badges */
+        .badge-success {
+            background-color: #28a745 !important;
+        }
+
+        .badge-warning {
+            background-color: #ffc107 !important;
+        }
+
+        .badge-danger {
+            background-color: #dc3545 !important;
+        }
+
 
         .container {
             background-color: rgba(255, 255, 255, 0.80);
@@ -81,14 +123,20 @@
             <div class="col-md-12">
                 <h3 class="text-center display-2 text-dark mb-2">Liste des notes des Débits</h3>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <a href="{{ route('web.paiements.create') }}" class="btn btn-primary">Ajouter une note Débit</a>
+                    <a href="{{ route('web.paiements.create') }}" class="btn btn-primary btn-hover-effect">
+                        <i class="fas fa-plus-circle"></i> Ajouter une note Débit
+                    </a>
                     <form action="{{ route('web.paiements.index') }}" method="GET" class="d-flex w-50">
                         <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-secondary ml-2">Rechercher</button>
+                        <button type="submit" class="btn btn-secondary ml-2 btn-hover-effect">
+                            <i class="fas fa-search"></i> 
+                        </button>
                     </form>
                 </div>
                 <div class="text-left mb-3">
-                    <a href="{{ url('/') }}" class="btn btn-secondary">Retourner vers le Tableau de Bord</a>
+                    <a href="{{ url('/') }}" class="btn btn-secondary btn-hover-effect">
+                        <i class="fas fa-arrow-left"></i> 
+                    </a>
                 </div>
             </div>
         </div>
@@ -156,8 +204,8 @@
                             <td>
                             @if (auth()->user()->hasRole('payment_validator'))
                                 <!-- Bouton pour afficher le modal -->
-                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#visaModal" data-id="{{ $paiement->id }}">
-                                 VISA
+                                <button type="button" class="btn btn-success btn-sm btn-hover-effect" data-toggle="modal" data-target="#visaModal" data-id="{{ $paiement->id }}">
+                                    <i class="fas fa-check-circle"></i> VISA
                                 </button>
                             @endif
                         </td>
@@ -173,6 +221,9 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
 
         <!-- Modal pour modifier la date d'accusé de réception -->
         <div class="modal fade" id="accuseModal" tabindex="-1" role="dialog" aria-labelledby="accuseModalLabel" aria-hidden="true">
