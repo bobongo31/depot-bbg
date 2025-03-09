@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Personnalisation du style de base */
+
+body {
+    @apply bg-gray-100 text-gray-900 font-sans;
+}
+
+/* Bouton de Sidebar */
+.sidebar-button {
+    @apply bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-200;
+}
+
+/* Menu Navbar */
+.navbar {
+    @apply bg-white shadow-md border-b border-gray-200;
+}
+
+.navbar a {
+    @apply text-blue-600 hover:text-blue-800 px-4 py-3 rounded-md transition duration-200 hover:bg-blue-50 font-medium;
+}
+
+.navbar a.active {
+    @apply text-blue-900 bg-blue-100 font-semibold;
+}
+
+/* Menu de navigation horizontal */
+.navbar-menu {
+    @apply flex justify-between items-center space-x-8 py-3;
+}
+
+.navbar-menu li {
+    @apply list-none;
+}
+
+.navbar-menu a {
+    @apply px-5 py-3 rounded-md text-blue-600 hover:text-blue-800 transition duration-200 hover:bg-blue-50 font-medium;
+}
+
+/* Tableaux */
+.table {
+    @apply min-w-full table-auto bg-white rounded-lg shadow-md border-collapse;
+}
+
+.table th, .table td {
+    @apply px-6 py-3 text-left border-b border-gray-200;
+}
+
+.table th {
+    @apply text-sm font-medium text-gray-700 bg-gray-50;
+}
+
+.table td {
+    @apply text-sm text-gray-600;
+}
+
+.table tr:hover {
+    @apply bg-gray-100;
+}
+
+/* Pagination du tableau */
+.pagination {
+    @apply flex justify-center items-center space-x-2 py-3;
+}
+
+.pagination a {
+    @apply px-4 py-2 text-sm text-blue-600 rounded-md border border-gray-300 hover:bg-blue-50 hover:text-blue-800 transition duration-200;
+}
+
+.pagination a.active {
+    @apply text-white bg-blue-500 border-blue-500;
+}
+
+.pagination a.disabled {
+    @apply text-gray-400 cursor-not-allowed;
+}
+
+/* Sidebar */
+.sidebar {
+    @apply bg-gray-800 text-white h-full w-64 p-5 space-y-6 fixed top-0 left-0 z-50;
+}
+
+.sidebar .logo {
+    @apply text-white text-2xl font-bold;
+}
+
+.sidebar a {
+    @apply block py-3 px-4 rounded-md hover:bg-gray-700 transition duration-200;
+}
+
+.sidebar a.active {
+    @apply bg-blue-600;
+}
+
+/* Dropdown menu */
+.dropdown {
+    @apply relative;
+}
+
+.dropdown button {
+    @apply bg-gray-700 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400;
+}
+
+.dropdown-menu {
+    @apply absolute right-0 w-48 bg-white rounded-lg shadow-lg mt-2 hidden;
+}
+
+.dropdown:hover .dropdown-menu {
+    @apply block;
+}
+
+.dropdown-menu a {
+    @apply block px-4 py-2 text-gray-800 hover:bg-gray-100 transition duration-200;
+}
+
+/* Formulaire */
+.input, .select, .textarea {
+    @apply border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md px-4 py-2 w-full text-gray-900;
+}
+
+.input:disabled, .select:disabled, .textarea:disabled {
+    @apply bg-gray-100 cursor-not-allowed;
+}
+
+.label {
+    @apply text-sm text-gray-700 font-medium;
+}
+
+/* Notifications */
+.notification {
+    @apply flex items-center space-x-3 bg-green-100 border-l-4 border-green-500 text-gray-800 p-4 rounded-md shadow-md;
+}
+
+.notification.success {
+    @apply bg-green-100 border-green-500;
+}
+
+.notification.error {
+    @apply bg-red-100 border-red-500;
+}
+
+.notification p {
+    @apply text-sm;
+}
+
+/* Modals */
+.modal-overlay {
+    @apply fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+    @apply bg-white p-8 rounded-lg shadow-lg w-96;
+}
+
+.modal-header {
+    @apply text-xl font-semibold text-gray-800;
+}
+
+.modal-body {
+    @apply text-gray-600;
+}
+
+.modal-footer {
+    @apply flex justify-end space-x-4;
+}
+
+.modal-footer button {
+    @apply py-2 px-4 rounded-md focus:outline-none;
+}
+
+/* Boutons du footer */
+.footer-button {
+    @apply bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 focus:outline-none;
+}
+
+/* Animations et transitions */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Adaptation responsive */
+@media (max-width: 768px) {
+    .navbar-menu {
+        @apply flex-col items-start;
+    }
+
+    .sidebar {
+        @apply w-56;
+    }
+
+    .navbar a {
+        @apply px-3 py-2;
+    }
+
+    .sidebar a {
+        @apply text-sm py-2 px-3;
+    }
+}
+
+/* Mise en page générale */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* En-tête */
+h1 {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Contenu de la recherche */
+.results-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Liste des résultats */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+li:hover {
+    background-color: #f1f1f1;
+}
+
+strong {
+    font-weight: bold;
+}
+
+/* Message d'absence de résultat */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #d9534f;
+}
+
+/* Liens */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

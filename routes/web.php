@@ -1,0 +1,46 @@
+<?php
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CourrierController;
+use App\Http\Controllers\AccuseDeReceptionController;
+use App\Http\Controllers\CourrierRecuController;
+use App\Http\Controllers\SearchController;
+
+// Route par défaut
+Route::get('/', function () {
+    return view('home');
+});
+
+// Routes d'authentification
+Auth::routes();
+
+// Route pour la page d'accueil après la connexion
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+// Routes pour le module des courriers (avec le middleware auth)
+Route::middleware('auth')->group(function () {
+    Route::get('/accuse-de-reception', [AccuseDeReceptionController::class, 'showForm'])->name('accuse.form');
+    Route::post('/accuse-de-reception', [AccuseDeReceptionController::class, 'store'])->name('accuse.store');
+    //Route::get('/courrier/create', [CourrierController::class, 'create'])->name('courrier.create');
+    //Route::post('/courrier/store', [CourrierController::class, 'store'])->name('courrier.store');
+    //Route::get('/courriers', [CourrierController::class, 'index'])->name('courrier.index');
+    //Route::get('/courrier/{id}', [CourrierController::class, 'show'])->name('courrier.show');
+    //Route::post('/courrier/validate/{id}', [CourrierController::class, 'validateCourrier'])->name('courrier.validate');
+    //Route::post('/courrier/transmit/{id}', [CourrierController::class, 'transmitToDirector'])->name('courrier.transmit');
+    //Route::get('/validation-history', [CourrierController::class, 'validationHistory'])->name('courrier.validationHistory');
+    Route::get('/courriers/create', [CourrierRecuController::class, 'create'])->name('courriers.create');
+    Route::post('/courriers/store', [CourrierRecuController::class, 'store'])->name('courriers.store');
+        // Route pour la modification
+    Route::get('/courriers/{courrier}/edit', [AccuseDeReceptionController::class, 'edit'])->name('courriers.edit');
+
+    // Route pour la suppression
+    Route::delete('/courriers/{courrier}', [AccuseDeReceptionController::class, 'destroy'])->name('courriers.destroy');
+    Route::put('courriers/{id}', [AccuseDeReceptionController::class, 'update'])->name('courriers.update');
+    Route::get('/courriers/{id}', [AccuseDeReceptionController::class, 'show'])->name('courriers.show');
+
+
+        // Routes pour afficher les courriers reçus et les accusés de réception
+    Route::get('/courriers', [CourrierRecuController::class, 'indexCourriers'])->name('courriers.index');
+    Route::get('/accuses', [AccuseDeReceptionController::class, 'indexAccuses'])->name('accuses.index');
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
+});
