@@ -32,35 +32,35 @@
     @endauth
 
   <!-- JavaScript pour le dropdown du profil -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-  $(document).ready(function(){
-      var notificationCount = 0;
+  jQuery(document).ready(function($) {
+    var notificationCount = 0;
 
-      // Détecter les changements dans les inputs, selects et textareas de la table
-      $('#courriersTable').find('input, select, textarea').on('change', function(){
-          notificationCount++;
-          updateNotificationIcon(notificationCount);
-      });
+    // Détecter les changements dans les inputs, selects et textareas de la table
+    $('#courriersTable').find('input, select, textarea').on('change', function(){
+        notificationCount++;
+        updateNotificationIcon(notificationCount);
+    });
 
-      // Fonction qui met à jour l'icône de notification avec un badge
-      function updateNotificationIcon(count){
-          // Si plus d'une modification, afficher "2"
-          var displayCount = (count >= 2) ? 2 : count;
-          var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' 
-                            + displayCount + '</span>';
-          $('.notification-icon').find('.notification-badge').remove();
-          $('.notification-icon').append(badgeHtml);
-      }
+    // Fonction qui met à jour l'icône de notification avec un badge
+    function updateNotificationIcon(count){
+        var displayCount = (count >= 2) ? 2 : count;
+        var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' 
+                        + displayCount + '</span>';
+        $('.notification-icon').find('.notification-badge').remove();
+        $('.notification-icon').append(badgeHtml);
+    }
 
-      // Gestion du menu profil en vanilla JS
-      const profileBtn = document.getElementById('profile-btn');
-      const profileMenu = document.getElementById('profile-menu');
-      if (profileBtn && profileMenu) {
-          profileBtn.addEventListener('click', function () {
-              profileMenu.classList.toggle('hidden');
-          });
-      }
-  });
+    // Gestion du menu profil en vanilla JS
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    if (profileBtn && profileMenu) {
+        profileBtn.addEventListener('click', function () {
+            profileMenu.classList.toggle('hidden');
+        });
+    }
+});
 </script>
 </body>
 </html>

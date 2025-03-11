@@ -36,32 +36,41 @@
   <nav class="bg-gray-50 border-t border-b border-gray-200">
     <div class="container mx-auto overflow-x-auto">
       <ul class="flex justify-center items-center space-x-8 py-4 whitespace-nowrap">
-        <li>
-            <a href="{{ route('home') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
-            <i class="fas fa-home"></i> Accueil <!-- Icône Accueil -->
-            </a>
-
-        <li>
+    @if(Auth::user() && (Auth::user()->role === 'agent' || Auth::user()->role === 'chef_service'))
+      <li>
+          <a href="{{ route('home') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
+              <i class="fas fa-home"></i> Accueil
+          </a>
+      </li>
+      <li>
           <a href="{{ route('accuse.form') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
-            <i class="fas fa-file-alt"></i> Accuser Réception <!-- Icône d'accusé réception -->
+              <i class="fas fa-file-alt"></i> Accuser Réception
           </a>
-        </li>
-        <li>
+      </li>
+      <li>
           <a href="{{ route('courriers.index') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
-            <i class="fas fa-envelope-open-text"></i> Tous les Courriers <!-- Icône courrier -->
+              <i class="fas fa-envelope-open-text"></i> Tous les Courriers
           </a>
-        </li>
-        <li>
+      </li>
+      <li>
           <a href="{{ route('courriers.create') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
-            <i class="fas fa-plus-circle"></i> Enregistrer un Courrier <!-- Icône ajouter -->
+              <i class="fas fa-plus-circle"></i> Enregistrer un Courrier
           </a>
-        </li>
-        <li>
+      </li>
+      <li>
           <a href="{{ route('accuses.index') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
-            <i class="fas fa-list-ul"></i> Liste des accusés réception <!-- Icône liste -->
+              <i class="fas fa-list-ul"></i> Liste des accusés réception
           </a>
-        </li>
-      </ul>
+      </li>
+      <li>
+    @endif
+  
+    @if(Auth::user() && Auth::user()->role === 'directeur_general')
+          <a href="{{ route('courriers.traites') }}" class="px-4 py-2 rounded-md text-green-500 hover:text-green-700 transition duration-200 hover:bg-green-100 font-medium hover:shadow-md transform hover:scale-105">
+              <i class="fas fa-check-circle"></i> Courriers Traités
+          </a>
+    @endif
+</li>
     </div>
   </nav>
 </header>

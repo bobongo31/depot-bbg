@@ -21,6 +21,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware('auth')->group(function () {
     Route::get('/accuse-de-reception', [AccuseDeReceptionController::class, 'showForm'])->name('accuse.form');
     Route::post('/accuse-de-reception', [AccuseDeReceptionController::class, 'store'])->name('accuse.store');
+    Route::get('/courriers/traites', [CourrierRecuController::class, 'indexTraite'])->name('courriers.traites');
+    Route::put('/courriers/update/ajax', [CourrierRecuController::class, 'updateAjax'])->name('courriers.update.ajax');
+    Route::post('/courriers/{id}/commentaire', [CourrierRecuController::class, 'addCommentaire'])->name('courriers.update.commentaire');
+    Route::post('/courriers/{id}/statut', [CourrierRecuController::class, 'updateStatut'])->name('courriers.update.statut');
+
     //Route::get('/courrier/create', [CourrierController::class, 'create'])->name('courrier.create');
     //Route::post('/courrier/store', [CourrierController::class, 'store'])->name('courrier.store');
     //Route::get('/courriers', [CourrierController::class, 'index'])->name('courrier.index');
@@ -37,7 +42,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/courriers/{courrier}', [AccuseDeReceptionController::class, 'destroy'])->name('courriers.destroy');
     Route::put('courriers/{id}', [AccuseDeReceptionController::class, 'update'])->name('courriers.update');
     Route::get('/courriers/{id}', [AccuseDeReceptionController::class, 'show'])->name('courriers.show');
-
 
         // Routes pour afficher les courriers reçus et les accusés de réception
     Route::get('/courriers', [CourrierRecuController::class, 'indexCourriers'])->name('courriers.index');

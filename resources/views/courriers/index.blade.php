@@ -21,16 +21,46 @@
         </thead>
         <tbody>
             @foreach($courriers as $courrier)
-                <tr onclick="window.location='{{ route('courriers.show', $courrier->id) }}'" style="cursor: pointer;">
+                <tr>
                     <td>{{ $courrier->date_reception }}</td>
                     <td>{{ $courrier->numero_enregistrement }}</td>
                     <td>{{ $courrier->numero_reference ?? 'N/A' }}</td>
                     <td>{{ $courrier->nom_expediteur }}</td>
                     <td>{{ $courrier->resume }}</td>
                     <td>{{ $courrier->observation ?? 'Aucune observation' }}</td>
-                    <td>{{ $courrier->commentaires ?? 'Aucun commentaire' }}</td>
-                    <td>{{ ucfirst($courrier->statut) }}</td>
                     <td>
+                    <!-- Affichage des commentaires sous forme de section (si non vide) -->
+                    @if($courrier->commentaires)
+                        <div class="commentaires-section mt-2">
+                            @foreach(explode("\n", $courrier->commentaires) as $commentaire)
+                                <p>{{ $commentaire }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <!-- Formulaire pour ajouter un commentaire (visible seulement pour le chef_service) -->
+                    @if(Auth::user() && Auth::user()->role === 'chef_service')
+                        <form class="comment-form" data-id="{{ $courrier->id }}">
+                            <input type="text" name="commentaire" placeholder="Ajouter un commentaire" class="form-control" />
+                            <button type="submit" class="btn btn-primary btn-sm mt-2">Ajouter Commentaire</button>
+                        </form>
+                    @endif
+                </td>
+                    <td>
+                        {{ ucfirst($courrier->statut) }}
+                        @if(Auth::user() && Auth::user()->role === 'chef_service')
+                            <select class="form-control mt-2 status-select" data-id="{{ $courrier->id }}">
+                                <option value="reçu" {{ $courrier->statut == 'reçu' ? 'selected' : '' }}>Reçu</option>
+                                <option value="en attente" {{ $courrier->statut == 'en attente' ? 'selected' : '' }}>En attente</option>
+                                <option value="traité" {{ $courrier->statut == 'traité' ? 'selected' : '' }}>Traité</option>
+                            </select>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('courriers.show', $courrier->id) }}" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
                         <a href="{{ route('courriers.edit', $courrier->id) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i>
                         </a>
@@ -49,37 +79,41 @@
 @endsection
 
 @push('scripts')
-    <!-- Ajouter DataTables et FontAwesome -->
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/js/all.js"></script>
-    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#courriersTable').DataTable({
-                "paging": true,
-                "ordering": true,
-                "searching": true
+    // Ajouter un commentaire via AJAX
+    $('.comment-form').submit(function(e) {
+        e.preventDefault();
+        var commentaire = $(this).find('input[name="commentaire"]').val();
+        var courrier_id = $(this).data('id');
+
+        if(commentaire) {
+            $.ajax({
+                url: '/courriers/' + courrier_id + '/commentaire',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    commentaire: commentaire
+                },
+                success: function(response) {
+                    if(response.success) {
+                        // Ajoute le nouveau commentaire sous forme de paragraphe
+                        var newComment = '<p>' + response.commentaire + '</p>';
+                        $(this).closest('td').find('.commentaires-section').append(newComment);
+                        $(this).find('input[name="commentaire"]').val(''); // Vide le champ commentaire
+                        alert(response.message);  // Affiche le message de succès
+                    }
+                },
+                error: function() {
+                    alert('Erreur lors de l\'ajout du commentaire.');
+                }
             });
-        });
+        }
+    });
+});
+
     </script>
-
-    <!-- Ajout du CSS personnalisé -->
-<style>
-    /* Style personnalisé pour le conteneur */
-    .custom-box {
-        background-color: #007BFF; /* Bleu clair */
-        padding: 20px; /* Espacement autour du texte */
-        border-radius: 10px; /* Coins arrondis */
-        text-align: center; /* Centrer le contenu */
-        margin: 20px 0; /* Marge autour du conteneur */
-    }
-
-    /* Style pour le titre */
-    .custom-box h1 {
-        color: white; /* Texte en blanc */
-        font-size: 2rem; /* Taille de police */
-        font-weight: bold; /* Police en gras */
-        margin: 0; /* Enlever la marge par défaut */
-    }
-</style>
 @endpush
+
+

@@ -8,6 +8,7 @@ use App\Models\Annexe;
 
 class CourrierRecuController extends Controller
 {
+    
     public function create()
     {
         // Récupérer la liste des numéros d'enregistrement existants
@@ -16,12 +17,53 @@ class CourrierRecuController extends Controller
         return view('courriers.create', compact('numEnregistrements'));
     }
 
-    // Affichage de la liste des courriers reçus
-    public function indexCourriers()
+    public function addCommentaire(Request $request, $id)
+{
+    // Récupérer l'accusé de réception
+    $courrier = AccuseReception::findOrFail($id);
+    
+    // Validation de l'entrée
+    $request->validate([
+        'commentaire' => 'required|string|max:255',
+    ]);
+    
+    // Récupérer les commentaires existants et ajouter le nouveau commentaire
+    $newCommentaire = $request->commentaire;
+    $existingCommentaires = $courrier->commentaires ?? '';  // Si aucun commentaire, initialiser à vide
+    
+    // Ajouter le nouveau commentaire à la fin des anciens (en ajoutant un saut de ligne pour la séparation)
+    $courrier->commentaires = $existingCommentaires . "\n" . $newCommentaire;
+    
+    // Sauvegarder la mise à jour
+    $courrier->save();
+    
+    // Retourner la réponse en JSON
+    return response()->json([
+        'success' => true,
+        'message' => 'Commentaire ajouté avec succès!',
+        'commentaire' => nl2br($courrier->commentaires) // Retourner les commentaires avec des sauts de ligne formatés
+    ]);
+}
+
+
+        // Affichage de la liste des courriers reçus
+        public function indexCourriers()
+        {
+            $courriers = AccuseReception::with('annexes')->get(); // Récupérer les courriers et leurs annexes
+            return view('courriers.index', compact('courriers'));
+        }
+
+        public function indexTraite()
     {
-        $courriers = AccuseReception::with('annexes')->get(); // Récupérer les courriers et leurs annexes
-        return view('courriers.index', compact('courriers'));
+        // Récupérer les accusés de réception dont le statut est "traité"
+        $courriersTraites = AccuseReception::with('annexes')
+                                ->where('statut', 'traité')
+                                ->get();
+
+        // Retourner la vue correspondante en passant les données
+        return view('courriers.traites', compact('courriersTraites'));
     }
+
 
     public function store(Request $request)
     {
@@ -70,6 +112,6 @@ class CourrierRecuController extends Controller
             }
         }
 
-        return redirect()->route('courriers.create')->with('success', 'Courrier reçu mis à jour avec succès !');
+        return redirect()->route('courriers.index')->with('success', 'Courrier reçu mis à jour avec succès !');
     }
 }

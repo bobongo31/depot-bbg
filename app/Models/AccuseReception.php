@@ -11,6 +11,8 @@ class AccuseReception extends Model
 
     protected $fillable = [
         'numero_enregistrement',
+        'receptionne_par',
+        'objet',
         'date_accuse_reception',
         'date_reception',
         'numero_reference',

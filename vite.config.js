@@ -14,7 +14,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            'vue': 'vue/dist/vue.esm-bundler.js', // Alias pour activer la compilation des templates Vue
+            'vue': 'vue/dist/vue.esm-bundler.js',
+            'jquery': 'jquery/dist/jquery.min.js' // Alias pour activer la compilation des templates Vue
         },
     },
     css: {
