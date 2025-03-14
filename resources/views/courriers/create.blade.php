@@ -58,6 +58,11 @@
             </div>
 
             <div class="mb-3">
+            <label for="service_concerne" class="form-label">Service Concerné</label>
+            <input type="text" class="form-control" id="service_concerne" name="service_concerne" required>
+            </div>
+
+            <div class="mb-3">
                 <label for="commentaires" class="form-label">Commentaires (Réservé au Chef de Service)</label>
                 <textarea class="form-control" id="commentaires" name="commentaires"></textarea>
             </div>

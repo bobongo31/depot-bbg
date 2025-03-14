@@ -114,4 +114,50 @@ class CourrierRecuController extends Controller
 
         return redirect()->route('courriers.index')->with('success', 'Courrier reçu mis à jour avec succès !');
     }
+
+
+    public function storeWithService(Request $request)
+    {
+        $validated = $request->validate([
+            'date_reception' => 'required|date',
+            'numero_enregistrement' => 'required|string|exists:accuse_receptions,numero_enregistrement',
+            'nom_expediteur' => 'required|string|max:255',
+            'numero_reference' => 'nullable|string|max:255',
+            'resume' => 'required|string',
+            'observation' => 'nullable|string',
+            'commentaires' => 'nullable|string',
+            'service_concerne' => 'required|string|max:255', // Nouveau champ service concerné
+            'annexes' => 'nullable|array',
+            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+        ]);
+
+        $accuse = AccuseReception::where('numero_enregistrement', $validated['numero_enregistrement'])->first();
+        if (!$accuse) {
+            return redirect()->back()->withErrors(['numero_enregistrement' => 'Le numéro d\'enregistrement est invalide.']);
+        }
+
+        $accuse->update([
+            'date_reception' => $validated['date_reception'],
+            'nom_expediteur' => $validated['nom_expediteur'],
+            'numero_reference' => $validated['numero_reference'] ?? null,
+            'resume' => $validated['resume'],
+            'observation' => $validated['observation'],
+            'commentaires' => $validated['commentaires'],
+            'service_concerne' => $validated['service_concerne'], // Enregistrement du service concerné
+            'statut' => 'reçu',
+        ]);
+
+        // Enregistrer les annexes
+        if ($request->hasFile('annexes')) {
+            foreach ($request->file('annexes') as $file) {
+                $filePath = $file->store('annexes', 'public');
+                $accuse->annexes()->create([
+                    'file_path' => $filePath,
+                    'accuse_de_reception_id' => $accuse->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('courriers.index')->with('success', 'Courrier reçu pour un service mis à jour avec succès !');
+    }
 }

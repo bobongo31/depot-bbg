@@ -4,6 +4,8 @@ use App\Http\Controllers\CourrierController;
 use App\Http\Controllers\AccuseDeReceptionController;
 use App\Http\Controllers\CourrierRecuController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ReponseController;
+
 
 // Route par défaut
 Route::get('/', function () {
@@ -25,7 +27,18 @@ Route::middleware('auth')->group(function () {
     Route::put('/courriers/update/ajax', [CourrierRecuController::class, 'updateAjax'])->name('courriers.update.ajax');
     Route::post('/courriers/{id}/commentaire', [CourrierRecuController::class, 'addCommentaire'])->name('courriers.update.commentaire');
     Route::post('/courriers/{id}/statut', [CourrierRecuController::class, 'updateStatut'])->name('courriers.update.statut');
+    Route::get('/reponses/create', [ReponseController::class, 'create'])->name('reponses.create');
+    Route::get('/reponses', [ReponseController::class, 'index'])->name('reponses.index');
+    Route::get('/reponses/{id}', [ReponseController::class, 'show'])->name('reponses.show');
+    Route::post('/reponses', [ReponseController::class, 'store'])->name('reponses.store');
+    Route::delete('/reponses/{id}', [ReponseController::class, 'destroy'])->name('reponses.destroy');
+    Route::get('/telegrammes/create', [ReponseController::class, 'createTelegramme'])->name('telegramme.create');
+    Route::post('/telegrammes/store', [ReponseController::class, 'storeTelegramme'])->name('telegramme.store');
+    Route::get('telegrammes/{id}', [ReponseController::class, 'show'])->name('telegrammes.show');
+    Route::delete('/telegrammes/{id}', [ReponseController::class, 'destroy'])->name('telegrammes.destroy');
 
+
+    
     //Route::get('/courrier/create', [CourrierController::class, 'create'])->name('courrier.create');
     //Route::post('/courrier/store', [CourrierController::class, 'store'])->name('courrier.store');
     //Route::get('/courriers', [CourrierController::class, 'index'])->name('courrier.index');

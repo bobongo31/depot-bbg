@@ -21,8 +21,15 @@ class AccuseReception extends Model
         'observation',
         'commentaires',
         'statut'
+        //'type_courrier',
+        //'service_destinataire_id'
     ];
 
+    
+    public function serviceDestinataire()
+    {
+        return $this->belongsTo(Service::class, 'service_destinataire_id');
+    }
     // Relation avec les annexes
     public function annexes()
     {

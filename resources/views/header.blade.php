@@ -63,6 +63,19 @@
           </a>
       </li>
       <li>
+      <li>
+        <a href="{{ route('telegramme.create') }}" class="px-4 py-2 rounded-md text-blue-500 hover:text-blue-700 transition duration-200 hover:bg-blue-100 font-medium hover:shadow-md transform hover:scale-105">
+            <i class="fas fa-paper-plane"></i> Envoyer un Télégramme
+        </a>
+    </li>
+
+    <li>
+    <a href="{{ route('reponses.index') }}" class="px-4 py-2 rounded-md text-green-500 hover:text-green-700 transition duration-200 hover:bg-green-100 font-medium hover:shadow-md transform hover:scale-105">
+        <i class="fas fa-eye"></i> Voir les Réponses
+        </a>
+    </li>
+
+
     @endif
   
     @if(Auth::user() && Auth::user()->role === 'directeur_general')
