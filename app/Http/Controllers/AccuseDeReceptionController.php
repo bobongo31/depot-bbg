@@ -11,11 +11,12 @@ use setasign\Fpdf\Fpdf;  // Ajoute cette ligne pour FPDF
 
 class AccuseDeReceptionController extends Controller
 {
-    public function showForm()
-    {
-        $numeroEnregistrement = $this->generateNumeroEnregistrement();
-        return view('accuse_de_reception', compact('numeroEnregistrement'));
-    }
+     // Affichage du formulaire avec un champ vide pour le numéro d'enregistrement
+     public function showForm()
+     {
+         // Suppression de la génération automatique du numéro d'enregistrement
+         return view('accuse_de_reception');
+     }
 
     public function indexTraite()
     {
@@ -158,8 +159,8 @@ class AccuseDeReceptionController extends Controller
 
 
     // Méthode pour générer un numéro d'enregistrement unique
-    private function generateNumeroEnregistrement()
-    {
-        return 'REC-' . strtoupper(uniqid());
-    }
+    //private function generateNumeroEnregistrement()
+    //{
+    //return 'REC-' . strtoupper(uniqid());
+    //}
 }

@@ -75,8 +75,6 @@ class CourrierRecuController extends Controller
             'nom_expediteur' => 'required|string|max:255',
             'numero_reference' => 'nullable|string|max:255',
             'resume' => 'required|string',
-            'observation' => 'nullable|string',
-            'commentaires' => 'nullable|string',
             'annexes' => 'nullable|array',
             'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
         ]);
@@ -95,8 +93,6 @@ class CourrierRecuController extends Controller
             'nom_expediteur' => $validated['nom_expediteur'],
             'numero_reference'=> $validated['numero_reference'] ?? null,
             'resume' => $validated['resume'],
-            'observation' => $validated['observation'],
-            'commentaires' => $validated['commentaires'],
             'statut' => 'reçu', // Par exemple, définir ou conserver le statut "reçu"
         ]);
 

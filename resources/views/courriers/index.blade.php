@@ -39,7 +39,7 @@
                     @endif
 
                     <!-- Formulaire pour ajouter un commentaire (visible seulement pour le chef_service) -->
-                    @if(Auth::user() && Auth::user()->role === 'chef_service')
+                    @if(Auth::user() && Auth::user()->role === 'admin')
                         <form class="comment-form" data-id="{{ $courrier->id }}">
                             <input type="text" name="commentaire" placeholder="Ajouter un commentaire" class="form-control" />
                             <button type="submit" class="btn btn-primary btn-sm mt-2">Ajouter Commentaire</button>
@@ -48,7 +48,7 @@
                 </td>
                     <td>
                         {{ ucfirst($courrier->statut) }}
-                        @if(Auth::user() && Auth::user()->role === 'chef_service')
+                        @if(Auth::user() && Auth::user()->role === 'admin')
                             <select class="form-control mt-2 status-select" data-id="{{ $courrier->id }}">
                                 <option value="reçu" {{ $courrier->statut == 'reçu' ? 'selected' : '' }}>Reçu</option>
                                 <option value="en attente" {{ $courrier->statut == 'en attente' ? 'selected' : '' }}>En attente</option>

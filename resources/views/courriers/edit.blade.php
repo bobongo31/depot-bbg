@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @if(Auth::user() && Auth::user()->role !== 'chef_service')
+    @if(Auth::user() && Auth::user()->role !== 'admin')
         <div class="alert alert-danger">Accès refusé. Vous n'avez pas les permissions nécessaires pour modifier ce courrier.</div>
         <a href="{{ route('courriers.index') }}" class="btn btn-primary">Retour à la liste des courriers</a>
     @else
