@@ -6,39 +6,102 @@ use Illuminate\Http\Request;
 use App\Models\Reponse;
 use App\Models\Telegramme;
 use App\Models\Annexe;
+use App\Models\AccuseReception;
+use Illuminate\Support\Facades\Log;
+
+
 
 class ReponseController extends Controller
 {
     /**
      * Affiche les détails d'un télégramme et de la réponse associée.
      */
-    public function show($id)
-{
-    // Récupère le télégramme avec ses annexes
-    $telegramme = Telegramme::with('annexes')->find($id);
     
+    
+     public function afficherFormulaireReponse($accuseDeReceptionId)
+     {
+         $accuseDeReception = AccuseReception::findOrFail($accuseDeReceptionId);
+         
+         return view('reponses.reponse_form', compact('accuseDeReception'));
+     }
+     
+     public function ajouterReponseFinale(Request $request, $reponseId)
+{
+    // Validation des données d'entrée
+    $request->validate([
+        'numero_enregistrement' => 'required|string|max:255', // Validation pour numéro d'enregistrement
+        'numero_reference' => 'required|string|max:255', // Validation pour numéro de référence
+        'observation' => 'nullable|string',
+        'file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx|max:10240', // Validation pour les fichiers
+    ]);
+
+    // Récupérer la réponse existante par son ID
+    $reponseExistante = Reponse::findOrFail($reponseId);
+
+    // Créer une nouvelle réponse finale
+    $reponseFinale = new Reponse();
+    $reponseFinale->numero_enregistrement = $request->input('numero_enregistrement'); // Utiliser la saisie manuelle
+    $reponseFinale->numero_reference = $request->input('numero_reference'); // Utiliser la saisie manuelle
+    $reponseFinale->service_concerne = $request->input('service_concerne');
+    $reponseFinale->observation = $request->input('observation');
+    $reponseFinale->telegramme_id = $reponseExistante->telegramme_id; // Lier la réponse finale au même télégramme
+    $reponseFinale->reponse_id = $reponseId; // Lier cette réponse finale à la réponse existante
+    $reponseFinale->save(); // Sauvegarder la réponse finale dans la table "reponse"
+
+    // Lier l'annexe si un fichier est téléchargé
+    if ($request->hasFile('file')) {
+        $file = $request->file('file');
+        $filePath = $file->store('annexes', 'public'); // Sauvegarde dans le répertoire 'annexes'
+
+        // Créer une nouvelle annexe
+        $annexe = new Annexe();
+        $annexe->file_path = $filePath;
+        $annexe->reponse_id = $reponseFinale->id; // Lier l'annexe à la réponse finale
+        $annexe->telegramme_id = $reponseExistante->telegramme_id; // Lier l'annexe au télégramme
+        $annexe->save();
+    }
+
+    // Retourner une réponse pour confirmer la création
+    return redirect()->route('dossier.view', ['id' => $reponseExistante->telegramme_id])
+        ->with('success', 'Réponse finale ajoutée avec succès et annexe téléchargée.');
+}
+
+
+public function show($id)
+{
     // Récupère la première réponse associée au télégramme
+    $reponse = Reponse::where('id', $id)->first();
+
+    // Retourne la vue avec la réponse
+    return view('reponses.show', compact('reponse'));
+}
+
+public function showWithTelegramme($id)
+{
+    // Trouver le télégramme par son ID, ou échouer si pas trouvé
+    $telegramme = Telegramme::findOrFail($id);
+
+    // Charger les annexes associées au télégramme
+    $telegramme = Telegramme::with('annexes')->findOrFail($id);
+
+    // Vérifier si les annexes existent (en s'assurant que ce n'est pas null)
+    // Vérifier si les annexes existent et ne sont pas nulles
+    if ($telegramme->annexes && $telegramme->annexes->isNotEmpty()) {
+        Log::info('Annexes liées au télégramme:', $telegramme->annexes->toArray());
+    } else {
+        Log::info('Aucune annexe trouvée pour le télégramme ID ' . $id);
+    }
+    
+
+
+
+    // Récupérer la réponse associée au télégramme
     $reponse = Reponse::where('telegramme_id', $id)->first();
 
-    // Vérifie si le télégramme ou la réponse existe, sinon redirige
-    if (!$telegramme || !$reponse) {
-        return redirect()->route('reponses.index')->with('error', 'Télégramme ou réponse non trouvée.');
-    }
-
-    // Récupère la tâche associée au télégramme (à ajouter si nécessaire)
-    // $tache = Tache::where('telegramme_id', $id)->first(); 
-
-    // Initialise la variable $isLate
-    $isLate = false;
-
-    // Exemple de logique de retard (ajuster selon ton modèle)
-    if ($reponse->created_at > $telegramme->due_date) {
-        $isLate = true;
-    }
-
-    // Retourne la vue avec les données
-    return view('telegrammes.show', compact('telegramme', 'reponse', 'isLate'));
+    // Retourner la vue avec le télégramme et la réponse
+    return view('telegramme.show', compact('telegramme', 'reponse'));
 }
+
    
     /**
      * Affiche la liste des réponses et des télégrammes.
@@ -88,18 +151,19 @@ class ReponseController extends Controller
     return view('reponses.index', compact('telegrammesEnAttente', 'reponses', 'reponsesGrouped'));
 }
 
-
-
-
    
     /**
      * Affiche le formulaire de création d'une réponse.
      * Si un `telegramme_id` est passé en paramètre, il est inclus dans le formulaire.
      */
-    public function create(Request $request)
+        public function create(Request $request) 
     {
         $telegramme_id = $request->query('telegramme_id') ?? null;
-        return view('reponses.create', compact('telegramme_id'));
+        
+        // Récupère les numéros d'enregistrement depuis la table telegrammes
+        $telegrammes = Telegramme::all(); 
+
+        return view('reponses.create', compact('telegramme_id', 'telegrammes'));
     }
    
     /**
@@ -115,7 +179,7 @@ class ReponseController extends Controller
             'observation'           => 'nullable|string',
             'commentaires'          => 'required|string',
             'annexes'               => 'nullable|array',
-            'annexes.*'             => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+            'annexes.*'             => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
             'telegramme_id'         => 'nullable|exists:telegrammes,id',
         ]);
    
@@ -151,51 +215,79 @@ class ReponseController extends Controller
      */
     public function createTelegramme()
     {
-        return view('telegramme.create');
-    }
+        $accuse_receptions = AccuseReception::all(); // Récupère tous les enregistrements
+        return view('telegramme.create', compact('accuse_receptions'));    }
    
     /**
      * Stocke un télégramme dans la base de données et enregistre ses annexes.
      */
     public function storeTelegramme(Request $request)
-    {
-        $validated = $request->validate([
-            'numero_enregistrement' => 'required|string|unique:telegrammes,numero_enregistrement',
-            'numero_reference'      => 'required|string|unique:telegrammes,numero_reference',
-            'service_concerne'      => 'required|string',
-            'observation'           => 'nullable|string',
-            'commentaires'          => 'nullable|string',
-            'annexes'               => 'nullable|array',
-            'annexes.*'             => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-        ]);
-   
+{
+    $validated = $request->validate([
+        'numero_enregistrement' => 'required|string',
+        'numero_reference'      => 'required|string',
+        'service_concerne'      => 'required|array|min:1', // Au moins un service obligatoire
+        'service_concerne.*'    => 'string',
+        'observation'           => 'nullable|string',
+        'commentaires'          => 'nullable|string',
+        'annexes'               => 'nullable|array',
+        'annexes.*'             => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+    ]);    
+
+    // Créer un enregistrement pour chaque service sélectionné
+    foreach ($validated['service_concerne'] as $service) {
         $telegramme = new Telegramme();
         $telegramme->numero_enregistrement = $validated['numero_enregistrement'];
         $telegramme->numero_reference      = $validated['numero_reference'];
-        $telegramme->service_concerne      = $validated['service_concerne'];
+        $telegramme->service_concerne      = $service;
         $telegramme->observation           = $validated['observation'];
         $telegramme->commentaires          = $validated['commentaires'];
         $telegramme->save();
-   
-        if ($request->hasFile('annexes')) {
+
+         // Gérer les annexes (ajout des fichiers pour chaque télégramme)
+         if ($request->hasFile('annexes')) {
             foreach ($request->file('annexes') as $file) {
                 if ($file->isValid()) {
-                    $filePath = $file->store('annexes', 'public');
-                    $telegramme->annexes()->create([
-                        'file_path' => $filePath,
+                    $filePath = $file->store('annexes', 'public'); // Stocke dans storage/app/public/annexes
+
+                    // Création correcte de l'annexe avec la liaison Telegramme
+                    Annexe::create([
+                        'file_path'     => $filePath,
+                        'telegramme_id' => $telegramme->id, // Ajout de l'ID du télégramme
                     ]);
+                    \Log::info("Annexe enregistrée : $filePath pour télégramme ID {$telegramme->id}");
                 }
             }
         }
-   
-        return redirect()->route('reponses.index')->with('success', 'Télégramme enregistré avec succès !');
     }
+
+    return redirect()->route('reponses.index')->with('success', 'Télégramme(s) enregistré(s) avec succès !');
+}
+
    
     /**
      * Supprime une réponse et, si elle est associée à un télégramme,
      * supprime également le télégramme et ses annexes.
      */
-    public function destroy($id)
+        public function destroyTelegramme($id)
+    {
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            return redirect()->route('telegrammes.index')->with('error', 'Vous n’avez pas l’autorisation de supprimer ce télégramme.');
+        }
+
+        $telegramme = Telegramme::findOrFail($id);
+
+        // Supprimer les annexes associées au télégramme
+        Annexe::where('telegramme_id', $telegramme->id)->delete();
+
+        // Supprimer le télégramme
+        $telegramme->delete();
+
+        return redirect()->route('telegrammes.index')->with('success', 'Télégramme supprimé avec succès.');
+    }
+
+    
+     public function destroy($id)
     {
         $reponse = Reponse::findOrFail($id);
        
@@ -212,4 +304,5 @@ class ReponseController extends Controller
    
         return redirect()->route('reponses.index')->with('success', 'Réponse et son télégramme associé supprimés avec succès.');
     }
+    
 }

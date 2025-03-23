@@ -3,8 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 // App\Models\User.php
@@ -50,5 +51,21 @@ class User extends Authenticatable
         return $this->hasRole('admin'); // Exemple avec 'admin' comme rôle
     }
 
-    // Autres méthodes spécifiques aux rôles peuvent être ajoutées ici
+    // Définir la relation avec les messages envoyés
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // Définir la relation avec les messages reçus
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    // Définir la relation avec tous les messages (envoyés et reçus)
+    public function messages()
+    {
+        return $this->sentMessages()->union($this->receivedMessages());
+    }
 }

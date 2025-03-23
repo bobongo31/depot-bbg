@@ -89,7 +89,7 @@ class AccuseDeReceptionController extends Controller
         'receptionne_par' => 'required|string|max:255',
         'objet' => 'required|string|max:255',
         'annexes' => 'nullable|array',
-        'annexes.*' => 'mimes:pdf|max:2048',
+        'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
         'avis' => 'nullable|string',
     ]);
 

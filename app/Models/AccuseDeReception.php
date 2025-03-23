@@ -25,7 +25,9 @@ class AccuseReception extends Model
         'resume',
         'observation',
         'commentaires',
-        'statut'
+        'statut',
+        'archive',
+        'status_archive',
     ];
 
     // Relation avec les annexes

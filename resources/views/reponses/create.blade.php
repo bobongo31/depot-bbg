@@ -11,19 +11,30 @@
     <form action="{{ route('reponses.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
+                <!-- Numéro d'Enregistrement -->
         <div class="mb-3">
-            <label for="numero_enregistrement" class="form-label">
-                <i class="fas fa-hashtag"></i> Numéro d'enregistrement
-            </label>
-            <input type="text" name="numero_enregistrement" class="form-control" required>
+            <label class="form-label"><i class="fas fa-hashtag"></i> Numéro d'Enregistrement</label>
+            <select id="select_numero_enregistrement" class="form-control" onchange="document.getElementById('manual_numero_enregistrement').value = this.value">
+                <option value="">Sélectionner un numéro d'enregistrement</option>
+                @foreach($telegrammes as $telegramme)
+                    <option value="{{ $telegramme->numero_enregistrement }}">{{ $telegramme->numero_enregistrement }}</option>
+                @endforeach
+            </select>
+            <input type="text" id="manual_numero_enregistrement" class="form-control mt-2" name="numero_enregistrement" placeholder="Ou saisissez manuellement">
         </div>
 
+        <!-- Numéro de Référence -->
         <div class="mb-3">
-            <label for="numero_reference" class="form-label">
-                <i class="fas fa-bookmark"></i> Numéro de Référence
-            </label>
-            <input type="text" name="numero_reference" class="form-control" required>
+            <label class="form-label"><i class="fas fa-bookmark"></i> Numéro de Référence</label>
+            <select id="select_numero_reference" class="form-control" onchange="document.getElementById('manual_numero_reference').value = this.value">
+                <option value="">Sélectionner un numéro de référence</option>
+                @foreach($telegrammes as $telegramme)
+                    <option value="{{ $telegramme->numero_reference }}">{{ $telegramme->numero_reference }}</option>
+                @endforeach
+            </select>
+            <input type="text" id="manual_numero_reference" class="form-control mt-2" name="numero_reference" placeholder="Ou saisissez manuellement">
         </div>
+
 
         <div class="mb-3">
             <label for="service_concerne" class="form-label">

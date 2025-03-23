@@ -10,7 +10,7 @@ class Telegramme extends Model
     use HasFactory;
 
     protected $fillable = [
-        'numero_enregistrement', 'numero_reference', 'service_concerne', 'observation', 'commentaires',
+        'numero_enregistrement', 'numero_reference', 'service_concerne', 'observation', 'commentaires','archive', 'status_archive',
     ];
 
     public function annexes()

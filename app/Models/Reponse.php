@@ -10,7 +10,7 @@ class Reponse extends Model
     use HasFactory;
 
     protected $fillable = [
-        'numero_enregistrement', 'numero_reference', 'service_concerne', 'commentaires', 'telegramme_id',
+        'numero_enregistrement', 'numero_reference', 'service_concerne', 'commentaires', 'telegramme_id', 'archive', 'status_archive',
     ];
 
     public function annexes()

@@ -27,7 +27,7 @@
                         <td class="py-4 px-6 text-sm text-gray-600">
                             @if($courrier->annexes->isNotEmpty())
                                 @foreach($courrier->annexes as $annexe)
-                                    <a href="{{ Storage::url($annexe->file_path) }}" target="_blank" class="text-blue-500 hover:underline block">
+                                    <a href="{{ asset('storage/' . $annexe->file_path) }}" target="_blank" class="text-blue-500 hover:underline block">
                                         Télécharger {{ basename($annexe->file_path) }}
                                     </a>
                                 @endforeach

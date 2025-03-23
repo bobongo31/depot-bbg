@@ -12,11 +12,11 @@
                     <th>Numéro d'enregistrement</th>
                     <th>Numéro de Référence</th>
                     <th>Service Concerné</th>
-                    <th>Expeditaire</th>
-                    <th>Resumé</th>
+                    <th>Expéditeur</th>
+                    <th>Résumé</th>
                     <th>Date</th>
                     <th>Statut</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,12 +37,12 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('reponses.show', $reponse->id) }}" class="btn btn-info btn-sm">
+                                <a href="{{ route('reponse.show', $reponse->id) }}" class="btn btn-info btn-sm">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @if ($reponse->telegramme_id)
                                     <a href="{{ route('reponses.create', ['telegramme_id' => $reponse->id]) }}" class="btn btn-success btn-sm">
-                                        <i class="fas fa-reply"></i> Répondre
+                                        <i class="fas fa-reply"></i> 
                                     </a>
                                 @endif
                                 <form action="{{ route('reponses.destroy', $reponse->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Voulez-vous vraiment supprimer cette réponse ?');">
@@ -52,18 +52,49 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+
+                                @if(auth()->user()->hasRole('admin')) <!-- Vérification du rôle admin -->
+                                    <!-- Bouton pour Réponse Finale -->
+                                    <a href="{{ route('reponse.ajouter', ['reponseId' => $reponse->id]) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-check-circle"></i> Réponse Finale
+                                    </a>
+
+                                    <!-- Bouton pour archiver le dossier -->
+                                    <form action="{{ route('archives.archiver', $reponse->numero_enregistrement) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <select name="categorie" class="form-select d-inline" style="width: auto;" required>
+                                            <option value="" disabled selected>Catégorie</option>
+                                            <option value="Ministère de la Culture et des Arts">Ministère de la Culture et des Arts</option>
+                                            <option value="Ministères">Ministères</option>
+                                            <option value="Expositions">Expositions</option>
+                                            <option value="Autre">Autre</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-archive"></i> Archiver
+                                        </button>
+                                    </form>
+
+                                    <!-- Bouton pour déclarer le dossier clos ou autre statut -->
+                                    <form action="{{ route('archives.declarer_clos', $reponse->numero_enregistrement) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <select name="status_archive" class="form-select d-inline" style="width: auto;" required>
+                                            <option value="" disabled selected>Statut</option>
+                                            <option value="clos">Clos</option>
+                                            <option value="en cours">En cours</option>
+                                            <option value="autre">Autre</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Déclarer
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @endif
                 @endforeach
             </tbody>
         </table>
-
-        <!-- Pagination pour chaque groupe 
-        <div class="d-flex justify-content-center">
-            {{ $reponses->links() }}
-        </div>
-    @endforeach-->
+    @endforeach
 
     <!-- Section des Télégrammes en Attente -->
     <h3 class="mt-4">📨 Télégrammes en Attente de Réponse</h3>
@@ -73,8 +104,8 @@
                 <th>Numéro d'enregistrement</th>
                 <th>Numéro de Référence</th>
                 <th>Service Concerné</th>
-                <th>Resume</th>
-                <th>Expeditaire</th>
+                <th>Résumé</th>
+                <th>Expéditeur</th>
                 <th>Annexes</th>
                 <th>Délai de Réponse</th>
                 <th>Action</th>
@@ -88,11 +119,10 @@
                 <td>{{ $telegramme->service_concerne }}</td>
                 <td>{{ $telegramme->commentaires }}</td>
                 <td>{{ $telegramme->observation }}</td>
-
                 <td>
                     @if($telegramme->annexes && $telegramme->annexes->isNotEmpty())
                         @foreach ($telegramme->annexes as $annexe)
-                            <a href="{{ asset('storage/' . $annexe->file_path) }}" download>
+                        <a href="{{ asset('storage/' . $annexe->file_path) }}" download>
                                 <i class="fas fa-file-download"></i>
                             </a><br>
                         @endforeach
@@ -108,18 +138,36 @@
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('reponses.create', ['telegramme_id' => $telegramme->id]) }}" class="btn btn-primary btn-sm">
+                @if(auth()->user() && auth()->user()->isAdmin())
+                    <form action="{{ route('telegrammes.destroy', $telegramme->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Voulez-vous vraiment supprimer ce télégramme ?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                @endif
+
+                <!-- Boutons avec alignement horizontal -->
+                <!-- Bouton "Afficher Détails" -->
+                <a href="{{ route('telegramme.show', ['id' => $telegramme->id]) }}" class="btn btn-info btn-sm">
+                        <i class="fas fa-eye"></i>
+                    </a>
+
+                <div class="d-flex">
+                    <!-- Bouton "Répondre" -->
+                    <a href="{{ route('reponses.create', ['telegramme_id' => $telegramme->id]) }}" class="btn btn-primary btn-sm me-2">
                         <i class="fas fa-reply"></i> Répondre
                     </a>
-                </td>
-            </tr>
+                </div>
+            </td>
+
         @empty
             <tr>
-                <td colspan="7">Aucun télégramme en attente.</td>
+                <td colspan="8">Aucun télégramme en attente.</td>
             </tr>
         @endforelse
         </tbody>
     </table>
-
 </div>
 @endsection
