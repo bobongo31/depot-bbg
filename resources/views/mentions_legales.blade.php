@@ -16,7 +16,7 @@
         <h2 class="scroll-animated">2. Hébergeur de l'application</h2>
         <p class="scroll-animated">
             L'hébergement de l'application est assuré par :<br>
-            <strong>Nom de l'hébergeur</strong> : fonds de promotion culturelle<br>
+            <strong>Nom de l'hébergeur</strong> : Keynsoft<br>
             <strong>Adresse</strong> : Kinshasa/Gombe
         </p>
 
