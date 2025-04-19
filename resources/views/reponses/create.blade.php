@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="scroll-animated container">
     <h2><i class="fas fa-reply"></i> Enregistrer une Réponse</h2>
 
     @if(session('success'))
@@ -12,7 +12,7 @@
         @csrf
 
                 <!-- Numéro d'Enregistrement -->
-        <div class="mb-3">
+        <div class="scroll-animated mb-3">
             <label class="form-label"><i class="fas fa-hashtag"></i> Numéro d'Enregistrement</label>
             <select id="select_numero_enregistrement" class="form-control" onchange="document.getElementById('manual_numero_enregistrement').value = this.value">
                 <option value="">Sélectionner un numéro d'enregistrement</option>
@@ -24,7 +24,7 @@
         </div>
 
         <!-- Numéro de Référence -->
-        <div class="mb-3">
+        <div class="scroll-animated mb-3">
             <label class="form-label"><i class="fas fa-bookmark"></i> Numéro de Référence</label>
             <select id="select_numero_reference" class="form-control" onchange="document.getElementById('manual_numero_reference').value = this.value">
                 <option value="">Sélectionner un numéro de référence</option>
@@ -36,7 +36,7 @@
         </div>
 
 
-        <div class="mb-3">
+        <div class="scroll-animated mb-3">
             <label for="service_concerne" class="form-label">
                 <i class="fas fa-building"></i> Service Concerné
             </label>
@@ -48,21 +48,21 @@
             </select>
         </div>
 
-        <div class="mb-3">
+        <div class="scroll-animated mb-3">
             <label for="observation" class="form-label">
                 <i class="fas fa-user"></i> Expéditeur
             </label>
             <textarea name="observation" class="form-control"></textarea>
         </div>
 
-        <div class="mb-3">
+        <div class="scroll-animated mb-3">
             <label for="commentaires" class="form-label">
                 <i class="fas fa-align-left"></i> Résumé
             </label>
             <textarea name="commentaires" class="form-control"></textarea>
         </div>
 
-        <div class="mb-3">
+        <div class="scroll-animated mb-3">
             <label for="annexes" class="form-label">
                 <i class="fas fa-paperclip"></i> Annexes (fichiers acceptés : jpg, png, pdf, docx)
             </label>
@@ -72,7 +72,7 @@
         @if(isset($telegramme_id))
             <input type="hidden" name="telegramme_id" value="{{ $telegramme_id }}">
         @elseif(isset($telegrammes) && $telegrammes->isNotEmpty())
-            <div class="mb-3">
+            <div class="scroll-animated mb-3">
                 <label for="telegramme_id" class="form-label">
                     <i class="fas fa-envelope"></i> Télégramme
                 </label>
@@ -84,7 +84,7 @@
             </div>
         @endif
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="scroll-animated btn btn-primary">
             <i class="fas fa-paper-plane"></i> Soumettre
         </button>
     </form>

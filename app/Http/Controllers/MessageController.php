@@ -7,6 +7,8 @@ use App\Models\AnnexeMessage;
 use App\Models\User; // Ajout de l'import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ZipArchive;
+
 
 class MessageController extends Controller 
 {
@@ -14,61 +16,135 @@ class MessageController extends Controller
 
     public function index()
 {
-    // Récupérer tous les utilisateurs sauf l'utilisateur actuellement connecté
-    $users = User::where('id', '!=', auth()->id())->get();
+    $userEntreprise = auth()->user()->entreprise;
+    $authUserId = auth()->id();
 
+    // Récupérer les utilisateurs de la même entreprise, sauf l'utilisateur connecté
+    $users = User::where('id', '!=', $authUserId)
+                 ->where('entreprise', $userEntreprise)
+                 ->get();
 
-    
-    // Récupérer les conversations existantes en fusionnant les destinataires des messages envoyés et les expéditeurs des messages reçus
-    $sentUsers = Message::where('sender_id', auth()->id())
+    // Récupérer les conversations (uniquement avec utilisateurs de la même entreprise)
+    $sentUsers = Message::where('sender_id', $authUserId)
         ->with('receiver')
         ->get()
-        ->pluck('receiver');
+        ->pluck('receiver')
+        ->filter(function ($user) use ($userEntreprise) {
+            return $user->entreprise === $userEntreprise;
+        });
 
-    $receivedUsers = Message::where('receiver_id', auth()->id())
+    $receivedUsers = Message::where('receiver_id', $authUserId)
         ->with('sender')
         ->get()
-        ->pluck('sender');
+        ->pluck('sender')
+        ->filter(function ($user) use ($userEntreprise) {
+            return $user->entreprise === $userEntreprise;
+        });
 
     $conversations = $sentUsers->merge($receivedUsers)->unique('id');
 
-    // Passer les variables à la vue
     return view('messages.index', compact('users', 'conversations'));
 }
+
 
     
 
 
 
-    public function store(Request $request) 
-    {
-        $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-            'content' => 'required|string',
-            'annexes.*' => 'file|max:2048' // Fichiers max 2MB
-        ]);
+public function store(Request $request) 
+{
+    // Validation des données de la requête
+    $request->validate([
+        'receiver_id' => 'required|exists:users,id',
+        'content' => 'required|string',
+        'annexes.*' => 'file|max:2048' // Taille max 2MB
+    ]);
 
-        // Créer le message
-        $message = Message::create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $request->receiver_id,
-            'content' => $request->content
-        ]);
+    // Récupérer l'utilisateur récepteur
+    $receiver = User::findOrFail($request->receiver_id);
 
-        // Enregistrer les fichiers annexes s'il y en a
-        if ($request->hasFile('annexes')) {
-            foreach ($request->file('annexes') as $file) {
-                $path = $file->store('annexes', 'public');
-
-                AnnexeMessage::create([
-                    'message_id' => $message->id,
-                    'file_path' => $path
-                ]);
-            }
-        }
-
-        return redirect()->back()->with('success', 'Message envoyé avec succès.');
+    // Vérifier si le récepteur est dans la même entreprise que l'expéditeur
+    if ($receiver->entreprise !== auth()->user()->entreprise) {
+        return back()->withErrors('Vous ne pouvez envoyer un message qu\'aux utilisateurs de la même entreprise.');
     }
+
+    // Création du message
+    $message = Message::create([
+        'sender_id' => Auth::id(),
+        'receiver_id' => $request->receiver_id,
+        'content' => $request->content
+    ]);
+
+    // Vérification et enregistrement des fichiers annexes
+    if ($request->hasFile('annexes')) {
+        foreach ($request->file('annexes') as $file) {
+            $filename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+
+            // Vérification stricte de l'extension
+            if (!in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'])) {
+                return back()->withErrors("Extension non autorisée : .$extension");
+            }
+
+            // Vérification du type MIME
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $file->getPathname());
+            finfo_close($finfo);
+
+            $allowedMimeTypes = [
+                'image/jpeg', 'image/png', 'application/pdf',
+                'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ];
+
+            if (!in_array($mime, $allowedMimeTypes)) {
+                return back()->withErrors("Type MIME non autorisé : $mime");
+            }
+
+            // Vérification avancée du .docx
+            if ($mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                $zip = new ZipArchive;
+                if ($zip->open($file->getPathname()) === TRUE) {
+                    $requiredFiles = [
+                        'word/document.xml', // Contenu principal
+                        '[Content_Types].xml', // Fichier obligatoire
+                        'docProps/core.xml' // Métadonnées
+                    ];
+
+                    foreach ($requiredFiles as $fileName) {
+                        if ($zip->locateName($fileName) === false) {
+                            $zip->close();
+                            return back()->withErrors('Fichier .docx invalide : fichiers internes manquants.');
+                        }
+                    }
+
+                    // Vérifier que word/document.xml contient du texte
+                    $content = $zip->getFromName('word/document.xml');
+                    if (empty(trim($content))) {
+                        $zip->close();
+                        return back()->withErrors('Fichier .docx corrompu ou vide.');
+                    }
+
+                    $zip->close();
+                } else {
+                    return back()->withErrors('Impossible d’ouvrir le fichier .docx.');
+                }
+            }
+
+            // Enregistrer le fichier après toutes les validations
+            $path = $file->store('annexes', 'public');
+
+            AnnexeMessage::create([
+                'message_id' => $message->id,
+                'file_path' => $path
+            ]);
+        }
+    }
+
+    // Retourner avec un message de succès
+    return redirect()->back()->with('success', 'Message envoyé avec succès.');
+}
+
+
 
 
     public function unreadCount()
@@ -179,11 +255,17 @@ public function getAnnexes($messageId)
 
 public function show($userId)
 {
-    $authUserId = auth()->id();
+    $authUser = auth()->user();
+    $authUserId = $authUser->id;
     
     // Récupérer l'utilisateur sélectionné
     $selectedUser = User::findOrFail($userId);
-    
+
+    // Vérifier si l'utilisateur sélectionné appartient à la même entreprise
+    if ($selectedUser->entreprise !== $authUser->entreprise) {
+        abort(403, 'Accès non autorisé.');
+    }
+
     // Récupérer les messages de la conversation
     $messages = Message::where(function ($query) use ($authUserId, $userId) {
         $query->where('sender_id', $authUserId)
@@ -192,21 +274,23 @@ public function show($userId)
         $query->where('sender_id', $userId)
               ->where('receiver_id', $authUserId);
     })->orderBy('created_at', 'asc')->get();
-    
+
     // Marquer les messages comme lus
     Message::where('sender_id', $userId)
         ->where('receiver_id', $authUserId)
         ->update(['is_read' => true]);
-    
-    // Récupérer les conversations existantes
+
+    // Récupérer les utilisateurs avec qui l'utilisateur connecté a déjà discuté
     $conversations = User::whereHas('messages', function ($query) use ($authUserId) {
         $query->where('sender_id', $authUserId)
               ->orWhere('receiver_id', $authUserId);
     })->get();
-    
-    // Récupérer tous les utilisateurs sauf l'utilisateur connecté
-    $users = User::where('id', '!=', auth()->id())->get();
-    
+
+    // Récupérer uniquement les utilisateurs de la même entreprise (sauf soi-même)
+    $users = User::where('entreprise', $authUser->entreprise)
+                 ->where('id', '!=', $authUserId)
+                 ->get();
+
     return view('messages.index', compact('conversations', 'messages', 'selectedUser', 'users'));
 }
 

@@ -14,14 +14,33 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    /**
+     * Les attributs pouvant être assignés en masse.
+     *
+     * @var array
+     */
     protected $fillable = [
-        'name', 'email', 'password', 'role', // Ajout de 'role'
+        'name',
+        'password',
+        'entreprise', // ✅ Ajout du champ entreprise
     ];
 
+    /**
+     * Les attributs à masquer dans les tableaux.
+     *
+     * @var array
+     */
     protected $hidden = [
-        'password', 'remember_token', 'service',
+        'password',
+        'remember_token',
+        'service',
     ];
 
+    /**
+     * Les attributs à caster.
+     *
+     * @return array
+     */
     protected function casts(): array
     {
         return [
@@ -30,6 +49,7 @@ class User extends Authenticatable
         ];
     }
 
+    
     /**
      * Vérifier si l'utilisateur a un rôle particulier.
      *
@@ -67,5 +87,11 @@ class User extends Authenticatable
     public function messages()
     {
         return $this->sentMessages()->union($this->receivedMessages());
+    }
+
+    // Relation avec le tenant
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
     }
 }

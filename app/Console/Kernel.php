@@ -13,8 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        // Ajoute tes commandes ici
-    ];
+        \App\Console\Commands\CheckTenantConnections::class,    ];
 
     /**
      * Définir la planification des tâches.

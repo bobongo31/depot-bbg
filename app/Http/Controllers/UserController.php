@@ -9,6 +9,15 @@ use App\Models\User;
 
 class UserController extends Controller
 {
+
+    protected static function booted()
+    {
+        static::addGlobalScope('entreprise', function (Builder $builder) {
+            if (Auth::check()) {
+                $builder->where('entreprise', Auth::user()->entreprise);
+            }
+        });
+    }
     // Affiche le formulaire d'édition
     public function edit()
     {

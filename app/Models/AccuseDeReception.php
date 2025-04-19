@@ -7,6 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class AccuseReception extends Model
 {
+
+
+
+    protected static function booted()
+    {
+        static::addGlobalScope('entreprise', function (Builder $builder) {
+            if (Auth::check()) {
+                $builder->where('entreprise', Auth::user()->entreprise);
+            }
+        });
+    }
     // Affichage de la liste des accusés de réception
     public function indexAccuses()
     {

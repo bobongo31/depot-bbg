@@ -78,28 +78,17 @@ public function show($id)
 
 public function showWithTelegramme($id)
 {
-    // Trouver le télégramme par son ID, ou échouer si pas trouvé
+    // Récupération du télégramme
     $telegramme = Telegramme::findOrFail($id);
 
-    // Charger les annexes associées au télégramme
-    $telegramme = Telegramme::with('annexes')->findOrFail($id);
+    // Récupération de l'accusé de réception correspondant selon le numéro d'enregistrement et le numéro de référence
+    $accuseReception = AccuseReception::where('numero_enregistrement', $telegramme->numero_enregistrement)
+        ->where('numero_reference', $telegramme->numero_reference)
+        ->with('annexes')  // Charge la relation annexes
+        ->first();
 
-    // Vérifier si les annexes existent (en s'assurant que ce n'est pas null)
-    // Vérifier si les annexes existent et ne sont pas nulles
-    if ($telegramme->annexes && $telegramme->annexes->isNotEmpty()) {
-        Log::info('Annexes liées au télégramme:', $telegramme->annexes->toArray());
-    } else {
-        Log::info('Aucune annexe trouvée pour le télégramme ID ' . $id);
-    }
-    
-
-
-
-    // Récupérer la réponse associée au télégramme
-    $reponse = Reponse::where('telegramme_id', $id)->first();
-
-    // Retourner la vue avec le télégramme et la réponse
-    return view('telegramme.show', compact('telegramme', 'reponse'));
+    // Retourne la vue avec le télégramme et l'accusé de réception
+    return view('telegramme.show', compact('telegramme', 'accuseReception'));
 }
 
    
@@ -189,6 +178,7 @@ public function showWithTelegramme($id)
         $reponse->service_concerne      = $validated['service_concerne'];
         $reponse->observation           = $validated['observation'];
         $reponse->commentaires          = $validated['commentaires'];
+        $reponse->user_id               = auth()->id(); // 👈 Associe l'utilisateur connecté
         
         if (!empty($validated['telegramme_id'])) {
             $reponse->telegramme_id = $validated['telegramme_id'];
@@ -242,6 +232,7 @@ public function showWithTelegramme($id)
         $telegramme->service_concerne      = $service;
         $telegramme->observation           = $validated['observation'];
         $telegramme->commentaires          = $validated['commentaires'];
+        $telegramme->user_id                 = auth()->id();
         $telegramme->save();
 
          // Gérer les annexes (ajout des fichiers pour chaque télégramme)

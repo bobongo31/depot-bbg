@@ -3,6 +3,7 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue'; // Ajout du plugin Vue
 
 export default defineConfig({
+    base: 'https://172.233.244.133.nip.io/', // Ajoute cette ligne pour définir la base URL en production
     plugins: [
         laravel({
             input: [

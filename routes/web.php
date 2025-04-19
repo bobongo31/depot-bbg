@@ -11,16 +11,27 @@ use App\Http\Controllers\AnnexeController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\FpcLoginController;
+use App\Http\Controllers\Auth\EntrepriseXLoginController;
+use App\Http\Controllers\CodeAccesController;
+use App\Http\Controllers\DossierPersonnelController;
+use App\Http\Controllers\DemandeCongeController;
+use App\Http\Controllers\FondsDemandeController;
+use App\Http\Controllers\DepenseCaisseController;
+use App\Http\Controllers\RapportCaisseController;
 
 
-// Route par défaut
-Route::get('/', function () {
-    return view('home');
-});
-
-// Routes d'authentification
+// ✅ Auth routes (connexion / inscription)
 Auth::routes();
 
+Route::get('/', function () {
+    return redirect()->route('home');
+});
+
+
+// ✅ Routes accessibles sans authentification ni code d’accès
+Route::get('/code-acces', [CodeAccesController::class, 'afficherFormulaire'])->name('code.form');
+Route::post('/code-acces', [CodeAccesController::class, 'verifierCode'])->name('code.verifier');
 
 Route::view('/politique-utilisation', 'politique_utilisation');
 Route::view('/politique-confidentialite', 'politique_confidentialite');
@@ -28,24 +39,21 @@ Route::view('/conditions-generales', 'conditions_generales');
 Route::view('/mentions-legales', 'mentions_legales');
 Route::view('/foire-questions', 'foire_questions');
 
+// ✅ Toutes les routes protégées → middleware auth + code.acces
+Route::middleware(['auth'
+])->group(function () {
+    // ✅ Route d'accueil
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Route pour la page d'accueil après la connexion
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// Routes pour le module des courriers (avec le middleware auth)
-Route::middleware('auth')->group(function () {
-
-
-
+    // ✅ Profil utilisateur
     Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
-    
-    // Route pour mettre à jour les informations de l'utilisateur
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
-    // Routes pour les accusés de réception
+
+    // ✅ Accusés de réception
     Route::get('/accuse-de-reception', [AccuseDeReceptionController::class, 'showForm'])->name('accuse.form');
     Route::post('/accuse-de-reception', [AccuseDeReceptionController::class, 'store'])->name('accuse.store');
 
-    // Routes pour les courriers reçus
+    // ✅ Courriers reçus
     Route::get('/courriers/traites', [CourrierRecuController::class, 'indexTraite'])->name('courriers.traites');
     Route::put('/courriers/update/ajax', [CourrierRecuController::class, 'updateAjax'])->name('courriers.update.ajax');
     Route::post('/courriers/{id}/commentaire', [CourrierRecuController::class, 'addCommentaire'])->name('courriers.update.commentaire');
@@ -53,7 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/courriers/create', [CourrierRecuController::class, 'create'])->name('courriers.create');
     Route::post('/courriers/store', [CourrierRecuController::class, 'store'])->name('courriers.store');
 
-    // Routes pour les réponses
+    // ✅ Réponses
     Route::get('reponse/ajouter/{reponseId}', [ReponseController::class, 'ajouterReponseFinale'])->name('reponse.ajouter');
     Route::get('/reponses/create', [ReponseController::class, 'create'])->name('reponses.create');
     Route::get('/reponses', [ReponseController::class, 'index'])->name('reponses.index');
@@ -61,42 +69,87 @@ Route::middleware('auth')->group(function () {
     Route::post('/reponses', [ReponseController::class, 'store'])->name('reponses.store');
     Route::delete('/reponses/{id}', [ReponseController::class, 'destroy'])->name('reponses.destroy');
 
-    // Routes pour les télégrammes
+    // ✅ Télégrammes
     Route::get('/telegrammes/create', [ReponseController::class, 'createTelegramme'])->name('telegramme.create');
     Route::post('/telegrammes/store', [ReponseController::class, 'storeTelegramme'])->name('telegramme.store');
     Route::get('/telegrammes', [ReponseController::class, 'index'])->name('telegrammes.index');
     Route::get('/telegramme/{id}', [ReponseController::class, 'showWithTelegramme'])->name('telegramme.show');
     Route::delete('/telegrammes/{id}', [ReponseController::class, 'destroyTelegramme'])->name('telegrammes.destroy');
 
-    // Routes pour les archives
+    // ✅ Archives
     Route::get('/archives/index', [ArchiveController::class, 'index'])->name('archives.index');
     Route::post('/archives/archiver/{numero_enregistrement}', [ArchiveController::class, 'archiverDossier'])->name('archives.archiver');
     Route::post('/archives/declarer-clos/{numero_enregistrement}', [ArchiveController::class, 'declarerClos'])->name('archives.declarer_clos');
 
-    // Routes pour les annexes
+    // ✅ Annexes et impressions
     Route::get('/annexes/download/{id}', [AnnexeController::class, 'download'])->name('annexes.download');
     Route::get('/print-annexes', [PrintController::class, 'printAnnexes'])->name('annexes.print');
 
-    // Routes pour la gestion des courriers (Accusé de réception)
+    // ✅ Gestion des courriers
     Route::get('/courriers/{courrier}/edit', [AccuseDeReceptionController::class, 'edit'])->name('courriers.edit');
     Route::delete('/courriers/{courrier}', [AccuseDeReceptionController::class, 'destroy'])->name('courriers.destroy');
     Route::put('/courriers/{id}', [AccuseDeReceptionController::class, 'update'])->name('courriers.update');
     Route::get('/courriers/{id}', [AccuseDeReceptionController::class, 'show'])->name('courriers.show');
-
-    // Routes pour afficher les courriers reçus et les accusés de réception
     Route::get('/courriers', [CourrierRecuController::class, 'indexCourriers'])->name('courriers.index');
     Route::get('/accuses', [AccuseDeReceptionController::class, 'indexAccuses'])->name('accuses.index');
-    
-    // Route de recherche
+
+    // ✅ Recherche
     Route::get('/search', [SearchController::class, 'index'])->name('search');
 
+    // ✅ Messagerie
     Route::get('messages/unreadCount', [MessageController::class, 'unreadCount'])->name('messages.unreadCount');
     Route::delete('messages/{message}/delete', [MessageController::class, 'destroy'])->name('messages.delete');
-    Route::post('messages/transfer', [MessageController::class, 'transfer'])->name('messages.transfer');  // Changement ici
+    Route::post('messages/transfer', [MessageController::class, 'transfer'])->name('messages.transfer');
     Route::get('messages/{message}/annexes', [MessageController::class, 'getAnnexes'])->name('messages.getAnnexes');
     Route::get('messages/{userId}', [MessageController::class, 'show'])->name('messages.show');
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::post('/messages/start', [MessageController::class, 'startConversation'])->name('messages.start');
+
+    // ✅ Test multi-tenants
+    Route::get('/test-tenant', [\App\Http\Controllers\TestTenantController::class, 'index']);
+
+    Route::resource('demandes_conges', DemandeCongeController::class);
+    // Routes pour les demandes de caisse
+Route::prefix('caisse/demandes')->name('caisse.demandes.')->group(function () {
+    Route::get('/', [FondsDemandeController::class, 'index'])->name('index');
+    Route::get('/create', [FondsDemandeController::class, 'create'])->name('create');
+    Route::post('/', [FondsDemandeController::class, 'store'])->name('store');
+    Route::get('/{id}', [FondsDemandeController::class, 'show'])->name('show');
+    Route::put('/{id}', [FondsDemandeController::class, 'update'])->name('update');
+    Route::delete('/{id}', [FondsDemandeController::class, 'destroy'])->name('destroy');
+});
+
+// Route pour afficher le rapport de caisse
+Route::get('/rapport/caisse', [RapportCaisseController::class, 'index'])->name('caisse.rapport.index');
+
+    Route::prefix('caisse')->name('caisse.')->group(function () {
+        Route::resource('depenses', DepenseCaisseController::class);
+        Route::resource('demandes', FondsDemandeController::class);
+    });
+
+
+Route::put('/demandes_conges/{demande_conge}', [DemandeCongeController::class, 'update'])->name('demandes_conges.update');
+Route::patch('/demandes_conges/{id}/approuver', [DemandeCongeController::class, 'approuver'])->name('demandes_conges.approuver');
+Route::patch('/demandes_conges/{id}/rejeter', [DemandeCongeController::class, 'rejeter'])->name('demandes_conges.rejeter');
+
+
+    // Afficher la liste des dossiers personnels
+Route::get('dossiers_personnels', [DossierPersonnelController::class, 'index'])->name('dossiers_personnels.index');
+
+// Créer un nouveau dossier personnel
+Route::get('dossiers_personnels/create', [DossierPersonnelController::class, 'create'])->name('dossiers_personnels.create');
+Route::post('dossiers_personnels', [DossierPersonnelController::class, 'store'])->name('dossiers_personnels.store');
+
+// Modifier un dossier personnel
+Route::get('dossiers_personnels/{dossierPersonnel}/edit', [DossierPersonnelController::class, 'edit'])->name('dossiers_personnels.edit');
+Route::put('dossiers_personnels/{dossierPersonnel}', [DossierPersonnelController::class, 'update'])->name('dossiers_personnels.update');
+
+// Supprimer un dossier personnel
+Route::delete('dossiers_personnels/{dossierPersonnel}', [DossierPersonnelController::class, 'destroy'])->name('dossiers_personnels.destroy');
+
+Route::patch('/caisse/demandes/{id}/approuver', [FondsDemandeController::class, 'approuver'])->name('caisse.demandes.approuver');
+Route::patch('/caisse/demandes/{id}/rejeter', [FondsDemandeController::class, 'rejeter'])->name('caisse.demandes.rejeter');
+
 
 });

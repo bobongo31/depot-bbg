@@ -1,51 +1,60 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="scroll-animated container mt-5">
+
     <!-- Titre -->
-    <div class="bg-blue-500 text-white text-center p-4 rounded-lg mb-4">
-        <h1 class="text-2xl font-bold">Détails du Courrier</h1>
+    <div class="scroll-animated text-center bg-primary text-white p-4 rounded shadow-sm mb-4">
+        <h1 class="h3 mb-0"><i class="fas fa-envelope-open-text me-2"></i>Détails du Courrier</h1>
     </div>
 
     <!-- Informations du courrier -->
-    <div class="bg-white shadow-lg rounded-lg p-6">
-        <p><strong>Numéro d'enregistrement :</strong> {{ $courrier->numero_enregistrement }}</p>
-        <p><strong>Date d'accuse réception :</strong> {{ $courrier->date_reception }}</p>
-        <p><strong>Numéro de référence :</strong> {{ $courrier->numero_reference ?? 'N/A' }}</p>
-        <p><strong>Expéditeur :</strong> {{ $courrier->nom_expediteur }}</p>
-        <p><strong>Résumé :</strong> {{ $courrier->resume }}</p>
-        <p><strong>Observation :</strong> {{ $courrier->observation ?? 'N/A' }}</p>
-        <p><strong>Commentaires :</strong> {{ $courrier->commentaires ?? 'N/A' }}</p>
-        <p><strong>Statut :</strong> 
-            <span class="px-2 py-1 rounded-md 
-                {{ $courrier->statut == 'reçu' ? 'bg-green-500' : ($courrier->statut == 'en attente' ? 'bg-yellow-500' : 'bg-red-500') }} text-white">
-                {{ ucfirst($courrier->statut) }}
-            </span>
-        </p>
+    <div class="scroll-animated card shadow-sm mb-4">
+        <div class="scroll-animated card-body">
+            <p><i class="fas fa-hashtag me-2 text-muted"></i><strong>Numéro d'enregistrement :</strong> {{ $courrier->numero_enregistrement }}</p>
+            <p><i class="fas fa-calendar-check me-2 text-muted"></i><strong>Date d'accusé réception :</strong> {{ $courrier->date_reception }}</p>
+            <p><i class="fas fa-link me-2 text-muted"></i><strong>Numéro de référence :</strong> {{ $courrier->numero_reference ?? 'N/A' }}</p>
+            <p><i class="fas fa-user me-2 text-muted"></i><strong>Expéditeur :</strong> {{ $courrier->nom_expediteur }}</p>
+            <p><i class="fas fa-align-left me-2 text-muted"></i><strong>Résumé :</strong> {{ $courrier->resume }}</p>
+            <p><i class="fas fa-eye me-2 text-muted"></i><strong>Observation :</strong> {{ $courrier->observation ?? 'N/A' }}</p>
+            <p><i class="fas fa-comment-dots me-2 text-muted"></i><strong>Commentaires :</strong> {{ $courrier->commentaires ?? 'N/A' }}</p>
+            <p>
+                <i class="fas fa-info-circle me-2 text-muted"></i><strong>Statut :</strong>
+                <span class="badge 
+                    {{ $courrier->statut == 'reçu' ? 'bg-success' : ($courrier->statut == 'en attente' ? 'bg-warning text-dark' : 'bg-danger') }}">
+                    {{ ucfirst($courrier->statut) }}
+                </span>
+            </p>
+        </div>
     </div>
 
     <!-- Liste des annexes -->
-    <div class="mt-6">
-        <h2 class="text-xl font-semibold mb-3">Annexes</h2>
-        @if($courrier->annexes->isEmpty())
-            <p>Aucune annexe disponible.</p>
-        @else
-            <ul class="list-disc list-inside">
-                @foreach ($courrier->annexes as $annexe)
-                    <li>
-                        <a href="{{ asset('storage/' . $annexe->file_path) }}" target="_blank" class="text-blue-500 hover:underline">
-                            📄 Voir le fichier {{ basename($annexe->file_path) }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        @endif
+    <div class="scroll-animated card shadow-sm mb-4">
+        <div class="scroll-animated card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-paperclip me-2"></i>Annexes</h5>
+        </div>
+        <div class="scroll-animated card-body">
+            @if($courrier->annexes->isEmpty())
+                <p class="text-muted">Aucune annexe disponible.</p>
+            @else
+                <ul class="scroll-animated list-group list-group-flush">
+                    @foreach ($courrier->annexes as $annexe)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-file-alt me-2 text-primary"></i>{{ basename($annexe->file_path) }}</span>
+                            <a href="{{ asset('storage/' . $annexe->file_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-download me-1"></i>Télécharger
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
     </div>
 
     <!-- Bouton retour -->
-    <div class="mt-6">
-        <a href="{{ route('courriers.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">
-            ⬅ Retour à la liste
+    <div class="scroll-animated text-end">
+        <a href="{{ route('courriers.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour à la liste
         </a>
     </div>
 </div>

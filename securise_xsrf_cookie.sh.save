@@ -1,0 +1,30 @@
+ #!/bin/bash
+
+# 📍 Chemin du fichier middleware Laravel
+FICHIER="app/Http/Middleware/SecureCookies.php"
+
+echo "🔐 Démarrage de la sécurisation du cookie XSRF-TOKEN..."
+
+if [ -f "$FICHIER" ]; then
+    echo "✅ Fichier trouvé : $FICHIER"
+
+    # Sauvegarde
+    cp "$FICHIER" "$FICHIER.bak"
+    echo "💾 Sauvegarde créée : $FICHIER.bak"
+
+    # Modification de la ligne setCookie
+    sed -i "s|cookie('XSRF-TOKEN'.*|cookie('XSRF-TOKEN', csrf_token(), 120, '/', null, true, false, false, 'Lax')|g" "$FICHIER"
+    echo "✏️ Cookie modifié : Secure=true, HttpOnly=false, SameSite=Lax"
+
+    # Vider le cache Laravel
+    echo "🧹 Vidage du cache Laravel..."
+    php artisan config:cache
+
+    # Redémarrage d'Apache
+    echo "🔄 Redémarrage du serveur Apache..."
+    sudo service apache2 restart
+
+    echo "✅ Sécurisation terminée avec succès !"
+else
+    echo "❌ Le fichier $FICHIER est introuvable. Lance ce script depuis la racine du projet Laravel."
+fi

@@ -1,6 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
+<div id="overlayMessage" class="overlay-message">
+  <div class="message-box">
+    <h5 class="mb-3">
+      <i class="fas fa-info-circle text-primary"></i> Bienvenue 👋
+    </h5>
+    <p class="mb-4">
+      Cette interface vous permet de <strong>consulter tous les courriers traités par la direction générale</strong> et de vérifier leur statut final.
+    </p>
+    <button class="btn btn-success btn-sm px-4" onclick="closeOverlay()">
+      <i class="fas fa-check-circle me-1"></i> J'ai compris
+    </button>
+  </div>
+</div>
+
 @if(auth()->user() && auth()->user()->role === 'directeur_general')
 <div class="container mx-auto p-6 bg-white shadow-lg rounded-lg">
     <h1 class="text-3xl font-semibold text-gray-800 mb-6">Liste des courriers traités</h1>
