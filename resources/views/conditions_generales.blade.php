@@ -23,14 +23,14 @@
             Les utilisateurs s'engagent à :
         </p>
         <ul class="scroll-animated">
-            <li>Utiliser l'application de manière professionnelle et conforme aux politiques de fonds de promotion culturelle</li>
+            <li>Utiliser l'application de manière professionnelle et conforme aux politiques de Keynsoft</li>
             <li>Ne pas divulguer les informations confidentielles accessibles via l'application à des personnes non autorisées</li>
             <li>Respecter les lois applicables en matière de gestion des données et de protection des informations personnelles</li>
         </ul>
 
         <h2 class="scroll-animated">4. Propriété intellectuelle</h2>
         <p class="scroll-animated">
-            Tous les contenus, logiciels, et éléments de conception de l'application sont la propriété exclusive de fonds de promotion culturelle et sont protégés par des droits d'auteur et des lois sur la propriété intellectuelle.
+            Tous les contenus, logiciels, et éléments de conception de l'application sont la propriété exclusive de Keynsoft et sont protégés par des droits d'auteur et des lois sur la propriété intellectuelle.
         </p>
 
         <h2 class="scroll-animated">5. Modifications des conditions</h2>
