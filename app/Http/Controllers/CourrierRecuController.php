@@ -156,4 +156,6 @@ class CourrierRecuController extends Controller
 
         return redirect()->route('courriers.index')->with('success', 'Courrier reçu pour un service mis à jour avec succès !');
     }
+
+
 }

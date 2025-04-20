@@ -1,4 +1,3 @@
-{{-- resources/views/search/results.blade.php --}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,7 +6,6 @@
     <title>Résultats de Recherche</title>
 
     <style>
-        /* Mise en page générale */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -16,7 +14,6 @@
             color: #333;
         }
 
-        /* En-tête */
         h1 {
             background-color: #007bff;
             color: white;
@@ -25,7 +22,6 @@
             margin-bottom: 20px;
         }
 
-        /* Contenu de la recherche */
         .results-container {
             max-width: 800px;
             margin: 0 auto;
@@ -35,7 +31,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Liste des résultats */
         ul {
             list-style-type: none;
             padding: 0;
@@ -57,7 +52,6 @@
             font-weight: bold;
         }
 
-        /* Message d'absence de résultat */
         .no-results {
             text-align: center;
             padding: 20px;
@@ -65,7 +59,6 @@
             color: #d9534f;
         }
 
-        /* Liens */
         a {
             color: #007bff;
             text-decoration: none;
@@ -73,6 +66,15 @@
 
         a:hover {
             text-decoration: underline;
+        }
+
+        .details-container {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -89,35 +91,52 @@
                         <strong>Enregistrement :</strong> {{ $accuse->numero_enregistrement }}<br>
                         <strong>Expéditeur :</strong> {{ $accuse->nom_expediteur }}<br>
                         <strong>Résumé :</strong> {{ $accuse->resume }}<br>
-                        <a href="#" class="voir-details" data-id="{{ $accuse->id }}">Voir les détails</a>
+                        <a href="{{ route('courriers.show', $accuse->id) }}">Voir les détails</a>
+
+                        <!-- Div où les détails du courrier s’afficheront -->
+                        <div class="details-container" id="details-{{ $accuse->id }}"></div>
                     </li>
                 @endforeach
             </ul>
         @endif
     </div>
 
-    <!-- Div où les détails du courrier seront affichés -->
-    <div id="courrier-details" class="details-container" style="display: none; margin-top: 20px; border: 1px solid #ddd; padding: 15px;"></div>
-
-    <!-- Ajout du script AJAX -->
+    <!-- Script AJAX pour charger les détails dynamiquement -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $(".voir-details").click(function(e) {
-                e.preventDefault();
-                var courrierId = $(this).data("id");
+<script>
+    $(document).ready(function() {
+        $(".voir-details").click(function(e) {
+            e.preventDefault();
+            var link = $(this);
+            var courrierId = link.data("id");
+            var detailsDiv = $("#details-" + courrierId);
 
-                $.ajax({
-                    url: "/courriers/" + courrierId, // Route Laravel pour récupérer les détails
-                    type: "GET",
-                    success: function(response) {
-                        $("#courrier-details").html(response).fadeIn(); // Afficher les détails sans recharger
-                    },
-                    error: function() {
-                        alert("Erreur lors du chargement des détails.");
-                    }
-                });
+            // Si déjà visible, on referme
+            if (detailsDiv.is(":visible")) {
+                detailsDiv.slideUp();
+                link.text("Voir les détails");
+                return;
+            }
+
+            // Sinon on charge dynamiquement via AJAX
+            $.ajax({
+                url: "/courriers/" + courrierId,  // Route qui appelle la méthode show
+                type: "GET",
+                success: function(data) {
+                    detailsDiv.html(data); // Injecte les détails reçus dans le div
+                    $(".details-container").not(detailsDiv).slideUp(); // Ferme les autres
+                    detailsDiv.slideDown(); // Affiche celle-ci
+                    $(".voir-details").not(link).text("Voir les détails"); // Reset texte des autres
+                    link.text("Cacher les détails");
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors du chargement des détails : ", xhr.responseText);
+                    detailsDiv.html("<p style='color:red;'>Erreur lors du chargement des détails.</p>").slideDown();
+                }
             });
         });
-    </script>
+    });
+</script>
+
 </body>
+</html>

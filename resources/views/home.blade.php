@@ -62,140 +62,156 @@
         </div>
         @else
     {{-- Contenu de la page Home --}}
-    <div class="scroll-animated container mx-auto mt-5">
-        <!-- Barre de recherche -->
-        <div class="flex justify-center mb-6">
-            <form action="{{ route('search') }}" method="GET" class="w-full flex items-center bg-white shadow-md rounded-lg px-4 py-2 max-w-screen-lg">
-                <input type="text" name="query" class="w-full px-3 py-2 border-none outline-none text-gray-700"
-                    placeholder="Rechercher un courrier ou un accusé de réception..." required>
-                    <button id="btn-recherche" type="submit" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
-                        Rechercher 🔍
-                    </button>
-            </form>
-        </div>
+        <div class="container mt-5">
+        <h2 class="mb-4 scroll-animated">📊 Statistiques Courriers</h2>
 
-        <!-- Graphiques modernes -->
-        <div class="row">
-            <!-- Graphique des accusés de réception traités -->
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-lg border-0 rounded-4">
-                    <div class="card-header bg-primary text-white">
-                        📈 Statistiques des accusés de réception traités
+        {{-- Barre de recherche --}}
+        <div class="scroll-animated row mb-4">
+            <div class="col-md-12">
+                <form method="GET" action="{{ route('search') }}">
+                    <div class="input-group shadow-lg">
+                        <input type="text" class="form-control" name="query" placeholder="Rechercher un accusé de réception..." aria-label="Rechercher avancée" value="{{ request('query') }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <canvas id="accusesTraitesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Graphique des courriers par statut -->
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-lg border-0 rounded-4">
-                    <div class="card-header bg-primary text-white">
-                        📊 Statistiques des courriers par statut
-                    </div>
-                    <div class="card-body">
-                        <canvas id="courriersStatusChart"></canvas>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
-        <!-- Graphique des accusés de réception par mois -->
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-lg border-0 rounded-4">
+        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('agent'))
+        <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+            {{-- Graphique 1 --}}
+            <div class="col scroll-animated">
+                <div class="card shadow-lg">
                     <div class="card-header bg-primary text-white">
-                        📆 Accusés de réception par mois
+                        <i class="fas fa-chart-bar text-white"></i> Courriers Reçus par mois
                     </div>
                     <div class="card-body">
-                        <canvas id="accusesParMoisChart"></canvas>
+                        <canvas id="courriersParMoisChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Graphique des courriers reçus par type -->
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-lg border-0 rounded-4">
-                    <div class="card-header bg-primary text-white">
-                        📨 Courriers reçus par type
+            {{-- Graphique 2 --}}
+            <div class="col scroll-animated">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-chart-line text-white"></i> Courriers Traités par mois
                     </div>
                     <div class="card-body">
-                        <canvas id="courriersTypeChart"></canvas>
+                        <canvas id="courriersTraitesParMoisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Graphique 3 --}}
+            <div class="col scroll-animated">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-secondary text-white">
+                        📅 Courriers Reçus par Jour (7 derniers jours)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="courriersParJourChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Graphique 4 --}}
+            <div class="col scroll-animated">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-warning text-white">
+                        🗓️ Courriers Reçus par Semaine (6 dernières semaines)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="courriersParSemaineChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-@endif
+        </div>
+        </div>
+            <div class="row mb-4 justify-content-center">
+            <div class="col-md-8 scroll-animated">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-info text-white text-center">
+                        <i class="fas fa-globe"></i> Vue Globale des Courriers
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center" style="max-height: 400px; padding: 0;">
+                        <canvas id="vueGlobaleChart" style="max-height: 350px; width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        @endif
+    @endif
 @endsection
 
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@push('scripts')
 <script>
-    // Graphique des accusés de réception traités
-    const ctx1 = document.getElementById('accusesTraitesChart').getContext('2d');
-    new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            datasets: [{
-                label: 'Accusés de réception traités',
-                data: [5, 12, 8, 15, 7],
-                backgroundColor: '#007bff',
-                borderColor: '#0056b3',
-                borderWidth: 1
-            }]
-        }
-    });
+    // Déjà existants
+    const moisRecu         = @json(array_keys($courriersParMois));
+    const dataRecu         = @json(array_values($courriersParMois));
+    const moisTraites      = @json(array_keys($courriersTraitesParMois));
+    const dataTraites      = @json(array_values($courriersTraitesParMois));
 
-    // Graphique des courriers par statut
-    const ctx2 = document.getElementById('courriersStatusChart').getContext('2d');
-    new Chart(ctx2, {
-        type: 'pie',
-        data: {
-            labels: ['Reçu', 'En attente', 'Traité'],
-            datasets: [{
-                label: 'Statut des courriers',
-                data: [30, 15, 50],
-                backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
-                borderColor: ['#218838', '#e0a800', '#c82333'],
-                borderWidth: 1
-            }]
-        }
-    });
+    // Nouveaux
+    const jours            = @json(array_keys($courriersParJour));
+    const dataParJour      = @json(array_values($courriersParJour));
+    const semaines         = @json(array_keys($courriersParSemaine));
+    const dataParSemaine   = @json(array_values($courriersParSemaine));
 
-    // Graphique des accusés de réception par mois
-    const ctx3 = document.getElementById('accusesParMoisChart').getContext('2d');
-    new Chart(ctx3, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            datasets: [{
-                label: 'Accusés de réception par mois',
-                data: [3, 5, 2, 8, 4],
-                borderColor: '#28a745',
-                borderWidth: 2,
-                fill: false
-            }]
-        }
-    });
+    const vueGlobaleLabels = @json(array_keys($vueGlobale));
+    const vueGlobaleData   = @json(array_values($vueGlobale));
 
-    // Graphique des courriers reçus par type
-    const ctx4 = document.getElementById('courriersTypeChart').getContext('2d');
-    new Chart(ctx4, {
+
+
+    const cfg = { responsive: true, plugins: { legend: { display: false } } };
+
+        new Chart(document.getElementById('vueGlobaleChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Personnel', 'Affaires', 'Commercial', 'Autre'],
+            labels: vueGlobaleLabels,
             datasets: [{
-                label: 'Types de courriers reçus',
-                data: [25, 35, 20, 20],
-                backgroundColor: ['#17a2b8', '#ffc107', '#007bff', '#6c757d'],
-                borderColor: ['#138496', '#e0a800', '#0056b3', '#5a6268'],
-                borderWidth: 1
+                label: 'Vue Globale',
+                data: vueGlobaleData,
+                backgroundColor: ['#0d6efd', '#198754', '#ffc107'], // Bootstrap colors
             }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            }
         }
     });
+
+
+    new Chart(document.getElementById('courriersParMoisChart'), {
+        type: 'bar',
+        data: { labels: moisRecu, datasets: [{ label: 'Reçus', data: dataRecu }] },
+        options: cfg
+    });
+
+    new Chart(document.getElementById('courriersTraitesParMoisChart'), {
+        type: 'bar',
+        data: { labels: moisTraites, datasets: [{ label: 'Traités', data: dataTraites }] },
+        options: cfg
+    });
+
+    new Chart(document.getElementById('courriersParJourChart'), {
+        type: 'line',
+        data: { labels: jours, datasets: [{ label: 'Reçus par Jour', data: dataParJour, borderColor: 'blue', fill: false }] },
+        options: cfg
+    });
+
+    new Chart(document.getElementById('courriersParSemaineChart'), {
+        type: 'bar',
+        data: { labels: semaines, datasets: [{ label: 'Reçus par Semaine', data: dataParSemaine, backgroundColor: 'orange' }] },
+        options: cfg
+    });
 </script>
-@endsection
+
+@endpush

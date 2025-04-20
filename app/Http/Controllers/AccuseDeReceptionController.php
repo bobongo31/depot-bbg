@@ -13,35 +13,7 @@ class AccuseDeReceptionController extends Controller
 {
 
 
-    public function dashboard()
-{
-    // 1. Accusés traités par mois (bar chart)
-    $accusesParMois = AccuseReception::whereYear('date_reception', now()->year)
-        ->selectRaw('MONTH(date_reception) as mois, COUNT(*) as total')
-        ->where('statut', 'traité')
-        ->groupBy('mois')
-        ->orderBy('mois')
-        ->get();
-
-    // 2. Courriers par statut (pie chart)
-    $statuts = AccuseReception::select('statut', DB::raw('count(*) as total'))
-        ->groupBy('statut')
-        ->get();
-
-    // 3. Accusés tous statuts confondus par mois (line chart)
-    $accusesLine = AccuseReception::whereYear('date_reception', now()->year)
-        ->selectRaw('MONTH(date_reception) as mois, COUNT(*) as total')
-        ->groupBy('mois')
-        ->orderBy('mois')
-        ->get();
-
-    // 4. Courriers reçus par type (doughnut chart)
-    $types = AccuseReception::select('type_courrier', DB::raw('count(*) as total'))
-        ->groupBy('type_courrier')
-        ->get();
-
-    return view('home', compact('accusesParMois', 'statuts', 'accusesLine', 'types'));
-}
+    
      // Affichage du formulaire avec un champ vide pour le numéro d'enregistrement
      public function showForm()
      {
@@ -104,11 +76,19 @@ class AccuseDeReceptionController extends Controller
         return view('accuses.index', compact('accuses'));
     }
 
-        public function show($id)
-    {
-        $courrier = AccuseReception::with('annexes')->findOrFail($id);
-        return view('courriers.show', compact('courrier'));
+    public function show($id)
+{
+    // Utiliser le modèle AccuseReception
+    $courrier = AccuseReception::with('annexes')->findOrFail($id);
+
+    // Si la requête est AJAX, on renvoie une vue partielle
+    if (request()->ajax()) {
+        return response()->view('courriers.show', compact('courrier'));
     }
+
+    // Sinon, on renvoie la vue complète
+    return view('courriers.show', compact('courrier'));
+}
 
 
 
@@ -188,6 +168,8 @@ class AccuseDeReceptionController extends Controller
     // Redirection vers la page des accusés avec l'URL du PDF
     return redirect()->route('accuses.index')->with('download_url', $downloadUrl);
 }
+
+
 
 
     // Méthode pour générer un numéro d'enregistrement unique

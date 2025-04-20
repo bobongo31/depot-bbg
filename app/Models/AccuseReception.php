@@ -9,25 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AccuseReception extends Model
 {
-
-
-
-    protected static function booted()
-    {
-        static::addGlobalScope('entreprise', function (Builder $builder) {
-            if (Auth::check()) {
-                $builder->whereHas('user', function ($query) {
-                    $query->where('entreprise', Auth::user()->entreprise);
-                });
-            }
-        });
-    }
-    // Affichage de la liste des accusés de réception
-    public function indexAccuses()
-    {
-        $accuses = AccuseReception::all(); // Récupérer les accusés de réception
-        return view('accuses.index', compact('accuses'));
-    }
     use HasFactory;
 
     protected $fillable = [
@@ -38,21 +19,58 @@ class AccuseReception extends Model
         'numero_reference',
         'nom_expediteur',
         'resume',
+        'objet', // ✅ Champ ajouté ici
         'observation',
         'commentaires',
         'statut',
         'archive',
         'status_archive',
+        'user_id', // Ajouté pour lier l'accusé à l'utilisateur
     ];
 
-    // Relation avec les annexes
+    /**
+     * Relation avec les annexes.
+     */
     public function annexes()
     {
         return $this->hasMany(Annexe::class, 'accuse_de_reception_id');
     }
-    public function user()
-{
-    return $this->belongsTo(User::class);
-}
 
+    /**
+     * Relation avec l'utilisateur (propriétaire de l'accusé).
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Scope global pour filtrer les accusés selon l'entreprise de l'utilisateur connecté.
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('entreprise', function (Builder $builder) {
+            if (Auth::check()) {
+                $builder->whereHas('user', function ($query) {
+                    $query->where('entreprise', Auth::user()->entreprise);
+                });
+            }
+        });
+
+        // Remplir automatiquement le user_id à la création
+        static::creating(function ($accuse) {
+            if (Auth::check() && empty($accuse->user_id)) {
+                $accuse->user_id = Auth::id();
+            }
+        });
+    }
+
+    /**
+     * Exemple de méthode pour afficher les accusés (non obligatoire dans le modèle).
+     */
+    public function indexAccuses()
+    {
+        $accuses = AccuseReception::all(); // Déjà filtrés automatiquement par entreprise
+        return view('accuses.index', compact('accuses'));
+    }
 }
