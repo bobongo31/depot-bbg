@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\AccuseReception; // Correctement importé ici
 use App\Models\Annexe;
@@ -129,11 +130,13 @@ class AccuseDeReceptionController extends Controller
                 $pdf->AddPage();
                 $pdf->useTemplate($tplIdx, 0, 0, 210);
 
+                $user = Auth::user(); // récupère l'utilisateur connecté
+
                 // Ajouter du texte en superposition
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->SetTextColor(255, 0, 0);
                 $pdf->SetXY(20, 10);
-                $pdf->Cell(0, 10, "Fonds de promotion culturelle", 0, 1, 'L');
+                $pdf->Cell(0, 10, " " . $user->entreprise, 0, 1, 'L');
                 $pdf->SetXY(20, 20);
                 $pdf->Cell(0, 10, "Date : " . $accuse->date_reception, 0, 1);
                 $pdf->SetXY(20, 30);
