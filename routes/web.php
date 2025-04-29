@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\CourrierController;
 use App\Http\Controllers\AccuseDeReceptionController;
 use App\Http\Controllers\CourrierRecuController;
@@ -24,9 +25,11 @@ use App\Http\Controllers\RapportCaisseController;
 // ✅ Auth routes (connexion / inscription)
 Auth::routes();
 
-Route::get('/', function () {
-    return redirect()->route('home');
-});
+// Afficher la page d'accueil sur '/'
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+
+// Après connexion, rediriger vers 'home'
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
 // ✅ Routes accessibles sans authentification ni code d’accès

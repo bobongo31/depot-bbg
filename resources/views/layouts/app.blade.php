@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>{{ config('app.name', 'Gestion_Courrier') }}</title>
+  <title>{{ config('app.name', 'Gestion_Intellingente_de_courrier') }}</title>
+  <link rel="icon" type="image/png" href="image/favicon.png">
+
 
   <!-- Fonts & CDN -->
   <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -42,18 +44,116 @@
       background-color: #333;
       color: #ffffff;
     }
+
+    .hover-scale {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.03);
+      }
+
+      .hover-scale {
+      transition: transform 0.3s ease-in-out;
+  }
+
+  .hover-scale:hover {
+      transform: scale(1.03);
+  }
+    .feature-card {
+        background: linear-gradient(135deg, #4A90E2, #5D9BFB);
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card .card-body {
+        background: white;
+        border-radius: 12px 12px 0 0;
+        padding: 20px;
+        color: #333;
+    }
+
+    .feature-card .card-body h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .feature-card .card-body p {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .feature-card img {
+        border-radius: 0 0 12px 12px;
+        max-width: 100%;
+    }
+
+
+    .blog-item {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+        position: relative;
+    }
+
+    .blog-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .hover-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .blog-item:hover .hover-effect {
+        opacity: 1;
+    }
+
+     /* Optionnel : ajout d'une animation ou d'un effet supplémentaire */
+     #contact .bg-white {
+        transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+    }
+
+    #contact .bg-white:hover {
+        background-color: #f3f4f6;
+        transform: scale(1.05);
+    }
+    
     
     
     .scroll-animated {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease-out;
-  }
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
 
-  .scroll-animated.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.scroll-animated.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Effet de zoom sur l'image */
+.hover-zoom {
+  transition: transform 0.3s ease-in-out;
+}
+
+.hover-zoom:hover {
+  transform: scale(1.1); /* Zoom léger lors du survol */
+}
     /* --- Animation du Footer --- */
     /* Animation d'apparition */
     .footer-animated {
@@ -255,6 +355,7 @@ canvas {
       }
     });
 
+
     // --- Animation d'apparition du footer au scroll ---
     document.addEventListener('DOMContentLoaded', function () {
       const footer = document.querySelector('.footer-animated');
@@ -276,22 +377,29 @@ canvas {
 
     // --- Animation d'apparition des éléments au scroll (autres que le footer) ---
     document.addEventListener('DOMContentLoaded', function () {
-      const animatedItems = document.querySelectorAll('.scroll-animated');
+  const animatedItems = document.querySelectorAll('.scroll-animated');
 
-      const observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
 
-      animatedItems.forEach(item => observer.observe(item));
+    animatedItems.forEach(item => observer.observe(item));
+  } else {
+    // Fallback pour les anciens navigateurs (mobile ou IE)
+    animatedItems.forEach(item => {
+      item.classList.add('visible');
     });
+  }
+});
 
     // Ajouter une classe "zoom-in" à la page lors du chargement
   document.addEventListener("DOMContentLoaded", function () {
@@ -308,28 +416,27 @@ canvas {
   });
 
   window.onload = function () {
-    const overlay = document.getElementById('overlayMessage');
-    const messageBox = overlay.querySelector('.message-box');
+  const overlay = document.getElementById('overlayMessage');
+  if (!overlay) return; // ← Empêche l'erreur sur les pages sans overlay
 
-    // Appliquer flexbox pour centrer
+  const messageBox = overlay.querySelector('.message-box');
+
+  // Appliquer flexbox pour centrer
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+
+  // Compteur de vues
+  let viewCount = localStorage.getItem('overlayMessageViewCount');
+  viewCount = viewCount ? parseInt(viewCount) : 0;
+
+  if (viewCount >= 8) {
+    overlay.style.display = 'none';
+  } else {
     overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
+  }
+};
 
-    // Compteur de vues
-    let viewCount = localStorage.getItem('overlayMessageViewCount');
-    if (!viewCount) {
-      viewCount = 0;
-    } else {
-      viewCount = parseInt(viewCount);
-    }
-
-    if (viewCount >= 8) {
-      overlay.style.display = 'none';
-    } else {
-      overlay.style.display = 'flex';
-    }
-  };
 
   function closeOverlay() {
     const overlay = document.getElementById('overlayMessage');
@@ -345,6 +452,57 @@ canvas {
     viewCount++;
     localStorage.setItem('overlayMessageViewCount', viewCount);
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const counters = document.querySelectorAll('.counter');
+
+  // Fonction pour animer les compteurs
+  function animateCounters() {
+    counters.forEach(counter => {
+      if (!counter.classList.contains('animated')) {
+        const target = +counter.getAttribute('data-count');
+        let current = 0; // On commence à 0
+        const increment = target / 200; // Increment de l'animation
+
+        const updateCount = () => {
+          if (current < target) {
+            current += increment;
+            counter.innerText = Math.ceil(current); // On met à jour la valeur affichée
+            setTimeout(updateCount, 20); // Vitesse de l'animation
+          } else {
+            counter.innerText = target; // On s'assure que la valeur finale est bien atteinte
+            counter.classList.add('animated'); // On marque comme animé pour éviter les répétitions
+          }
+        };
+
+        updateCount();
+      }
+    });
+  }
+
+  // Observer la section pour savoir quand elle devient visible
+  const observer = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          console.log('Section visible, animation des compteurs lancée!');
+          animateCounters();
+          observer.unobserve(entry.target); // On désactive l'observation une fois l'animation lancée
+        }
+      });
+    },
+    { threshold: 0.2 } // L'animation démarre lorsque 20% de la section est visible
+  );
+
+  const counterSection = document.querySelector('.scroll-animated');
+  
+  if (counterSection) {
+    observer.observe(counterSection); // On observe la section contenant les compteurs
+  } else {
+    console.error('La section avec la classe .scroll-animated n\'a pas été trouvée.');
+  }
+});
+
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   @stack('scripts')

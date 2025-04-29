@@ -1,19 +1,15 @@
 <footer class="bg-secondary text-white py-4 mt-auto footer-animated">
-  <div class="container">
-    <div class="row">
-      <!-- Colonne 1 : Contact -->
-      <div class="col-md-4 mb-4">
-        <h5>Contact</h5>
-        <ul class="list-unstyled">
-          <li>
-            <a href="mailto:contact@support.com" class="text-white text-decoration-none footer-link">
-              <i class="fas fa-envelope"></i> contact@support.com
-            </a>
-          </li>
-        </ul>
+  <div class="container text-center">
+    <div class="row justify-content-center">
+      <!-- Logo à gauche -->
+      <div class="col-md-2">
+        <a href="/" class="text-white text-decoration-none">
+          <img src="image/LOGO-GIC.png" alt="Logo" style="width: 80px; height: auto;">
+        </a>
       </div>
+
       <!-- Colonne 2 : Infos légales -->
-      <div class="col-md-4 mb-4">
+      <div class="col-md-3 mb-4">
         <h5>Informations légales</h5>
         <ul class="list-unstyled">
           <li><a href="/politique-utilisation" class="text-white text-decoration-none footer-link"><i class="fas fa-file-alt"></i> Politique d'utilisation</a></li>
@@ -22,8 +18,9 @@
           <li><a href="/mentions-legales" class="text-white text-decoration-none footer-link"><i class="fas fa-info-circle"></i> Mentions légales</a></li>
         </ul>
       </div>
+
       <!-- Colonne 3 : Autres liens -->
-      <div class="col-md-4 mb-4">
+      <div class="col-md-3 mb-4">
         <h5>Autres</h5>
         <ul class="list-unstyled">
           <li><a href="/foire-questions" class="text-white text-decoration-none footer-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
@@ -31,10 +28,11 @@
       </div>
     </div>
   </div>
+  
   <!-- Copyright -->
   <div class="bg-dark text-center py-3 mt-auto">
     <div class="container">
-      <p class="mb-0">© {{ date('Y') }} Gestion Intelligente de Courrier - Tous droits réservés</p>
+      <p class="mb-0">© {{ date('Y') }} GIC v1.0.2</p>
     </div>
   </div>
 </footer>
