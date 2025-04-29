@@ -343,7 +343,7 @@
                         <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
                         <h4 class="mb-3">Commencer un essai gratuit en ligne</h4>
                         <p>Essayez notre solution sans engagement ni carte bancaire.</p>
-                        <a href="#" class="btn btn-success text-uppercase mt-3">Commencer un essai gratuit</a>
+                        <a href="inscription" class="btn btn-success text-uppercase mt-3">Commencer un essai gratuit</a>
                     </div>
                 </div>
 
