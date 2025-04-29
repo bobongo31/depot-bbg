@@ -20,6 +20,7 @@ use App\Http\Controllers\DemandeCongeController;
 use App\Http\Controllers\FondsDemandeController;
 use App\Http\Controllers\DepenseCaisseController;
 use App\Http\Controllers\RapportCaisseController;
+use App\Http\Controllers\UtilisateurController;
 
 
 // ✅ Auth routes (connexion / inscription)
@@ -27,6 +28,7 @@ Auth::routes();
 
 // Afficher la page d'accueil sur '/'
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+
 
 // Après connexion, rediriger vers 'home'
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -41,6 +43,8 @@ Route::view('/politique-confidentialite', 'politique_confidentialite');
 Route::view('/conditions-generales', 'conditions_generales');
 Route::view('/mentions-legales', 'mentions_legales');
 Route::view('/foire-questions', 'foire_questions');
+Route::get('/inscription', [UtilisateurController::class, 'create'])->name('utilisateur.create');
+Route::post('/inscription', [UtilisateurController::class, 'store'])->name('utilisateur.store');
 
 // ✅ Toutes les routes protégées → middleware auth + code.acces
 Route::middleware(['auth'
@@ -112,29 +116,40 @@ Route::middleware(['auth'
     // ✅ Test multi-tenants
     Route::get('/test-tenant', [\App\Http\Controllers\TestTenantController::class, 'index']);
 
-    Route::resource('demandes_conges', DemandeCongeController::class);
-    // Routes pour les demandes de caisse
-Route::prefix('caisse/demandes')->name('caisse.demandes.')->group(function () {
-    Route::get('/', [FondsDemandeController::class, 'index'])->name('index');
-    Route::get('/create', [FondsDemandeController::class, 'create'])->name('create');
-    Route::post('/', [FondsDemandeController::class, 'store'])->name('store');
-    Route::get('/{id}', [FondsDemandeController::class, 'show'])->name('show');
-    Route::put('/{id}', [FondsDemandeController::class, 'update'])->name('update');
-    Route::delete('/{id}', [FondsDemandeController::class, 'destroy'])->name('destroy');
-});
-
-// Route pour afficher le rapport de caisse
-Route::get('/rapport/caisse', [RapportCaisseController::class, 'index'])->name('caisse.rapport.index');
-
-    Route::prefix('caisse')->name('caisse.')->group(function () {
-        Route::resource('depenses', DepenseCaisseController::class);
-        Route::resource('demandes', FondsDemandeController::class);
+   // Routes pour les demandes de caisse
+Route::prefix('caisse')->name('caisse.')->group(function () {
+    // Routes liées aux demandes de fonds
+    Route::prefix('demandes')->name('demandes.')->group(function () {
+        Route::get('/', [FondsDemandeController::class, 'index'])->name('index');
+        Route::get('/create', [FondsDemandeController::class, 'create'])->name('create');
+        Route::post('/', [FondsDemandeController::class, 'store'])->name('store');
+        Route::get('/{id}', [FondsDemandeController::class, 'show'])->name('show');
+        Route::put('/{id}', [FondsDemandeController::class, 'update'])->name('update');
+        Route::delete('/{id}', [FondsDemandeController::class, 'destroy'])->name('destroy');
+        // Approver ou rejeter les demandes de fonds
+        Route::patch('/{id}/approuver', [FondsDemandeController::class, 'approuver'])->name('approuver');
+        Route::patch('/{id}/rejeter', [FondsDemandeController::class, 'rejeter'])->name('rejeter');
     });
 
+    // Routes liées aux dépenses de caisse
+    Route::resource('depenses', DepenseCaisseController::class);
+});
 
-Route::put('/demandes_conges/{demande_conge}', [DemandeCongeController::class, 'update'])->name('demandes_conges.update');
-Route::patch('/demandes_conges/{id}/approuver', [DemandeCongeController::class, 'approuver'])->name('demandes_conges.approuver');
-Route::patch('/demandes_conges/{id}/rejeter', [DemandeCongeController::class, 'rejeter'])->name('demandes_conges.rejeter');
+
+    // Route pour afficher le rapport de caisse
+Route::get('/rapport/caisse', [RapportCaisseController::class, 'index'])->name('caisse.rapport.index');
+
+
+Route::prefix('conges')->name('demandes_conges.')->group(function () {
+    Route::get('/', [DemandeCongeController::class, 'index'])->name('index');
+    Route::get('/create', [DemandeCongeController::class, 'create'])->name('create');
+    Route::post('/', [DemandeCongeController::class, 'store'])->name('store');
+    Route::get('/{id}', [DemandeCongeController::class, 'show'])->name('show');
+    Route::put('/{id}', [DemandeCongeController::class, 'update'])->name('update');
+    Route::delete('/{id}', [DemandeCongeController::class, 'destroy'])->name('destroy');
+    Route::patch('/{id}/approuver', [DemandeCongeController::class, 'approuver'])->name('approuver');
+    Route::patch('/{id}/rejeter', [DemandeCongeController::class, 'rejeter'])->name('rejeter');  // Cette ligne doit être présente
+});
 
 
     // Afficher la liste des dossiers personnels
@@ -151,8 +166,8 @@ Route::put('dossiers_personnels/{dossierPersonnel}', [DossierPersonnelController
 // Supprimer un dossier personnel
 Route::delete('dossiers_personnels/{dossierPersonnel}', [DossierPersonnelController::class, 'destroy'])->name('dossiers_personnels.destroy');
 
-Route::patch('/caisse/demandes/{id}/approuver', [FondsDemandeController::class, 'approuver'])->name('caisse.demandes.approuver');
-Route::patch('/caisse/demandes/{id}/rejeter', [FondsDemandeController::class, 'rejeter'])->name('caisse.demandes.rejeter');
+
+
 
 
 });

@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 <!-- Début du Hero Section -->
 <div class="scroll-animated container-fluid py-5" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
     <div class="container">
@@ -17,7 +23,7 @@
                 </p>
                 <div class="scroll-animated d-flex gap-3">
                     <a href="https://wa.me/243897604018" class="btn btn-light text-primary text-uppercase px-4 py-2">Demander une démo</a>
-                    <a href="#" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
+                    <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
                 </div>
             </div>
 
@@ -236,7 +242,7 @@
     <div class="scroll-animated container-fluid py-5" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
         <div class="container text-center">
             <div class="section-title position-relative pb-3 mb-5 mx-auto" style="max-width: none;">
-                <h1 class="mb-0 text-white" style="white-space: nowrap;">GIC, le logiciel GED qui va bouleverser votre quotidien.</h1>
+                <h1 class="mb-0 text-dark" style="white-space: nowrap;">GIC, la GED qui change tout</h1>
             </div>
             <div class="row g-4">
 
