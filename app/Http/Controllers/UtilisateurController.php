@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Utilisateur;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UtilisateurController extends Controller
 {
+
+    public function index()
+{
+    $utilisateurs = Utilisateur::orderBy('created_at', 'desc')->get();
+    $users = User::orderBy('created_at', 'desc')->get();
+
+    return view('utilisateurs.index', compact('utilisateurs', 'users'));
+}
     // Affiche le formulaire d'inscription
     public function create()
     {

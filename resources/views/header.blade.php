@@ -108,8 +108,8 @@
             </li>
         @endif
 
-        @if(Auth::user() && Auth::user()->role === 'admin')
-            <li>
+        @if(Auth::user() && (Auth::user()->role === 'agent' || Auth::user()->role === 'admin'))
+        <li>
                 <a href="{{ route('archives.index') }}" class="btn btn-outline-success px-4 py-2">
                     <i class="fas fa-archive menu-icon {{ request()->routeIs('archives.index') ? 'active' : '' }}" title="Archives"></i>
                 </a>

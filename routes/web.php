@@ -43,8 +43,10 @@ Route::view('/politique-confidentialite', 'politique_confidentialite');
 Route::view('/conditions-generales', 'conditions_generales');
 Route::view('/mentions-legales', 'mentions_legales');
 Route::view('/foire-questions', 'foire_questions');
+Route::get('/utilisateurs', [UtilisateurController::class, 'index'])->name('utilisateur.index');
 Route::get('/inscription', [UtilisateurController::class, 'create'])->name('utilisateur.create');
 Route::post('/inscription', [UtilisateurController::class, 'store'])->name('utilisateur.store');
+Route::post('/utilisateur/valider/{id}', [UserController::class, 'valider'])->name('utilisateur.valider');
 
 // ✅ Toutes les routes protégées → middleware auth + code.acces
 Route::middleware(['auth'

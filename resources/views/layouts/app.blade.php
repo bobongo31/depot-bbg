@@ -3,9 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>{{ config('app.name', 'Gestion_Intellingente_de_courrier') }}</title>
-  <link rel="icon" type="image/png" href="image/favicon.png">
+  <meta name="google-site-verification" content="F4V5-90SAdqL2N6PFPeoscwMqvFKIMHWT5mF3fssm1A" />
+
+  <!-- SEO Meta -->
+<meta name="description" content="GIC centralise la gestion des ventes, stocks, factures, livraisons, bons de commande et courriers pour PME. Simple, sécurisé et efficace.">
+<meta name="keywords" content="GIC, gestion PME, facturation, bon de commande, gestion de stock, vente, archivage, application entreprise">
+<meta name="author" content="GIC Team">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="GIC – Gestion PME centralisée et intelligente">
+<meta property="og:description" content="Gérez vos ventes, stocks, factures, livraisons et courriers avec une solution intuitive pour PME.">
+<meta property="og:url" content="https://172.233.244.133.nip.io">
+<meta property="og:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GIC – Gestion intelligente pour PME">
+<meta name="twitter:description" content="Solution tout-en-un pour piloter efficacement votre PME : vente, stock, facturation et archivage sécurisé.">
+<meta name="twitter:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>GIC – Gestion intelligente pour PME</title>
+<link rel="icon" type="image/png" href="image/favicon.png">
 
 
   <!-- Fonts & CDN -->

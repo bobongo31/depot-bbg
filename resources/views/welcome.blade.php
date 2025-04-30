@@ -29,7 +29,7 @@
 
             <!-- Image à droite avec effet de survol -->
             <div class="scroll-animated col-lg-6 text-center">
-                <img src="image/Image_hero.JPG" alt="Illustration GedZilla" class="img-fluid hover-zoom" style="max-width: 110%;">
+                <img src="image/Image_hero.JPG" alt="Illustration GedZilla" class="img-fluid hover-zoom" style="max-width: 100%;">
             </div>
             
         </div>
