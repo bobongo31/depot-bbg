@@ -42,5 +42,17 @@ class UtilisateurController extends Controller
         Utilisateur::create($request->all());
 
         // Retourne un message de succès
-        return redirect()->route('welcome')->with('success', 'Votre entreprise a été inscrite avec succès. Vous recevrez bientôt une confirmation par email.');    }
+        return redirect()->route('welcome')->with('success', 'Votre entreprise a été inscrite avec succès. Vous recevrez bientôt une confirmation par email.');    
+    }
+
+    public function supprimer($id)
+{
+    $utilisateur = Utilisateur::find($id);
+    if ($utilisateur) {
+        $utilisateur->delete();
+        return redirect()->back()->with('success', 'Utilisateur supprimé avec succès.');
+    }
+    return redirect()->back()->with('error', 'Utilisateur non trouvé.');
+}
+
 }

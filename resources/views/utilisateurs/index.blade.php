@@ -48,10 +48,19 @@
                             </small>
 
                             <!-- Bouton de validation -->
-                            <form method="POST" action="{{ route('utilisateur.valider', $utilisateur->id) }}" class="mt-3">
+                            <form method="POST" action="{{ route('utilisateur.valider', $utilisateur->id) }}" class="mt-3" onsubmit="return confirmValidation()">
                                 @csrf
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-check-circle"></i> Valider l'inscription
+                                </button>
+                            </form>
+
+                            <!-- Bouton de suppression -->
+                            <form method="POST" action="{{ route('utilisateur.supprimer', $utilisateur->id) }}" class="mt-3" onsubmit="return confirmDelete()">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
                                 </button>
                             </form>
                         </div>
@@ -83,10 +92,26 @@
                                 <i class="fas fa-envelope"></i>
                                 {{ $user->email }}
                             </p>
+                            <p class="card-text mb-2">
+                                <i class="fas fa-building"></i>
+                                <strong>Entreprise :</strong> {{ $user->entreprise }}
+                            </p>
+
                             <p class="card-text">
                                 <i class="fas fa-calendar-alt"></i>
                                 Créé le {{ $user->created_at->format('d/m/Y') }}
                             </p>
+                        </div>
+                        <div class="card-footer bg-light text-end">
+                            <!-- Bouton de suppression -->
+                            <form method="POST" action="{{ route('user.delete', $user->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+
                         </div>
                     </div>
                 </div>
@@ -95,4 +120,16 @@
     @endif
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    function confirmDelete() {
+        return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');
+    }
+
+    function confirmValidation() {
+        return confirm('Êtes-vous sûr de vouloir valider cette inscription ?');
+    }
+</script>
 @endsection

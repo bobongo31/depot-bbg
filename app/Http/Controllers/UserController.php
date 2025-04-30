@@ -73,7 +73,20 @@ public function valider($id)
         $utilisateur->delete();
 
         // Retourner à la liste avec un message de succès
-        return redirect()->route('utilisateur.index')->with('success', 'Utilisateur validé et créé avec succès.');
+        return redirect()->route('utilisateurs.index')->with('success', 'Utilisateur validé et créé avec succès.');
     }
+
+    public function supprimer($id)
+    {
+        $user = User::find($id); // Remplacez "User" par le modèle correspondant
+    
+        if ($user) {
+            $user->delete();
+            return redirect()->route('utilisateurs.index')->with('success', 'Utilisateur supprimé avec succès.');
+        }
+    
+        return redirect()->route('utilisateurs.index')->with('error', 'Utilisateur non trouvé.');
+    }
+    
 
 }
