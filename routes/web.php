@@ -127,6 +127,7 @@ Route::prefix('caisse')->name('caisse.')->group(function () {
     Route::prefix('demandes')->name('demandes.')->group(function () {
         Route::get('/', [FondsDemandeController::class, 'index'])->name('index');
         Route::get('/create', [FondsDemandeController::class, 'create'])->name('create');
+        Route::get('/{id}/edit', [FondsDemandeController::class, 'edit'])->name('edit');
         Route::post('/', [FondsDemandeController::class, 'store'])->name('store');
         Route::get('/{id}', [FondsDemandeController::class, 'show'])->name('show');
         Route::put('/{id}', [FondsDemandeController::class, 'update'])->name('update');
