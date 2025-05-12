@@ -60,7 +60,7 @@
 
 <!-- Début de la section Fonctionnalités -->
 <div class="container py-5">
-    <div class="text-center mb-5">
+      <div class="text-center section-title position-relative pb-3 mb-5 mx-auto" style="max-width: none;">
         <h2 class="fw-bold" style="font-size: 2.5rem;">Fonctionnalités Clés de GIC</h2>
     </div>
 
@@ -163,7 +163,7 @@
 <!-- Début de la section Tarifs -->
 <section class="scroll-animated py-5" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
   <div class="container">
-    <div class="text-center mb-5">
+      <div class="text-center section-title position-relative pb-3 mb-5 mx-auto" style="max-width: none;">
       <h1 class="fw-bold text-white" style="font-size: 2.5rem;">Nos Tarifs Simples et Adaptés</h1>
     </div>
 
@@ -241,7 +241,7 @@
 <section>
     <div class="scroll-animated container-fluid py-5" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
         <div class="container text-center">
-            <div class="section-title position-relative pb-3 mb-5 mx-auto" style="max-width: none;">
+            <div class="section-title text-center position-relative pb-3 mb-5 mx-auto" style="max-width: 800px;">
                 <h1 class="mb-0 text-dark" style="white-space: nowrap;">GIC, la GED qui change tout</h1>
             </div>
             <div class="row g-4">

@@ -31,27 +31,52 @@
 <link rel="icon" type="image/png" href="image/favicon.png">
 <link rel="stylesheet" href="/build/assets/app-D-ZV-3sJ.css">
   <!-- Fonts & CDN -->
-  <link rel="dns-prefetch" href="//fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-  <!-- Font Awesome via CDN -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
-  <!-- jQuery, Popper.js & Bootstrap JS (CDN) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- <!-- Garder seulement Bootstrap 5.3.3 -->
+<!-- Lien vers les bibliothèques CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="icon" type="image/png" href="{{ asset('image/LOGO-GIC.png') }}">
+
+
+
+<!-- jQuery (doit être chargé en premier) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Autres bibliothèques JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.counterup/2.1.0/jquery.counterup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow.js/1.1.2/wow.min.js"></script>
+
+<!-- SweetAlert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Popper.js et Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Script personnalisé -->
 <script type="module" src="/build/assets/app-DBi3esb5.js"></script>
 
+    <!-- JavaScript Libraries -->
+    <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
+    <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ asset('lib/counterup/counterup.min.js') }}"></script>
+    <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
 
 
+    <!-- Template Javascript -->
+  <script src="{{ asset('js/main.js') }}"></script>
 
   <!-- Import Tailwind CSS et JS via Vite -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -83,6 +108,29 @@
   .hover-scale:hover {
       transform: scale(1.03);
   }
+
+ header {
+    display: block;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* Ajuste à ta hauteur réelle */
+    background-color: #fff; /* ou autre couleur souhaitée */
+    z-index: 999;
+}
+
+
+
+  body {
+    padding-top: 0px; /* Ajustez selon la hauteur réelle */
+}
+main {
+    padding-top: 30px;
+}
+
+
     .feature-card {
         background: linear-gradient(135deg, #4A90E2, #5D9BFB);
         border-radius: 12px;
@@ -308,14 +356,13 @@ canvas {
     }
   }
 
-  
-    
+
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 {{ session('theme', 'light-theme') }}">
   <div id="app" class="flex min-h-screen flex-col">
     <!-- Inclusion du header contenant le menu -->
-    @include('header')
+    @include('partials.header')
 
     <!-- Zone de contenu principal -->
     <main class="flex-grow p-6">
@@ -323,7 +370,7 @@ canvas {
     </main>
 
     <!-- Inclusion du footer (le markup n'inclut plus le style et le script spécifiques) -->
-    @include('footer')
+    @include('partials.footer')
   </div>
 
   @auth
@@ -334,7 +381,7 @@ canvas {
 
   <!-- Scripts globaux -->
   <script>
-    
+
     
     // Script pour les notifications & autres fonctionnalités (exemple)
     jQuery(document).ready(function($) {
@@ -527,7 +574,20 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
   </script>
+  <!-- jQuery (si nécessaire) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap Bundle JS (inclut Popper.js nécessaire aux dropdowns et aux toggles) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper + Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
   @stack('scripts')
   </body>
 </html>
