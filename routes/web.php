@@ -38,6 +38,9 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/code-acces', [CodeAccesController::class, 'afficherFormulaire'])->name('code.form');
 Route::post('/code-acces', [CodeAccesController::class, 'verifierCode'])->name('code.verifier');
 
+Route::view('/apropos', 'apropos')->name('apropos');
+Route::view('/mission', 'mission')->name('mission');
+Route::view('/services', 'services')->name('services');
 Route::view('/politique-utilisation', 'politique_utilisation');
 Route::view('/politique-confidentialite', 'politique_confidentialite');
 Route::view('/conditions-generales', 'conditions_generales');

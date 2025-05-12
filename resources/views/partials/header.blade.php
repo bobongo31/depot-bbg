@@ -3,36 +3,36 @@
 ?>  
 
 <body>
-    <!-- Topbar (visible en ≥992px) -->
-<div class="topbar d-none d-lg-flex justify-content-between">
-    <div class="d-flex align-items-center">
-        <a href="#" class="text-white me-3"><i class="fas fa-bell"></i></a>
-    </div>
+    <!-- Topbar (visible sur tous les écrans) -->
+    <div class="topbar d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+            <a href="#" class="text-white me-3"><i class="fas fa-bell"></i></a>
+        </div>
 
-    <!-- Alignement à droite -->
-    <div class="d-flex align-items-center ms-auto">
-        @auth
-            <!-- Affichage du nom de l'utilisateur et des boutons Profil et Déconnexion -->
-            <span class="text-white me-3"><i class="fas fa-user-circle"></i> {{ Auth::user()->name }}</span>
-            
-            <!-- Bouton Profil -->
-            <a href="{{ route('profile.edit') }}" class="text-white me-3">
-                <i class="fas fa-edit"></i>
-            </a>
-            
-            <!-- Bouton Déconnexion -->
-            <a href="{{ route('logout') }}" class="text-white"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fas fa-sign-out-alt"></i> Déconnexion
-            </a>
-        @else
-            <!-- Si l'utilisateur n'est pas connecté, afficher le bouton Connexion -->
-            <a href="{{ route('login') }}" class="btn btn-sm btn-success ms-3">
-                <i class="fas fa-sign-in-alt"></i> Connexion
-            </a>
-        @endauth
+        <!-- Alignement à droite -->
+        <div class="d-flex align-items-center ms-auto">
+            @auth
+                <!-- Affichage du nom de l'utilisateur et des boutons Profil et Déconnexion -->
+                <span class="text-white me-3"><i class="fas fa-user-circle"></i> {{ Auth::user()->name }}</span>
+                
+                <!-- Bouton Profil -->
+                <a href="{{ route('profile.edit') }}" class="text-white me-3">
+                    <i class="fas fa-edit"></i>
+                </a>
+                
+                <!-- Bouton Déconnexion -->
+                <a href="{{ route('logout') }}" class="text-white"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </a>
+            @else
+                <!-- Si l'utilisateur n'est pas connecté, afficher le bouton Connexion -->
+                <a href="{{ route('login') }}" class="btn btn-sm btn-success ms-3">
+                    <i class="fas fa-sign-in-alt"></i> Connexion
+                </a>
+            @endauth
+        </div>
     </div>
-</div>
 
   <!-- Navbar sticky juste en dessous -->
 <nav class="navbar navbar-expand-lg navbar-dark px-5 navbar-sticky">
@@ -50,6 +50,28 @@
             <i class="fas fa-home menu-icon"></i> Accueil
         </a>
       </li>
+
+      <!-- À propos -->
+<li class="nav-item">
+  <a href="{{ route('apropos') }}" class="nav-link {{ request()->routeIs('apropos') ? 'active' : '' }}">
+    <i class="fas fa-info-circle menu-icon"></i> À propos
+  </a>
+</li>
+
+<!-- Mission -->
+<li class="nav-item">
+  <a href="{{ route('mission') }}" class="nav-link {{ request()->routeIs('mission') ? 'active' : '' }}">
+    <i class="fas fa-bullseye menu-icon"></i> Mission
+  </a>
+</li>
+
+<!-- Services -->
+<li class="nav-item">
+  <a href="{{ route('services') }}" class="nav-link {{ request()->routeIs('services') ? 'active' : '' }}">
+    <i class="fas fa-cogs menu-icon"></i> Services
+  </a>
+</li>
+
 
       <!-- Liens spécifiques à l'utilisateur authentifié -->
       @auth

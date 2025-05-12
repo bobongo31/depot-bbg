@@ -5,29 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google-site-verification" content="F4V5-90SAdqL2N6PFPeoscwMqvFKIMHWT5mF3fssm1A" />
 
-  <!-- Balises SEO de base -->
-<meta name="description" content="GIC est une solution tout-en-un pour PME : gestion des ventes, stocks, facturation, bons de commande, livraisons, courriers, et archivage électronique sécurisé. Simple, rapide et efficace.">
-<meta name="keywords" content="GIC, gestion PME, facturation, gestion de stock, vente, archivage électronique, bon de commande, gestion électronique de courrier, archivage numérique, application entreprise, ERP, solution PME">
-<meta name="author" content="Équipe GIC">
+   @hasSection('meta')
+        @yield('meta')
+    @else
+        <!-- Balises SEO de base -->
+        <meta name="description" content="GIC est une solution tout-en-un pour PME : gestion des ventes, stocks, facturation, bons de commande, livraisons, courriers, et archivage électronique sécurisé. Simple, rapide et efficace.">
+        <meta name="keywords" content="GIC, gestion PME, facturation, gestion de stock, vente, archivage électronique, bon de commande, gestion électronique de courrier, archivage numérique, application entreprise, ERP, solution PME">
+        <meta name="author" content="Équipe GIC">
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="GIC – Solution de gestion intelligente pour PME">
-<meta property="og:description" content="Simplifiez la gestion de votre entreprise avec GIC : ventes, stocks, factures, courriers, archivage numérique et plus.">
-<meta property="og:url" content="https://172.233.244.133.nip.io">
-<meta property="og:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="GIC – Solution de gestion intelligente pour PME">
+        <meta property="og:description" content="Simplifiez la gestion de votre entreprise avec GIC : ventes, stocks, factures, courriers, archivage numérique et plus.">
+        <meta property="og:url" content="https://172.233.244.133.nip.io">
+        <meta property="og:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
 
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="GIC – ERP pour PME : gestion et archivage intelligents">
-<meta name="twitter:description" content="Gérez votre PME avec efficacité : GIC regroupe vente, stock, facturation, gestion de courriers et archivage numérique.">
-<meta name="twitter:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="GIC – ERP pour PME : gestion et archivage intelligents">
+        <meta name="twitter:description" content="Gérez votre PME avec efficacité : GIC regroupe vente, stock, facturation, gestion de courriers et archivage numérique.">
+        <meta name="twitter:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+    @endif
+
 
 <!-- Sécurité -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- Titre de la page -->
-<title>GIC – Gestion intelligente pour PME</title>
+<title>@yield('title', 'GIC – Gestion intelligente pour PME')</title>
 <link rel="icon" type="image/png" href="image/favicon.png">
 <link rel="stylesheet" href="/build/assets/app-D-ZV-3sJ.css">
   <!-- Fonts & CDN -->
@@ -131,6 +136,141 @@ main {
 }
 
 
+ @media (max-width: 768px) {
+        .card h3 {
+            font-size: 1.2em;
+        }
+        .card p {
+            font-size: 0.95em;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card {
+            border-radius: 10px;
+        }
+        .icon-feature {
+            font-size: 1.5em !important;
+        }
+    }
+
+    .sci-card {
+        background: linear-gradient(145deg, rgba(0, 204, 255, 0.1), rgba(0, 102, 204, 0.2));
+        border: 1px solid rgba(0, 204, 255, 0.4);
+        border-radius: 20px;
+        padding: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .sci-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 20px rgba(0, 204, 255, 0.6);
+    }
+
+    .sci-icon {
+        font-size: 2.5rem;
+        color: #00ccff;
+        text-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
+    }
+
+    .sci-card p {
+        color: #e0f7ff;
+    }
+
+    @media (max-width: 576px) {
+        .sci-card {
+            border-radius: 15px;
+        }
+
+        .sci-icon {
+            font-size: 2rem;
+        }
+    }
+
+    .team-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 16px;
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0, 204, 255, 0.2);
+    }
+
+    .team-card img {
+        border: 3px solid #00ccff;
+        transition: border-color 0.3s;
+    }
+
+    .team-card:hover img {
+        border-color: #00ffff;
+    }
+
+    .social-icons a {
+        font-size: 18px;
+        color: #cccccc;
+        transition: color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+        color: #00ccff;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .team-card {
+            padding: 20px;
+        }
+    }
+
+    .sci-fi-card {
+    background: #111827;
+    border: 2px solid #00ccff;
+    border-radius: 15px;
+    box-shadow: 0 0 15px #00ccff88;
+    transition: transform 0.3s, box-shadow 0.3s;
+    max-width: 350px;
+}
+.sci-fi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px #00ccff;
+}
+.social-icons a {
+    color: #00ccff;
+    font-size: 20px;
+    transition: color 0.3s;
+}
+.social-icons a:hover {
+    color: #ffffff;
+}
+
+/* Effet de survol pour les cartes */
+.hover-effect {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.hover-effect:hover {
+    transform: scale(1.05); /* Légère mise à l'échelle */
+    box-shadow: 0 10px 15px rgba(0, 204, 255, 0.7); /* Ombre douce */
+}
+
+/* Assurez-vous que les cartes soient visibles même avec des fonds sombres */
+.card {
+    background-color: rgba(0, 0, 0, 0.85); /* Assurez-vous que la carte est suffisamment opaque */
+    border: 1px solid rgba(0, 204, 255, 0.6); /* Bordure bleue claire */
+    border-radius: 15px;
+}
+
+.card-body {
+    color: white; /* Assurez-vous que le texte est visible */
+}
     .feature-card {
         background: linear-gradient(135deg, #4A90E2, #5D9BFB);
         border-radius: 12px;

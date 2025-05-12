@@ -1,7 +1,9 @@
 
     <!-- Footer Start -->
      
-    <div class="container-fluid text-light wow fadeInUp" data-wow-delay="0.1s" style="background: #4d4942;">
+    <div class="container-fluid text-light wow fadeInUp"
+     data-wow-delay="0.1s"
+     style="background: linear-gradient(90deg, #0f2027, #203a43, #2c5364); padding: 20px 0; box-shadow: 0 0 20px rgba(0,0,0,0.4);">
     <div class="row justify-content-center">
             <div class="row">
                 <!-- 
@@ -57,7 +59,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid text-white" style="background: #171410;">
+<div class="container-fluid text-white" style="background: linear-gradient(90deg, #1a1a2e, #16213e, #0f3460); padding: 20px 0; box-shadow: 0 0 15px rgba(0,0,0,0.6);">
         <div class="row justify-content-center text-center">
             <div class="row justify-content-end">
                 <div class="col-lg-8 col-md-6">
