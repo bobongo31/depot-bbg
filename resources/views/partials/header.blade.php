@@ -46,7 +46,7 @@
     <ul class="navbar-nav ms-auto">
       <!-- Accueil -->
       <li class="nav-item">
-        <a href="{{ route('home') }}" class="nav-link {{ $curPageName === 'home' ? 'active' : '' }}">
+        <a href="{{ route('welcome') }}" class="nav-link {{ $curPageName === 'home' ? 'active' : '' }}">
             <i class="fas fa-home menu-icon"></i> Accueil
         </a>
       </li>
@@ -58,13 +58,6 @@
   </a>
 </li>
 
-<!-- Mission -->
-<li class="nav-item">
-  <a href="{{ route('mission') }}" class="nav-link {{ request()->routeIs('mission') ? 'active' : '' }}">
-    <i class="fas fa-bullseye menu-icon"></i> Mission
-  </a>
-</li>
-
 <!-- Services -->
 <li class="nav-item">
   <a href="{{ route('services') }}" class="nav-link {{ request()->routeIs('services') ? 'active' : '' }}">
@@ -72,9 +65,31 @@
   </a>
 </li>
 
+<!-- Articles -->
+<li class="nav-item">
+  <a href="{{ route('articles.index') }}" class="nav-link {{ request()->routeIs('articles.*') ? 'active' : '' }}">
+    <i class="fas fa-newspaper menu-icon"></i> Articles
+  </a>
+</li>
+
+
+<!-- Mission -->
+<li class="nav-item">
+  <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('mission') ? 'active' : '' }}">
+    <i class="fas fa-phone-volume menu-icon"></i> Contact
+  </a>
+</li>
 
       <!-- Liens spécifiques à l'utilisateur authentifié -->
       @auth
+       <!-- Statique courrierr -->
+      <li class="nav-item">
+          <a href="{{ route('home') }}" class="nav-link {{ $curPageName === 'home' ? 'active' : '' }}">
+              <i class="fas fa-chart-line menu-icon"></i> Statistique
+          </a>
+      </li>
+
+
         <!-- Messages -->
         <li class="nav-item">
           <a href="{{ route('messages.index') }}" class="nav-link {{ request()->routeIs('messages.index') ? 'active' : '' }}">

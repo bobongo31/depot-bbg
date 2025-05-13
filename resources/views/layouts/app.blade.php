@@ -12,6 +12,12 @@
         <meta name="description" content="GIC est une solution tout-en-un pour PME : gestion des ventes, stocks, facturation, bons de commande, livraisons, courriers, et archivage électronique sécurisé. Simple, rapide et efficace.">
         <meta name="keywords" content="GIC, gestion PME, facturation, gestion de stock, vente, archivage électronique, bon de commande, gestion électronique de courrier, archivage numérique, application entreprise, ERP, solution PME">
         <meta name="author" content="Équipe GIC">
+        <!-- Meta horaires, téléphone, site web -->
+        <meta name="openingHours" content="Mo-Su 00:00-23:59">
+        <meta name="telephone" content="+243897604018">
+        <meta name="website" content="https://keynsoft.tech">
+        <meta name="address" content="15, AV. Lutendele, Mont-Ngafula, Kinshasa, RDC">
+
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
@@ -45,6 +51,24 @@
 <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 <link rel="icon" type="image/png" href="{{ asset('image/LOGO-GIC.png') }}">
 
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Keynsoft",
+  "url": "https://keynsoft.tech",
+  "telephone": "+243897604018",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "15, AV. Lutendele",
+    "addressLocality": "Mont-Ngafula",
+    "addressRegion": "Kinshasa",
+    "addressCountry": "CD"
+  },
+  "openingHours": "Mo-Su 00:00-23:59"
+}
+</script>
 
 
 <!-- jQuery (doit être chargé en premier) -->

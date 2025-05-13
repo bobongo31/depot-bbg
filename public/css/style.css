@@ -1,24 +1,30 @@
 /********** Template CSS **********/
+/*
 :root {
     --primary: #006006;
     --secondary: #0a3f74;
     --light: #EEF9FF;
     --dark: #4a2f03;
-}
-
-
+}*/
+/* Commence hors de l'écran à droite */
+/* Quitte l'écran à gauche */
+/*
 @keyframes scroll-right-left {
     0% {
-        transform: translateX(35%); /* Commence hors de l'écran à droite */
-    }
+        transform: translateX(35%); /*
+    }/*
     100% {
-        transform: translateX(-100%); /* Quitte l'écran à gauche */
+        transform: translateX(-100%); 
     }
 }
 
+/* Animation avec durée réglable */
+/*
 .animate-scroll {
-    animation: scroll-right-left 50s linear infinite; /* Animation avec durée réglable */
+    animation: scroll-right-left 50s linear infinite; 
 }
+
+/*
 
 
 #news-ticker {
@@ -66,10 +72,10 @@
     transition: opacity .5s ease-out, visibility 0s linear 0s;
     visibility: visible;
     opacity: 1;
-}
+} */
 
 
-/*** Heading ***/
+/*** Heading ***//*
 h1,
 h2,
 .fw-bold {
@@ -87,9 +93,9 @@ h6,
 .fw-medium {
     font-weight: 600 !important;
 }
+*/
 
-
-/*** Button ***/
+/*** Button ***//*
 .btn {
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
@@ -132,60 +138,8 @@ h6,
     padding-right: 0;
     text-align: center;
 }
-/* --- Topbar --- */
-.topbar {
-  background-color: #707674;
-  color: #fff;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  z-index: 1000;
-}
-
-/* --- Navbar sticky --- */
-.navbar-sticky {
-  position: sticky;
-  top: 0;              /* Par défaut, colle tout en haut */
-  z-index: 999;
-  background-image: linear-gradient(90deg, #00c6ff, #0072ff);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: all 0.3s ease-in-out;
-}
-
-/* --- Décalage sous la topbar uniquement sur large --- */
-@media (min-width: 992px) {
-  .navbar-sticky {
-    top: 45px;         /* hauteur exacte de .topbar */
-  }
-}
-
-/* --- Liens de la navbar --- */
-.navbar-dark .nav-link {
-  font-family: 'Nunito', sans-serif;
-  margin-left: 25px;
-  padding: 1rem 0;
-  color: #fff9f9;
-  font-size: 0.9rem;
-  font-weight: 100;
-  text-transform: uppercase;
-  transition: color .5s;
-}
-.navbar-dark .nav-link:hover,
-.navbar-dark .nav-link.active {
-  color: #2c5eff;
-}
-
-/* --- Hamburger --- */
-.navbar-toggler {
-  border-color: rgba(0,0,0,0.1);
-  background-color: #076329 !important;
-}
-.navbar-toggler-icon {
-  color: #fff;
-}
-
-/*** Carousel ***/
+*/
+/*** Carousel ***//*
 .carousel-caption {
     top: 0;
     left: 0;
@@ -218,8 +172,8 @@ h6,
     height: 3rem;
 }
 
-
-/*** Section Title ***/
+*/
+/*** Section Title ***//*
 .section-title::before {
     position: absolute;
     content: "";
@@ -279,8 +233,8 @@ h6,
     0% {left: 0; } 50% { left : 85px; } 100% { left: 0; }
 }
 
-
-/*** Service ***/
+*/
+/*** Service ***//*
 .service-item {
     position: relative;
     height: 300px;
@@ -317,9 +271,10 @@ h6,
     bottom: -24px;
     opacity: 1;
 }
+*/
 
 
-/*** Testimonial ***/
+/*** Testimonial ***//*
 .testimonial-carousel .owl-dots {
     margin-top: 15px;
     display: flex;
@@ -355,10 +310,10 @@ h6,
 .testimonial-carousel .owl-item.center .testimonial-item {
     background: #FFFFFF !important;
     box-shadow: 0 0 30px #DDDDDD;
-}
+}*/
 
 
-/*** Team ***/
+/*** Team ***//*
 .team-item {
     transition: .5s;
 }
@@ -423,9 +378,9 @@ h6,
 .blog-item:hover .blog-img img {
     transform: scale(1.15);
 }
+*/
 
-
-/*** Miscellaneous ***/
+/*** Miscellaneous ***//*
 @media (min-width: 991.98px) {
     .facts {
         position: relative;
@@ -433,7 +388,8 @@ h6,
         z-index: 1;
     }
 }
-
+*/
+/*
 .back-to-top {
     position: fixed;
     display: none;
@@ -446,6 +402,7 @@ h6,
     background: linear-gradient(rgba(9, 30, 62, .7), rgba(9, 30, 62, .7)), url(../img/carousel50.jpg) center center no-repeat;
     background-size: cover;
 }
+*/
 
 .link-animated a {
     transition: .5s;
@@ -459,4 +416,58 @@ h6,
     .footer-about {
         margin-bottom: -75px;
     }
+}
+/* --- Topbar --- */
+.topbar {
+  background-color: #707674;
+  color: #fff;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+}
+
+/* --- Navbar sticky --- */
+.navbar-sticky {
+  position: sticky;
+  top: 0;              /* Par défaut, colle tout en haut */
+  background-color: #00c6ff; /* Définir un fond par défaut */
+  transition: none;  /* Tester sans transition */
+  z-index: 999;
+  background-image: linear-gradient(90deg, #00c6ff, #0072ff);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+/* --- Décalage sous la topbar uniquement sur large --- */
+@media (min-width: 992px) {
+  .navbar-sticky {
+    top: 45px;         /* hauteur exacte de .topbar */
+  }
+}
+
+/* --- Liens de la navbar --- */
+.navbar-dark .nav-link {
+  font-family: 'Nunito', sans-serif;
+  margin-left: 25px;
+  padding: 1rem 0;
+  color: #fff9f9;
+  font-size: 0.9rem;
+  font-weight: 100;
+  text-transform: uppercase;
+  transition: color .5s;
+}
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link.active {
+  color: #2c5eff;
+}
+
+/* --- Hamburger --- */
+.navbar-toggler {
+  border-color: rgba(0,0,0,0.1);
+  background-color: #076329 !important;
+}
+.navbar-toggler-icon {
+  color: #fff;
 }

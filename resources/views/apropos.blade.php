@@ -10,7 +10,7 @@
     <!-- Open Graph pour Facebook -->
     <meta property="og:title" content="Entreprise Informatique à Kinshasa - Depuis 2017">
     <meta property="og:description" content="Des solutions numériques pour votre succès. Découvrez comment notre expertise peut transformer votre entreprise.">
-    <meta property="og:image" content="{{ asset('image/Image_hero.JPG') }}">
+    <meta property="og:image" content="https://172.233.244.133.nip.io/image/HERO.jpg">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
 
@@ -18,7 +18,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Entreprise Informatique à Kinshasa">
     <meta name="twitter:description" content="Depuis 2017, nous fournissons des solutions numériques innovantes à Kinshasa.">
-    <meta name="twitter:image" content="{{ asset('image/Image_hero.JPG') }}">
+    <meta name="twitter:image" content="https://172.233.244.133.nip.io/image/HERO.jpg">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -37,57 +37,99 @@
     </div>
 @endif
 <!-- Début du Hero Section -->
-<div class="scroll-animated container-fluid py-5 position-relative" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('src=image/Image_hero.JPG') no-repeat center center; background-size: cover;">
-    <div class="container position-relative">
-        <div class="row align-items-center g-5">
-            
-            <!-- Texte à gauche -->
-            <div class="scroll-animated col-lg-6 text-white">
-                <h1 class="mb-4" style="font-weight: 700; font-size: 3rem;">Notre entreprise, <br>Au service de votre succès.</h1>
-                <h4 class="mb-3 fst-italic">“Des solutions sur mesure pour chaque défi technologique”</h4>
-                <p class="mb-4" style="font-size: 1.1rem;">
-                    Depuis 2017, nous sommes engagés à fournir des solutions qui aident nos clients à naviguer dans l'univers numérique avec succès. Notre expertise repose sur l'innovation et la qualité, pour des résultats tangibles.<br><br>
-                    Découvrez comment nous avons transformé la gestion documentaire, simplifié les processus et offert des solutions de communication et de productivité adaptées à vos besoins.
-                </p>
-                <div class="scroll-animated d-flex gap-3">
-                    <a href="https://wa.me/243897604018" class="btn btn-light text-primary text-uppercase px-4 py-2">Demander une démo</a>
-                    <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
-                </div>
+<div class="scroll-animated container-fluid d-flex justify-content-center align-items-center text-center text-white" style="
+    width: 100%;
+    height: 650px;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, rgba(0, 31, 63, 0.8), rgba(0, 51, 102, 0.8)), url('image/HERO.jpg') no-repeat center center;
+    background-size: cover;
+">
+    <div class="container">
+        <div class="scroll-animated mx-auto" style="max-width: 800px;">
+            <h1 class="mb-4 fw-bold" style="font-size: 3rem;">Notre entreprise,<br>Au service de votre succès.</h1>
+            <h4 class="mb-3 fst-italic">“Des solutions sur mesure pour chaque défi technologique”</h4>
+            <p class="mb-4" style="font-size: 1.1rem;">
+                Depuis 2017, nous sommes engagés à fournir des solutions qui aident nos clients à naviguer dans l'univers numérique avec succès. Notre expertise repose sur l'innovation et la qualité, pour des résultats tangibles.<br><br>
+                Découvrez comment nous avons transformé la gestion documentaire, simplifié les processus et offert des solutions de communication et de productivité adaptées à vos besoins.
+            </p>
+            <div class="scroll-animated d-flex justify-content-center gap-3 flex-wrap">
+                <a href="https://wa.me/243897604018" class="btn btn-light text-primary text-uppercase px-4 py-2">Demander une démo</a>
+                <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
             </div>
-
-            <!-- Image à droite avec effet de survol -->
-            <div class="scroll-animated col-lg-6 text-center">
-                <img src="image/Image_hero.JPG" alt="Illustration Entreprise" class="img-fluid hover-zoom" style="max-width: 100%; height: auto; border-radius: 8px;">
-            </div>
-            
         </div>
     </div>
 </div>
 <!-- Fin du Hero Section -->
 
+
+
 <!-- Section À propos -->
-<section style="width: 100%; background: linear-gradient(135deg, rgba(0, 51, 102, 0.9), rgba(0, 102, 204, 0.8), rgba(0, 0, 0, 0.9)), url('path/to/your/background-image.jpg'); background-size: cover; background-position: center; padding: 60px 15px;">
-    <div class="scroll-animated container-fluid py-5 container position-relative">
-       <h2 class="text-center section-title text-white mb-4"><strong>Qui sommes-nous ?</strong></h2>
-        <p class="lead text-center text-white mb-3"><strong>Depuis 2017</strong>, notre entreprise informatique basée à Kinshasa s'est consacrée à fournir des solutions sur mesure aux défis technologiques auxquels font face les entreprises et organisations de toutes tailles.</p>
-        <p class="text-center text-white mb-5"><strong>Notre mission est double :</strong></p>
+<section style="width: 100%; background: linear-gradient(135deg, rgba(0, 51, 102, 0.9), rgba(0, 102, 204, 0.8), rgba(0, 0, 0, 0.9)), url('image/fond-keynsoft.jpg'); background-size: cover; background-position: center; padding: 80px 20px;">
+    <div class="scroll-animated container">
+        <h2 class="text-center text-white mb-4 fw-bold display-5">
+            <i class="fas fa-brain me-2"></i>Qui sommes-nous ?
+        </h2>
+
+        <p class="text-white text-center lead mb-5" style="max-width: 800px; margin: auto;">
+            <strong>Chez Keynsoft</strong>, nous pensons que chaque défi numérique mérite une solution sur mesure.<br><br>
+            Depuis 2017, notre studio tech basé à <strong>Kinshasa</strong> est spécialisé dans :
+        </p>
+
+        <ul class="text-white lead mb-5" style="max-width: 900px; margin: auto; list-style: none; padding-left: 0;">
+            <li><i class="fas fa-code me-2"></i>Développement web & mobile</li>
+            <li><i class="fas fa-shield-alt me-2"></i>Cybersécurité & infrastructure serveur</li>
+            <li><i class="fas fa-pencil-ruler me-2"></i>Design UI/UX & motion design</li>
+            <li><i class="fas fa-robot me-2"></i>Automatisation de processus métier</li>
+        </ul>
+
+        <p class="text-white text-center lead mb-5" style="max-width: 900px; margin: auto;">
+            Notre force ? Une <strong>approche Full-Stack</strong> et un savoir-faire local au service des entreprises africaines.
+        </p>
+
+        <div class="scroll-animated text-white text-center mb-5" style="max-width: 900px; margin: auto;">
+            <h3 class="mb-3 fw-bold">
+                <i class="fas fa-rocket me-2"></i>GIC – Notre solution de gestion intelligente
+            </h3>
+            <p><em>"Pensé, codé et hébergé par Keynsoft."</em></p>
+            <p>
+                GIC (Gestion Intelligente de Courrier) est une plateforme SaaS conçue pour aider les PME à :
+            </p>
+            <ul class="mb-4" style="list-style: none; padding-left: 0;">
+                <li><i class="fas fa-envelope-open-text me-2"></i>Gérer leurs documents et courriers électroniques</li>
+                <li><i class="fas fa-box-open me-2"></i>Centraliser les factures, commandes et stocks</li>
+                <li><i class="fas fa-sync-alt me-2"></i>Suivre les processus métiers avec sécurité et efficacité</li>
+            </ul>
+            <p class="mb-3">
+                <i class="fas fa-lock me-2"></i>Sécurisé – 
+                <i class="fas fa-globe me-2"></i>Accessible 24/7 – 
+                <i class="fas fa-tools me-2"></i>100 % adaptable
+            </p>
+            <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
+        </div>
+
+        <div class="scroll-animated text-white text-center mb-5">
+            <p class="lead"><strong>Notre mission est double :</strong></p>
+        </div>
 
         <div class="row justify-content-center">
+            <!-- Carte 1 -->
             <div class="scroll-animated col-lg-5 col-md-6 mb-4 px-3">
                 <div class="card h-100" style="background-color: rgba(0, 0, 0, 0.75); border: 1px solid rgba(0, 204, 255, 0.6); border-radius: 15px;">
-                    <div class="card-body text-white">
+                    <div class="card-body text-white text-center">
                         <i class="fas fa-user-shield icon-feature mb-3" style="font-size: 2em; color: #00ccff;"></i>
-                        <h3>1. Améliorer votre image de marque</h3>
-                        <p>Renforcez la confiance et l'engagement de vos clients, fournisseurs et investisseurs grâce à une présence numérique professionnelle et efficace. Bénéficiez d'une communication claire et transparente qui met en valeur vos valeurs et vos réalisations.</p>
+                        <h4 class="fw-bold mb-3">1. Améliorer votre image de marque</h4>
+                        <p>Renforcez la confiance et l'engagement de vos clients, fournisseurs et investisseurs grâce à une présence numérique professionnelle. Mettez en valeur vos valeurs et vos réalisations.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 col-md-6 mb-4 px-3">
+
+            <!-- Carte 2 -->
+            <div class="scroll-animated col-lg-5 col-md-6 mb-4 px-3">
                 <div class="card h-100" style="background-color: rgba(0, 0, 0, 0.75); border: 1px solid rgba(0, 204, 255, 0.6); border-radius: 15px;">
-                    <div class="scroll-animated card-body text-white">
+                    <div class="card-body text-white text-center">
                         <i class="fas fa-cogs icon-feature mb-3" style="font-size: 2em; color: #00ccff;"></i>
-                        <h3>2. Optimiser vos opérations</h3>
-                        <p>Automatisez vos processus pour gagner en productivité, réduire les coûts et améliorer la satisfaction des employés. Profitez de solutions numériques innovantes pour simplifier vos tâches quotidiennes et optimiser le fonctionnement de votre organisation.</p>
+                        <h4 class="fw-bold mb-3">2. Optimiser vos opérations</h4>
+                        <p>Automatisez vos processus pour gagner en productivité, réduire les coûts et améliorer la satisfaction des employés. Simplifiez vos tâches et optimisez vos résultats.</p>
                     </div>
                 </div>
             </div>
@@ -95,6 +137,7 @@
     </div>
 </section>
 <!-- Fin Section À propos -->
+
 
  <!-- Section Pourquoi nous choisir -->
 <section style="width: 100%; background: linear-gradient(135deg, #001F3F, #001C33); padding: 60px 20px;">
@@ -134,6 +177,60 @@
             <li class="list-inline-item mx-3"><strong>+50 clients fidèles</strong></li>
             <li class="list-inline-item mx-3"><strong>+1000 projets réalisés</strong></li>
         </ul>
+    </div>
+</section>
+
+<!-- Section Nos Services -->
+<section style="width: 100%; background: linear-gradient(135deg,rgb(19, 28, 37),rgb(10, 42, 68)); padding: 60px 20px;">
+    <div class="scroll-animated container text-center text-white">
+        <h2 class="section-title mb-5" style="font-weight: bold; color: #00ccff;">Nos Services</h2>
+        <p class="mb-5" style="font-size: 18px;">Nous offrons une gamme complète de services pour permettre aux organisations de s'améliorer.</p>
+        
+        <div class="row justify-content-center">
+            <!-- Service 1 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="sci-card h-100">
+                    <div class="scroll-animated card-body text-center">
+                        <i class="fas fa-laptop-code sci-icon mb-3" style="font-size: 100px; color:rgb(255, 255, 255);"></i>
+                        <h4 class="text-white">Développement de plateformes numériques</h4>
+                        <p>Création d'applications web et mobiles robustes, performantes et sur mesure.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="sci-card h-100">
+                    <div class="scroll-animated card-body text-center">
+                        <i class="fas fa-palette sci-icon mb-3" style="font-size: 100px; color:rgb(255, 255, 255);"></i>
+                        <h4 class="text-white">Identité Visuelle complète</h4>
+                        <p>Design graphique, logos, chartes visuelles modernes et adaptées à votre image.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="sci-card h-100">
+                    <div class="scroll-animated card-body text-center">
+                        <i class="fas fa-chalkboard-teacher sci-icon mb-3" style="font-size: 100px; color:rgb(255, 255, 255);"></i>
+                        <h4 class="text-white">Formations</h4>
+                        <p>Formations professionnelles en développement, bureautique et cybersécurité.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 4 -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="sci-card h-100">
+                    <div class="scroll-animated card-body text-center">
+                        <i class="fas fa-desktop sci-icon mb-3" style="font-size: 100px; color:rgb(255, 255, 255);"></i>
+                        <h4 class="text-white">Vente de matériels informatiques</h4>
+                        <p>Vente d’équipements informatiques, serveurs, périphériques et solutions réseau.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

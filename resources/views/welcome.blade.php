@@ -58,105 +58,104 @@
   </div>
 </section>
 
+
+
 <!-- Début de la section Fonctionnalités -->
-<div class="container py-5">
-      <div class="text-center section-title position-relative pb-3 mb-5 mx-auto" style="max-width: none;">
-        <h2 class="fw-bold" style="font-size: 2.5rem;">Fonctionnalités Clés de GIC</h2>
-    </div>
+<section style="width: 100%; background: linear-gradient(135deg, rgb(19, 28, 37), rgb(10, 42, 68)); padding: 60px 20px;">
+  <div class="scroll-animated container text-center text-white">
+    <h2 class="section-title mb-5" style="font-weight: bold; color: #00ccff;">Fonctionnalités Clés de GIC</h2>
+    <p class="mb-5" style="font-size: 18px;">Des outils puissants pour optimiser votre gestion quotidienne.</p>
 
     <div class="row g-4">
-        <!-- Carte 1 : Gestion de Courriers -->
-        <div class="scroll-animated col-lg-6">
-            <div class="card h-100 shadow-lg border-0 hover-scale" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff);">
-                <div class="card-body">
-                    <h3 class="fw-bold p-2 mb-3" style="border: 2px solid #00acc1; border-radius: 8px; text-align: center;">Gestion de Courriers</h3>
-                    <p>
-                        Enregistrez facilement vos courriers entrants et sortants, suivez leur statut en temps réel et recevez des notifications internes automatiques pour une meilleure organisation documentaire.
-                    </p>
-                    <div class="text-center mt-4">
-                        <img src="image/gestion_courrier.jpg" alt="Gestion de Courriers" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
+      <!-- Carte Fonctionnalité 1 -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="card-body text-center">
+            <h4 class="text-white">Gestion de Courriers</h4>
+            <p>Enregistrez facilement vos courriers entrants et sortants, suivez leur statut en temps réel.</p>
+            <img src="image/gestion_courrier.jpg" alt="Gestion de Courriers" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
+            <a href="{{ route('articles.show', 'gestion-courriers') }}" class="btn btn-primary">
+              En savoir plus <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
         </div>
+      </div>
 
-        <!-- Carte 2 : Archivage Intelligent -->
-        <div class="scroll-animated col-lg-6">
-            <div class="card h-100 shadow-lg border-0 hover-scale" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff);">
-                <div class="card-body">
-                    <h3 class="fw-bold p-2 mb-3" style="border: 2px solid #00acc1; border-radius: 8px; text-align: center;">Archivage Intelligent</h3>
-                    <p>
-                        Organisez automatiquement vos documents grâce à notre technologie d’indexation intelligente. Accédez rapidement à tout via une recherche avancée, le tout hébergé de façon sécurisée dans le cloud.
-                    </p>
-                    <div class="text-center mt-4">
-                        <img src="image/Archivage_Intelligent.jpg" alt="Archivage Intelligent" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
+      <!-- Carte Fonctionnalité 2 -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="card-body text-center">
+            <h4 class="text-white">Archivage Intelligent</h4>
+            <p>Indexation automatique, recherche rapide, accès cloud sécurisé à vos documents.</p>
+            <img src="image/Archivage_Intelligent.jpg" alt="Archivage Intelligent" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
+            <a href="{{ route('articles.show', 'archivage-intelligent') }}" class="btn btn-primary">
+              En savoir plus <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
         </div>
+      </div>
 
-        <!-- Carte 3 : Messagerie Sécurisée -->
-        <div class="scroll-animated col-lg-6">
-            <div class="card h-100 shadow-lg border-0 hover-scale" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff);">
-                <div class="card-body">
-                    <h3 class="fw-bold p-2 mb-3" style="border: 2px solid #00acc1; border-radius: 8px; text-align: center;">Messagerie Sécurisée</h3>
-                    <p>
-                        Échangez rapidement et en toute confidentialité grâce à une messagerie chiffrée. Gardez un historique centralisé de toutes les communications internes importantes.
-                    </p>
-                    <div class="text-center mt-4">
-                        <img src="image/Archivage_IntelligentOK.jpg" alt="Messagerie Sécurisée" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
+      <!-- Carte Fonctionnalité 3 -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="card-body text-center">
+            <h4 class="text-white">Messagerie Sécurisée</h4>
+            <p>Communiquez en toute confidentialité grâce à une messagerie interne chiffrée.</p>
+            <img src="image/Archivage_IntelligentOK.jpg" alt="Messagerie Sécurisée" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
+            <a href="{{ route('articles.show', 'messagerie-securisee') }}" class="btn btn-primary">
+              En savoir plus <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
         </div>
+      </div>
 
-        <!-- Carte 4 : Gestion des Utilisateurs -->
-        <div class="scroll-animated col-lg-6">
-            <div class="card h-100 shadow-lg border-0 hover-scale" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff);">
-                <div class="card-body">
-                    <h3 class="fw-bold p-2 mb-3" style="border: 2px solid #00acc1; border-radius: 8px; text-align: center;">Gestion des Utilisateurs</h3>
-                    <p>
-                        Gérez les accès par services, attribuez des rôles précis et gardez une trace complète des actions des utilisateurs grâce à notre système d’audit intégré.
-                    </p>
-                    <div class="text-center mt-4">
-                        <img src="image/Gestion-des-Utilisateurs.jpg" alt="Gestion des Utilisateurs" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
+      <!-- Carte Fonctionnalité 4 -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="card-body text-center">
+            <h4 class="text-white">Gestion des Utilisateurs</h4>
+            <p>Contrôle des accès, rôles définis, audit des actions pour une gestion sécurisée.</p>
+            <img src="image/Gestion-des-Utilisateurs.jpg" alt="Gestion des Utilisateurs" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
+            <a href="{{ route('articles.show', 'gestion-utilisateurs') }}" class="btn btn-primary">
+              En savoir plus <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
         </div>
+      </div>
 
-        <!-- Carte 5 : Signature Numérique -->
-        <div class="scroll-animated col-lg-6">
-            <div class="card h-100 shadow-lg border-0 hover-scale" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff);">
-                <div class="card-body">
-                    <h3 class="fw-bold p-2 mb-3" style="border: 2px solid #00acc1; border-radius: 8px; text-align: center;">Signature Numérique</h3>
-                    <p>
-                        Signez vos documents officiels de façon électronique, en conformité avec les normes RGPD. Une méthode rapide, sûre et juridiquement reconnue.
-                    </p>
-                    <div class="text-center mt-4">
-                        <img src="image/Signature-Numerique.jpg" alt="Signature Numérique" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
+      <!-- Carte Fonctionnalité 5 -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="card-body text-center">
+            <h4 class="text-white">Signature Numérique</h4>
+            <p>Signez vos documents en ligne avec une validité juridique et conforme RGPD.</p>
+            <img src="image/Signature-Numerique.jpg" alt="Signature Numérique" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
+            <a href="{{ route('articles.show', 'signature-numerique') }}" class="btn btn-primary">
+              En savoir plus <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
         </div>
+      </div>
 
-        <!-- Carte 6 : Gestion de Stock & Vente -->
-        <div class="scroll-animated col-lg-6">
-            <div class="card h-100 shadow-lg border-0 hover-scale" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff);">
-                <div class="card-body">
-                    <h3 class="fw-bold p-2 mb-3" style="border: 2px solid #00acc1; border-radius: 8px; text-align: center;">Gestion de Stock & Vente</h3>
-                    <p>
-                        Suivez vos stocks en temps réel, gérez les produits, éditez vos factures et bons de commande automatiquement. Pilotez votre activité commerciale avec une solution tout-en-un.
-                    </p>
-                    <div class="text-center mt-4">
-                        <img src="image/Gestion_de_Stock_Vente.jpg" alt="Gestion de Stock et Vente" class="img-fluid" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
+      <!-- Carte Fonctionnalité 6 -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="card-body text-center">
+            <h4 class="text-white">Gestion de Stock & Vente</h4>
+            <p>Suivi des stocks, gestion des ventes, facturation automatisée dans un seul outil.</p>
+            <img src="image/Gestion_de_Stock_Vente.jpg" alt="Gestion de Stock et Vente" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
+            <a href="{{ route('articles.show', 'gestion-stock-vente') }}" class="btn btn-primary">
+              En savoir plus <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 <!-- Fin de la section Fonctionnalités -->
+
+
 
 
 
@@ -354,7 +353,7 @@
 <!-- Fin de la section -->
 
 <!-- Section Hero  -->
-<section class="scroll-animated py-5" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff); border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin: 2rem auto; max-width: 1200px;">
+<section class="py-5" style="background: linear-gradient(to bottom right, #e0f7fa, #ffffff); border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin: 2rem auto; max-width: 1200px;">
   <div class="container px-4">
     <div class="row align-items-center">
       <!-- Texte côté gauche -->

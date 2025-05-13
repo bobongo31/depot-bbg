@@ -37,10 +37,33 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 // ✅ Routes accessibles sans authentification ni code d’accès
 Route::get('/code-acces', [CodeAccesController::class, 'afficherFormulaire'])->name('code.form');
 Route::post('/code-acces', [CodeAccesController::class, 'verifierCode'])->name('code.verifier');
+Route::get('/fonctionnalites', function () {
+    return view('articles.index');
+})->name('articles.index');
+
+Route::get('/fonctionnalites/{slug}', function ($slug) {
+    $views = [
+        'gestion-courriers',
+        'archivage-intelligent',
+        'messagerie-securisee',
+        'gestion-utilisateurs',
+        'signature-numerique',
+        'gestion-stock-vente',
+    ];
+
+    if (in_array($slug, $views)) {
+        return view('articles.' . $slug);
+    }
+
+    abort(404);
+})->name('articles.show');
 
 Route::view('/apropos', 'apropos')->name('apropos');
 Route::view('/mission', 'mission')->name('mission');
 Route::view('/services', 'services')->name('services');
+Route::view('/contact', 'contact')->name('contact');
+Route::view('/contact.send', 'contact.send')->name('contact.send');
+Route::view('/rendezvous', 'rendezvous')->name('rendezvous');
 Route::view('/politique-utilisation', 'politique_utilisation');
 Route::view('/politique-confidentialite', 'politique_confidentialite');
 Route::view('/conditions-generales', 'conditions_generales');
