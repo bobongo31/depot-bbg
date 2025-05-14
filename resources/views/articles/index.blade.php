@@ -33,7 +33,7 @@
 ">
     <div class="container">
         <div class="mx-auto" style="max-width: 800px;">
-            <h1 class="scroll-animated mb-4 fw-bold" style="font-size: 3rem;">Fonctionnalités GIC</h1>
+            <h1 class="scroll-animated mb-4 fw-bold" style="font-size: 2rem;">Fonctionnalités GIC</h1>
             <h4 class="scroll-animated mb-3 fst-italic">“Optimisez vos processus, simplifiez votre gestion”</h4>
             <p class="scroll-animated mb-4" style="font-size: 1.1rem;">
                 GIC propose des outils puissants pour centraliser, automatiser et sécuriser la gestion de vos activités.

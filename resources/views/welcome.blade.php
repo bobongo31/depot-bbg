@@ -69,8 +69,8 @@
     <div class="row g-4">
       <!-- Carte Fonctionnalité 1 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
-          <div class="card-body text-center">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="scroll-animated card-body text-center">
             <h4 class="text-white">Gestion de Courriers</h4>
             <p>Enregistrez facilement vos courriers entrants et sortants, suivez leur statut en temps réel.</p>
             <img src="image/gestion_courrier.jpg" alt="Gestion de Courriers" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
@@ -83,8 +83,8 @@
 
       <!-- Carte Fonctionnalité 2 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
-          <div class="card-body text-center">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="scroll-animated card-body text-center">
             <h4 class="text-white">Archivage Intelligent</h4>
             <p>Indexation automatique, recherche rapide, accès cloud sécurisé à vos documents.</p>
             <img src="image/Archivage_Intelligent.jpg" alt="Archivage Intelligent" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
@@ -97,8 +97,8 @@
 
       <!-- Carte Fonctionnalité 3 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
-          <div class="card-body text-center">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="scroll-animated card-body text-center">
             <h4 class="text-white">Messagerie Sécurisée</h4>
             <p>Communiquez en toute confidentialité grâce à une messagerie interne chiffrée.</p>
             <img src="image/Archivage_IntelligentOK.jpg" alt="Messagerie Sécurisée" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
@@ -111,8 +111,8 @@
 
       <!-- Carte Fonctionnalité 4 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
-          <div class="card-body text-center">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="scroll-animated card-body text-center">
             <h4 class="text-white">Gestion des Utilisateurs</h4>
             <p>Contrôle des accès, rôles définis, audit des actions pour une gestion sécurisée.</p>
             <img src="image/Gestion-des-Utilisateurs.jpg" alt="Gestion des Utilisateurs" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
@@ -125,8 +125,8 @@
 
       <!-- Carte Fonctionnalité 5 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
-          <div class="card-body text-center">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="scroll-animated card-body text-center">
             <h4 class="text-white">Signature Numérique</h4>
             <p>Signez vos documents en ligne avec une validité juridique et conforme RGPD.</p>
             <img src="image/Signature-Numerique.jpg" alt="Signature Numérique" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
@@ -139,8 +139,8 @@
 
       <!-- Carte Fonctionnalité 6 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
-          <div class="card-body text-center">
+        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+          <div class="scroll-animated card-body text-center">
             <h4 class="text-white">Gestion de Stock & Vente</h4>
             <p>Suivi des stocks, gestion des ventes, facturation automatisée dans un seul outil.</p>
             <img src="image/Gestion_de_Stock_Vente.jpg" alt="Gestion de Stock et Vente" class="img-fluid mt-3 mb-3" style="max-width: 80%;">
