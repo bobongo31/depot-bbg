@@ -53,7 +53,6 @@
                 Découvrez comment nous avons transformé la gestion documentaire, simplifié les processus et offert des solutions de communication et de productivité adaptées à vos besoins.
             </p>
             <div class="scroll-animated d-flex justify-content-center gap-3 flex-wrap">
-                <a href="https://wa.me/243897604018" class="btn btn-light text-primary text-uppercase px-4 py-2">Demander une démo</a>
                 <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
             </div>
         </div>

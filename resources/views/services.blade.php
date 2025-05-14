@@ -130,12 +130,13 @@
         <p class="mb-4">{{ $service['desc'] }}</p>
         <ul class="list-unstyled">
             @foreach($service['items'] as $item)
-                <li>✅ {{ $item }}</li>
+                <li><i class="fas fa-check-circle" style="color: #00ccff;"></i> {{ $item }}</li>
             @endforeach
         </ul>
     </div>
 </section>
 @endforeach
+
 
 <!-- Call to Action -->
 <section class="text-white text-center py-5" style="background: linear-gradient(135deg, #003366, #001f3f);">
