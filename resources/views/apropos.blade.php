@@ -39,7 +39,7 @@
 <!-- Début du Hero Section -->
 <div class="scroll-animated container-fluid d-flex justify-content-center align-items-center text-center text-white" style="
     width: 100%;
-    height: 650px;
+    height: 600px;
     padding: 60px 20px;
     background: linear-gradient(135deg, rgba(0, 31, 63, 0.8), rgba(0, 51, 102, 0.8)), url('image/HERO.jpg') no-repeat center center;
     background-size: cover;
@@ -49,9 +49,7 @@
             <h1 class="mb-4 fw-bold" style="font-size: 3rem;">Notre entreprise,<br>Au service de votre succès.</h1>
             <h4 class="mb-3 fst-italic">“Des solutions sur mesure pour chaque défi technologique”</h4>
             <p class="mb-4" style="font-size: 1.1rem;">
-                Depuis 2017, nous sommes engagés à fournir des solutions qui aident nos clients à naviguer dans l'univers numérique avec succès. Notre expertise repose sur l'innovation et la qualité, pour des résultats tangibles.<br><br>
-                Découvrez comment nous avons transformé la gestion documentaire, simplifié les processus et offert des solutions de communication et de productivité adaptées à vos besoins.
-            </p>
+                Depuis 2017, nous sommes engagés à fournir des solutions qui aident nos clients à naviguer dans l'univers numérique avec succès. Notre expertise repose sur l'innovation et la qualité, pour des résultats tangibles.            </p>
             <div class="scroll-animated d-flex justify-content-center gap-3 flex-wrap">
                 <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit, sans carte bancaire</a>
             </div>
@@ -64,24 +62,24 @@
 
 <!-- Section À propos -->
 <section style="width: 100%; background: linear-gradient(135deg, rgba(0, 51, 102, 0.9), rgba(0, 102, 204, 0.8), rgba(0, 0, 0, 0.9)), url('image/fond-keynsoft.jpg'); background-size: cover; background-position: center; padding: 80px 20px;">
-    <div class="scroll-animated container">
-        <h2 class="text-center text-white mb-4 fw-bold display-5">
+    <div class="container">
+        <h2 class="scroll-animated text-center text-white mb-4 fw-bold display-5">
             <i class="fas fa-brain me-2"></i>Qui sommes-nous ?
         </h2>
 
-        <p class="text-white text-center lead mb-5" style="max-width: 800px; margin: auto;">
+        <p class="scroll-animated text-white text-center lead mb-5" style="max-width: 800px; margin: auto;">
             <strong>Chez Keynsoft</strong>, nous pensons que chaque défi numérique mérite une solution sur mesure.<br><br>
             Depuis 2017, notre studio tech basé à <strong>Kinshasa</strong> est spécialisé dans :
         </p>
 
-        <ul class="text-white lead mb-5" style="max-width: 900px; margin: auto; list-style: none; padding-left: 0;">
+        <ul class="scroll-animated text-white lead mb-5" style="max-width: 900px; margin: auto; list-style: none; padding-left: 0;">
             <li><i class="fas fa-code me-2"></i>Développement web & mobile</li>
             <li><i class="fas fa-shield-alt me-2"></i>Cybersécurité & infrastructure serveur</li>
             <li><i class="fas fa-pencil-ruler me-2"></i>Design UI/UX & motion design</li>
             <li><i class="fas fa-robot me-2"></i>Automatisation de processus métier</li>
         </ul>
 
-        <p class="text-white text-center lead mb-5" style="max-width: 900px; margin: auto;">
+        <p class="scroll-animated text-white text-center lead mb-5" style="max-width: 900px; margin: auto;">
             Notre force ? Une <strong>approche Full-Stack</strong> et un savoir-faire local au service des entreprises africaines.
         </p>
 

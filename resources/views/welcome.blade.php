@@ -62,14 +62,14 @@
 
 <!-- Début de la section Fonctionnalités -->
 <section style="width: 100%; background: linear-gradient(135deg, rgb(19, 28, 37), rgb(10, 42, 68)); padding: 60px 20px;">
-  <div class="scroll-animated container text-center text-white">
-    <h2 class="section-title mb-5" style="font-weight: bold; color: #00ccff;">Fonctionnalités Clés de GIC</h2>
-    <p class="mb-5" style="font-size: 18px;">Des outils puissants pour optimiser votre gestion quotidienne.</p>
+  <div class="container text-center text-white">
+    <h2 class="scroll-animated section-title mb-5" style="font-weight: bold; color: #00ccff;">Fonctionnalités Clés de GIC</h2>
+    <p class="scroll-animated mb-5" style="font-size: 18px;">Des outils puissants pour optimiser votre gestion quotidienne.</p>
 
     <div class="row g-4">
       <!-- Carte Fonctionnalité 1 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
           <div class="card-body text-center">
             <h4 class="text-white">Gestion de Courriers</h4>
             <p>Enregistrez facilement vos courriers entrants et sortants, suivez leur statut en temps réel.</p>
@@ -83,7 +83,7 @@
 
       <!-- Carte Fonctionnalité 2 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
           <div class="card-body text-center">
             <h4 class="text-white">Archivage Intelligent</h4>
             <p>Indexation automatique, recherche rapide, accès cloud sécurisé à vos documents.</p>
@@ -97,7 +97,7 @@
 
       <!-- Carte Fonctionnalité 3 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
           <div class="card-body text-center">
             <h4 class="text-white">Messagerie Sécurisée</h4>
             <p>Communiquez en toute confidentialité grâce à une messagerie interne chiffrée.</p>
@@ -111,7 +111,7 @@
 
       <!-- Carte Fonctionnalité 4 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
           <div class="card-body text-center">
             <h4 class="text-white">Gestion des Utilisateurs</h4>
             <p>Contrôle des accès, rôles définis, audit des actions pour une gestion sécurisée.</p>
@@ -125,7 +125,7 @@
 
       <!-- Carte Fonctionnalité 5 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
           <div class="card-body text-center">
             <h4 class="text-white">Signature Numérique</h4>
             <p>Signez vos documents en ligne avec une validité juridique et conforme RGPD.</p>
@@ -139,7 +139,7 @@
 
       <!-- Carte Fonctionnalité 6 -->
       <div class="col-lg-4 col-md-6 mb-4">
-        <div class="sci-card h-100 bg-dark text-white shadow-lg p-4">
+        <div class="scroll-animated sci-card h-100 bg-dark text-white shadow-lg p-4">
           <div class="card-body text-center">
             <h4 class="text-white">Gestion de Stock & Vente</h4>
             <p>Suivi des stocks, gestion des ventes, facturation automatisée dans un seul outil.</p>
