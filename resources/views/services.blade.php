@@ -22,6 +22,7 @@
 
 <!-- HERO -->
 <section style="
+    scroll-animated
     width: 100%;
     height: 500px; /* Hauteur diminuée */    padding: 60px 20px;
     background: linear-gradient(135deg, rgba(0, 31, 63, 0.8), rgba(0, 51, 102, 0.8)), url('image/HERO.jpg');
@@ -32,7 +33,7 @@
     align-items: center;
     justify-content: center;
 ">
-    <div class="container text-center text-white">
+    <div class="scroll-animated container text-center text-white">
         <h1 class="display-4 mb-4 fw-bold">Nos Services</h1>
         <p class="lead mb-0">Des solutions numériques pour vous faire gagner en efficacité, visibilité et rentabilité.</p>
     </div>

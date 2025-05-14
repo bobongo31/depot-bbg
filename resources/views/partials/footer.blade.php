@@ -4,7 +4,7 @@
     <div class="container-fluid text-light wow fadeInUp"
      data-wow-delay="0.1s"
      style="background: linear-gradient(90deg, #0f2027, #203a43, #2c5364); padding: 20px 0; box-shadow: 0 0 20px rgba(0,0,0,0.4);">
-    <div class="row justify-content-center">
+    <div class="scroll-animated row justify-content-center">
             <div class="row">
                 <!-- 
                 <div class="col-lg-4 col-md-6 footer-about" >
@@ -25,7 +25,7 @@
                 <div class="col-lg-8 col-md-6">
                 <div class="row gx-5">
                     <div class="col-lg-8 col-md-12 pt-5 mb-5">
-                        <div class="section-title section-title-sm position-relative pb-3 mb-4">
+                        <div class="scroll-animated section-title section-title-sm position-relative pb-3 mb-4">
                             <!-- Icône avant le texte "Nous Suivre" -->
                             <h3 class="text-light mb-0"><i class="fas fa-users me-2"></i>Nous Suivre</h3>
                         </div>
@@ -36,7 +36,7 @@
                             </a>
                         </div>
 
-                        <div class="d-flex mt-4">
+                        <div class="scroll-animated d-flex mt-4">
                             <!-- Icônes de réseaux sociaux avec des boutons -->
                             <a class="btn btn btn-square me-2" href="#" style="background-color:#0b0557; color: #fff;">
                                 <i class="fab fa-twitter fw-normal"></i>
@@ -54,10 +54,10 @@
                     </div>
                     
                     <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
-                        <div class="section-title section-title-sm position-relative pb-3 mb-4">
+                        <div class="scroll-animated section-title section-title-sm position-relative pb-3 mb-4">
                             <h3 class="text-light mb-0">Pages</h3>
                         </div>
-                        <div class="link-animated d-flex flex-column justify-content-start">
+                        <div class="scroll-animated link-animated d-flex flex-column justify-content-start">
                             <a class="text-light mb-2" href="/mentions-legales"><i class="fas fa-arrow-right text me-2" style="color:rgb(255, 255, 255);"></i>Mentions Légales</a>
                             <a class="text-light mb-2" href="/politique-confidentialite"><i class="fas fa-arrow-right text me-2" style="color:rgb(255, 255, 255);"></i>Confidentialité</a>
                             <a class="text-light mb-2" href="/conditions-generales"><i class="fas fa-arrow-right text me-2" style="color:rgb(255, 255, 255);"></i>Conditions générales</a>
@@ -71,7 +71,7 @@
 
     <!-- Footer -->
     <div class="container-fluid text-white" style="background: linear-gradient(90deg, #1a1a2e, #16213e, #0f3460); padding: 20px 0; box-shadow: 0 0 15px rgba(0,0,0,0.6);">
-        <div class="row justify-content-center text-center">
+        <div class="scroll-animated row justify-content-center text-center">
             <div class="row justify-content-end">
                 <div class="col-lg-8 col-md-6">
                     <div class="d-flex align-items-center justify-content-center" style="height: 75px;">

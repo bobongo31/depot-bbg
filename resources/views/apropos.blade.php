@@ -300,7 +300,7 @@
 
 <!-- Section centrée -->
 <div class="d-flex justify-content-center my-5">
-    <div class="team-card sci-fi-card p-4 text-white text-center position-relative">
+    <div class="scroll-animated team-card sci-fi-card p-4 text-white text-center position-relative">
         <!-- Icône téléphone fixe -->
         <div class="mb-3">
             <i class="fas fa-phone-volume" style="font-size: 100px; color: #00ccff;"></i>
