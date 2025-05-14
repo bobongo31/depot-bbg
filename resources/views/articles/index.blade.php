@@ -32,15 +32,14 @@
     background-size: cover;
 ">
     <div class="container">
-        <div class="scroll-animated mx-auto" style="max-width: 800px;">
-            <h1 class="mb-4 fw-bold" style="font-size: 3rem;">Fonctionnalités GIC</h1>
-            <h4 class="mb-3 fst-italic">“Optimisez vos processus, simplifiez votre gestion”</h4>
-            <p class="mb-4" style="font-size: 1.1rem;">
+        <div class="mx-auto" style="max-width: 800px;">
+            <h1 class="scroll-animated mb-4 fw-bold" style="font-size: 3rem;">Fonctionnalités GIC</h1>
+            <h4 class="scroll-animated mb-3 fst-italic">“Optimisez vos processus, simplifiez votre gestion”</h4>
+            <p class="scroll-animated mb-4" style="font-size: 1.1rem;">
                 GIC propose des outils puissants pour centraliser, automatiser et sécuriser la gestion de vos activités.
                 Découvrez nos modules pour la gestion du courrier, des documents, de la messagerie, de la signature numérique, et plus.
             </p>
             <div class="scroll-animated d-flex justify-content-center gap-3 flex-wrap">
-                <a href="https://wa.me/243897604018" class="btn btn-light text-primary text-uppercase px-4 py-2">Demander une démo</a>
                 <a href="inscription" class="btn btn-outline-light text-uppercase px-4 py-2">Essai gratuit</a>
             </div>
         </div>
