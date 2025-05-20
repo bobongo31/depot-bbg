@@ -1,4 +1,11 @@
 RewriteEngine On
+
+# Rediriger tout le trafic de l'ancien domaine vers le nouveau
+RewriteCond %{HTTP_HOST} ^172\.233\.244\.133\.nip\.io$ [NC]
+RewriteRule ^(.*)$ https://gic.172.233.244.133.nip.io/$1 [R=301,L]
+
+
+RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 

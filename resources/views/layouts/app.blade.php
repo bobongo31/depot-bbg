@@ -522,6 +522,14 @@ canvas {
 
 
   </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-13LEHFNS9X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-13LEHFNS9X');
+</script>
 </head>
 <body class="bg-gray-100 text-gray-900 {{ session('theme', 'light-theme') }}">
   <div id="app" class="flex min-h-screen flex-col">
@@ -755,3 +763,4 @@ document.addEventListener('DOMContentLoaded', function () {
   @stack('scripts')
   </body>
 </html>
+@sendAnalyticsClientId

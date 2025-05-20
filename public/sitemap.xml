@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://172.233.244.133.nip.io/</loc>
+    <loc>https://gic.172.233.244.133.nip.io/</loc>
   </url>
   <url>
-    <loc>https://172.233.244.133.nip.io/login</loc>
+    <loc>https://gic.172.233.244.133.nip.io/apropos</loc>
   </url>
   <url>
-    <loc>https://172.233.244.133.nip.io/register</loc>
+    <loc>https://gic.172.233.244.133.nip.io/services</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites/gestion-courriers</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites/archivage-intelligent</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites/messagerie-securisee</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites/gestion-utilisateurs</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites/signature-numerique</loc>
+  </url>
+  <url>
+    <loc>https://gic.172.233.244.133.nip.io/fonctionnalites/gestion-stock-vente</loc>
   </url>
 </urlset>
