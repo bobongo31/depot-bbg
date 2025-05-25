@@ -5,108 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google-site-verification" content="F4V5-90SAdqL2N6PFPeoscwMqvFKIMHWT5mF3fssm1A" />
 
-   @hasSection('meta')
-        @yield('meta')
-    @else
-        <!-- Balises SEO de base -->
-        <meta name="description" content="GIC est une solution tout-en-un pour PME : gestion des ventes, stocks, facturation, bons de commande, livraisons, courriers, et archivage électronique sécurisé. Simple, rapide et efficace.">
-        <meta name="keywords" content="GIC, gestion PME, facturation, gestion de stock, vente, archivage électronique, bon de commande, gestion électronique de courrier, archivage numérique, application entreprise, ERP, solution PME">
-        <meta name="author" content="Équipe GIC">
-        <!-- Meta horaires, téléphone, site web -->
-        <meta name="openingHours" content="Mo-Su 00:00-23:59">
-        <meta name="telephone" content="+243897604018">
-        <meta name="website" content="https://keynsoft.tech">
-        <meta name="address" content="15, AV. Lutendele, Mont-Ngafula, Kinshasa, RDC">
+  {{-- Canonical URL pour le référencement --}}
+  <link rel="canonical" href="{{ url()->current() }}">
 
+  @hasSection('meta')
+      @yield('meta')
+  @else
+      <!-- Balises SEO par défaut -->
+      <meta name="description" content="GIC est une solution tout-en-un pour PME : gestion des ventes, stocks, facturation, bons de commande, livraisons, courriers, et archivage électronique sécurisé. Simple, rapide et efficace.">
+      <meta name="keywords" content="GIC, gestion PME, facturation, gestion de stock, vente, archivage électronique, bon de commande, gestion électronique de courrier, archivage numérique, application entreprise, ERP, solution PME">
+      <meta name="author" content="Équipe GIC">
+      <meta name="openingHours" content="Mo-Su 00:00-23:59">
+      <meta name="telephone" content="+243897604018">
+      <meta name="website" content="https://keynsoft.tech">
+      <meta name="address" content="15, AV. Lutendele, Mont-Ngafula, Kinshasa, RDC">
 
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:title" content="GIC – Solution de gestion intelligente pour PME">
-        <meta property="og:description" content="Simplifiez la gestion de votre entreprise avec GIC : ventes, stocks, factures, courriers, archivage numérique et plus.">
-        <meta property="og:url" content="https://172.233.244.133.nip.io">
-        <meta property="og:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+      <!-- Open Graph -->
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="GIC – Solution de gestion intelligente pour PME">
+      <meta property="og:description" content="Simplifiez la gestion de votre entreprise avec GIC : ventes, stocks, factures, courriers, archivage numérique et plus.">
+      <meta property="og:url" content="https://172.233.244.133.nip.io">
+      <meta property="og:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
 
-        <!-- Twitter -->
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="GIC – ERP pour PME : gestion et archivage intelligents">
-        <meta name="twitter:description" content="Gérez votre PME avec efficacité : GIC regroupe vente, stock, facturation, gestion de courriers et archivage numérique.">
-        <meta name="twitter:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
-    @endif
+      <!-- Twitter -->
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="GIC – ERP pour PME : gestion et archivage intelligents">
+      <meta name="twitter:description" content="Gérez votre PME avec efficacité : GIC regroupe vente, stock, facturation, gestion de courriers et archivage numérique.">
+      <meta name="twitter:image" content="https://172.233.244.133.nip.io/image/SEO.jpg">
+  @endif
 
+  <!-- Sécurité -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<!-- Sécurité -->
-<meta name="csrf-token" content="{{ csrf_token() }}">
+  <!-- Titre -->
+  <title>@yield('title', 'GIC – Gestion intelligente pour PME')</title>
 
-<!-- Titre de la page -->
-<title>@yield('title', 'GIC – Gestion intelligente pour PME')</title>
-<link rel="icon" type="image/png" href="image/favicon.png">
-<link rel="stylesheet" href="/build/assets/app-D-ZV-3sJ.css">
-  <!-- Fonts & CDN -->
-<!-- Lien vers les bibliothèques CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
-<link rel="icon" type="image/png" href="{{ asset('image/LOGO-GIC.png') }}">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ asset('image/favicon.png') }}">
 
+  <!-- Feuilles de style -->
+  <link rel="stylesheet" href="/build/assets/app-D-ZV-3sJ.css">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Keynsoft",
-  "url": "https://keynsoft.tech",
-  "telephone": "+243897604018",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "15, AV. Lutendele",
-    "addressLocality": "Mont-Ngafula",
-    "addressRegion": "Kinshasa",
-    "addressCountry": "CD"
-  },
-  "openingHours": "Mo-Su 00:00-23:59"
-}
-</script>
+  <!-- Fonts & bibliothèques CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 
+  <!-- JSON-LD Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Keynsoft",
+    "url": "https://keynsoft.tech",
+    "telephone": "+243897604018",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "15, AV. Lutendele",
+      "addressLocality": "Mont-Ngafula",
+      "addressRegion": "Kinshasa",
+      "addressCountry": "CD"
+    },
+    "openingHours": "Mo-Su 00:00-23:59"
+  }
+  </script>
 
-<!-- jQuery (doit être chargé en premier) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- JavaScript Libraries -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.counterup/2.1.0/jquery.counterup.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wow.js/1.1.2/wow.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Autres bibliothèques JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.counterup/2.1.0/jquery.counterup.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/wow.js/1.1.2/wow.min.js"></script>
-
-<!-- SweetAlert -->
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<!-- Popper.js et Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Script personnalisé -->
-<script type="module" src="/build/assets/app-DBi3esb5.js"></script>
-
-    <!-- JavaScript Libraries -->
-    <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
-    <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
-    <script src="{{ asset('lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ asset('lib/counterup/counterup.min.js') }}"></script>
-    <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
-
-
-    <!-- Template Javascript -->
+  <!-- Scripts compilés et personnalisés -->
+  <script type="module" src="/build/assets/app-DBi3esb5.js"></script>
+  <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
+  <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
+  <script src="{{ asset('lib/waypoints/waypoints.min.js') }}"></script>
+  <script src="{{ asset('lib/counterup/counterup.min.js') }}"></script>
+  <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
   <script src="{{ asset('js/main.js') }}"></script>
-
   <!-- Import Tailwind CSS et JS via Vite -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
