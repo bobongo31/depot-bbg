@@ -44,8 +44,7 @@
   <link rel="icon" type="image/png" href="{{ asset('image/favicon.png') }}">
 
   <!-- Feuilles de style -->
-  <link rel="stylesheet" href="/build/assets/app-D-ZV-3sJ.css">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
   <!-- Fonts & bibliothèques CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -93,8 +92,14 @@
   <script src="{{ asset('lib/counterup/counterup.min.js') }}"></script>
   <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
   <script src="{{ asset('js/main.js') }}"></script>
-  <!-- Import Tailwind CSS et JS via Vite -->
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Import Tailwind CSS et JS via Vite -->
+  {{-- CSS & JS conditionnels selon l’environnement --}}
+  @env('local')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @else
+    <link rel="stylesheet" href="{{ asset('build/assets/app-D-ZV-3sJ.css') }}">
+    <script type="module" src="{{ asset('build/assets/app-DBi3esb5.js') }}"></script>
+  @endenv
 
   <!-- Styles globaux et animations extraites -->
   <style>

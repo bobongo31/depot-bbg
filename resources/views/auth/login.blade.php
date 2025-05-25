@@ -107,7 +107,7 @@
 
                         <div class="row mb-3 scroll-animated">
                         <div class="col-md-6 offset-md-4">
-                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.nocaptcha.sitekey') }}"></div>
                             @if ($errors->has('g-recaptcha-response'))
                                 <span class="text-danger small d-block mt-2">
                                     {{ $errors->first('g-recaptcha-response') }}
