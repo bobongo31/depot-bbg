@@ -56,6 +56,7 @@ class LoginController extends Controller
         'entreprise' => 'required|string',
         'name' => 'required|string',
         'password' => 'required|string',
+        'g-recaptcha-response' => 'required|captcha',
     ]);
 
     // Récupération des informations

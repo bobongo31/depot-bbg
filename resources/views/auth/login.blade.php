@@ -1,6 +1,7 @@
 @extends('layouts.app') 
 
 @section('content')
+{!! NoCaptcha::renderJs() !!}
 @if (session('alerte_abonnement'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{ session('alerte_abonnement') }}
@@ -103,6 +104,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row mb-3 scroll-animated">
+                        <div class="col-md-6 offset-md-4">
+                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                            @if ($errors->has('g-recaptcha-response'))
+                                <span class="text-danger small d-block mt-2">
+                                    {{ $errors->first('g-recaptcha-response') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
 
                         <!-- Bouton -->
                         <div class="row mb-0 scroll-animated">

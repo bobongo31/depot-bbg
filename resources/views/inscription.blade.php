@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+{!! NoCaptcha::renderJs() !!}
+
 @if ($errors->any())
     <div class="alert alert-danger">
         <ul>
@@ -61,6 +63,10 @@
         <div class="mb-3">
             <label for="phone" class="form-label"><i class="fas fa-phone"></i> Numéro de téléphone</label>
             <input type="text" class="form-control" id="phone" name="phone" required>
+        </div>
+
+        <div class="mb-3">
+            {!! NoCaptcha::display() !!}
         </div>
 
         <button type="submit" class="btn btn-primary w-100 btn-hover-effect">Commencer l'essai gratuit</button>
