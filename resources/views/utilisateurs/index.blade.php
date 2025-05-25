@@ -95,10 +95,6 @@ use Carbon\Carbon;
                             {{ $user->email }}
                         </p>
                         <p class="card-text mb-2">
-                            <i class="fas fa-phone"></i>
-                            {{ $user->phone }}
-                        </p>
-                        <p class="card-text mb-2">
                             <i class="fas fa-building"></i>
                             <strong>Entreprise :</strong> {{ $user->entreprise }}
                         </p>
