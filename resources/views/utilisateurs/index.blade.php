@@ -72,73 +72,76 @@ use Carbon\Carbon;
         @endforeach
     </div>
 @endif
+{{-- SECTION DES UTILISATEURS VALIDÉS --}}
+<hr class="my-5">
+<h2 class="scroll-animated text-center mb-5"><i class="fas fa-user-check"></i> Utilisateurs Validés</h2>
 
-    {{-- SECTION DES UTILISATEURS VALIDÉS --}}
-    <hr class="my-5">
-    <h2 class="scroll-animated text-center mb-5"><i class="fas fa-user-check"></i> Utilisateurs Validés</h2>
+@if($users->isEmpty())
+    <p class="text-center">Aucun utilisateur validé pour le moment.</p>
+@else
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
+        @foreach($users as $user)
+            <div class="col">
+                <div class="card shadow-sm h-100 border-0 rounded-4 scroll-animated hover-zoom"
+                     data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
+                    <div class="card-body text-white" style="background: linear-gradient(135deg, #38ef7d, #11998e); border-radius: 1rem;">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-check"></i>
+                            {{ $user->name }} <br>
+                            <small class="text-white-50">ID: {{ $user->id }}</small>
+                        </h5>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-envelope"></i>
+                            {{ $user->email }}
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-phone"></i>
+                            {{ $user->phone }}
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-building"></i>
+                            <strong>Entreprise :</strong> {{ $user->entreprise }}
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-calendar-alt"></i>
+                            Créé le {{ \Carbon\Carbon::parse($user->created_at)->format('d/m/Y H:i') }}
+                        </p>
 
-    @if($users->isEmpty())
-        <p class="text-center">Aucun utilisateur validé pour le moment.</p>
-    @else
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
-            @foreach($users as $user)
-                <div class="col">
-                    <div class="card shadow-sm h-100 border-0 rounded-4 scroll-animated hover-zoom"
-                         data-aos="fade-up" data-aos-duration="1000" data-aos-once="true">
-                        <div class="card-body text-white" style="background: linear-gradient(135deg, #38ef7d, #11998e); border-radius: 1rem;">
-                            <h5 class="card-title">
-                                <i class="fas fa-user-check"></i>
-                                {{ $user->name }} <br>
-                                <small class="text-white-50">ID: {{ $user->id }}</small>
-                            </h5>
-                            <p class="card-text mb-2">
-                                <i class="fas fa-envelope"></i>
-                                {{ $user->email }}
-                            </p>
-                            <p class="card-text mb-2">
-                                <i class="fas fa-building"></i>
-                                <strong>Entreprise :</strong> {{ $user->entreprise }}
-                            </p>
-                            <p class="card-text mb-2">
-                                <i class="fas fa-calendar-alt"></i>
-                                Créé le {{ Carbon::parse($user->created_at)->format('d/m/Y') }}
-                            </p>
-
-                            @php
-                                $isExpired = $user->abonnement_expires_at ? Carbon::parse($user->abonnement_expires_at)->lt(now()) : false;
-                            @endphp
-                            <p class="card-text mb-2">
-                                <i class="fas fa-clock"></i>
-                                <strong>Abonnement jusqu'au :</strong>
-                                {{ $user->abonnement_expires_at ? Carbon::parse($user->abonnement_expires_at)->format('d/m/Y') : 'Non défini' }}
-                            </p>
-                            <p class="card-text mb-2">
-                                <i class="fas fa-bell"></i>
-                                <strong>Statut de l’abonnement :</strong>
-                                @if(is_null($user->abonnement_expires_at))
-                                    <span class="badge bg-primary">À vie</span>
-                                @elseif($isExpired)
-                                    <span class="badge bg-danger">Expiré</span>
-                                @else
-                                    <span class="badge bg-success">Valide</span>
-                                @endif
-                            </p>
-                        </div>
-                        <div class="card-footer bg-light text-end">
-                            <form method="POST" action="{{ route('user.delete', $user->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i> Supprimer
-                                </button>
-                            </form>
-                        </div>
+                        @php
+                            $isExpired = $user->abonnement_expires_at ? \Carbon\Carbon::parse($user->abonnement_expires_at)->lt(now()) : false;
+                        @endphp
+                        <p class="card-text mb-2">
+                            <i class="fas fa-clock"></i>
+                            <strong>Abonnement jusqu'au :</strong>
+                            {{ $user->abonnement_expires_at ? \Carbon\Carbon::parse($user->abonnement_expires_at)->format('d/m/Y H:i') : 'Non défini' }}
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-bell"></i>
+                            <strong>Statut de l’abonnement :</strong>
+                            @if(is_null($user->abonnement_expires_at))
+                                <span class="badge bg-primary">À vie</span>
+                            @elseif($isExpired)
+                                <span class="badge bg-danger">Expiré</span>
+                            @else
+                                <span class="badge bg-success">Valide</span>
+                            @endif
+                        </p>
+                    </div>
+                    <div class="card-footer bg-light text-end">
+                        <form method="POST" action="{{ route('user.delete', $user->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </form>
                     </div>
                 </div>
-            @endforeach
-        </div>
-    @endif
-</div>
+            </div>
+        @endforeach
+    </div>
+@endif
+
 @endsection
 
 @section('scripts')
