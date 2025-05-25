@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+use Carbon\Carbon;
+@endphp
+
 @section('content')
 <div class="container py-4">
     <h2 class="scroll-animated text-center mb-5"><i class="fas fa-users"></i> Liste des Inscrits</h2>
@@ -44,7 +48,7 @@
                         <div class="card-footer bg-light text-end">
                             <small class="text-muted">
                                 <i class="fas fa-calendar-alt"></i>
-                                Inscrit le {{ $utilisateur->created_at->format('d/m/Y') }}
+                                Inscrit le {{ Carbon::parse($utilisateur->created_at)->format('d/m/Y') }}
                             </small>
 
                             <!-- Bouton de validation -->
@@ -98,16 +102,16 @@
                             </p>
                             <p class="card-text mb-2">
                                 <i class="fas fa-calendar-alt"></i>
-                                Créé le {{ $user->created_at->format('d/m/Y') }}
+                                Créé le {{ Carbon::parse($user->created_at)->format('d/m/Y') }}
                             </p>
 
                             @php
-                                $isExpired = $user->abonnement_expires_at && $user->abonnement_expires_at->lt(now());
+                                $isExpired = $user->abonnement_expires_at ? Carbon::parse($user->abonnement_expires_at)->lt(now()) : false;
                             @endphp
                             <p class="card-text mb-2">
                                 <i class="fas fa-clock"></i>
                                 <strong>Abonnement jusqu'au :</strong>
-                                {{ $user->abonnement_expires_at ? $user->abonnement_expires_at->format('d/m/Y') : 'Non défini' }}
+                                {{ $user->abonnement_expires_at ? Carbon::parse($user->abonnement_expires_at)->format('d/m/Y') : 'Non défini' }}
                             </p>
                             <p class="card-text mb-2">
                                 <i class="fas fa-bell"></i>
