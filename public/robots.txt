@@ -1,4 +1,6 @@
 User-agent: *
+Disallow: /utilisateurs
+
 Allow: /
 
 Sitemap: https://gic.172.233.244.133.nip.io/sitemap.xml
