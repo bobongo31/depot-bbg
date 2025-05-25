@@ -96,14 +96,32 @@
                                 <i class="fas fa-building"></i>
                                 <strong>Entreprise :</strong> {{ $user->entreprise }}
                             </p>
-
-                            <p class="card-text">
+                            <p class="card-text mb-2">
                                 <i class="fas fa-calendar-alt"></i>
                                 Créé le {{ $user->created_at->format('d/m/Y') }}
                             </p>
+
+                            @php
+                                $isExpired = $user->abonnement_expires_at && $user->abonnement_expires_at->lt(now());
+                            @endphp
+                            <p class="card-text mb-2">
+                                <i class="fas fa-clock"></i>
+                                <strong>Abonnement jusqu'au :</strong>
+                                {{ $user->abonnement_expires_at ? $user->abonnement_expires_at->format('d/m/Y') : 'Non défini' }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="fas fa-bell"></i>
+                                <strong>Statut de l’abonnement :</strong>
+                                @if(is_null($user->abonnement_expires_at))
+                                    <span class="badge bg-primary">À vie</span>
+                                @elseif($isExpired)
+                                    <span class="badge bg-danger">Expiré</span>
+                                @else
+                                    <span class="badge bg-success">Valide</span>
+                                @endif
+                            </p>
                         </div>
                         <div class="card-footer bg-light text-end">
-                            <!-- Bouton de suppression -->
                             <form method="POST" action="{{ route('user.delete', $user->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
                                 @csrf
                                 @method('DELETE')
@@ -111,7 +129,6 @@
                                     <i class="fas fa-trash"></i> Supprimer
                                 </button>
                             </form>
-
                         </div>
                     </div>
                 </div>
@@ -119,7 +136,6 @@
         </div>
     @endif
 </div>
-
 @endsection
 
 @section('scripts')
