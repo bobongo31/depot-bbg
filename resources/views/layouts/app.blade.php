@@ -519,6 +519,7 @@ canvas {
       transform: scale(1);
     }
   }
+
 #whatsapp-btn {
   position: fixed !important; /* reste fixe peu importe le scroll */
   bottom: 30px;
@@ -547,7 +548,6 @@ canvas {
   height: 32px;
   fill: white;
 }
-
   </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-13LEHFNS9X"></script>
