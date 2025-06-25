@@ -5,8 +5,14 @@ use Carbon\Carbon;
 @endphp
 
 @section('content')
+{!! NoCaptcha::renderJs() !!}
 <div class="container py-4">
     <h2 class="scroll-animated text-center mb-5"><i class="fas fa-users"></i> Liste des Inscrits</h2>
+
+    {{-- Affichage d’un seul reCAPTCHA ici --}}
+    <div class="text-center mb-4">
+        {!! NoCaptcha::display() !!}
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success text-center">

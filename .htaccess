@@ -1,19 +1,20 @@
 RewriteEngine On
 
-# Rediriger tout le trafic de l'ancien domaine vers le nouveau
-RewriteCond %{HTTP_HOST} ^172\.233\.244\.133\.nip\.io$ [NC]
-RewriteRule ^(.*)$ https://gic.172.233.244.133.nip.io/$1 [R=301,L]
+# Rediriger tout le trafic de l'ancien domaine nip.io vers keynsoft.online
+RewriteCond %{HTTP_HOST} ^(172\.233\.244\.133\.nip\.io|gic\.172\.233\.244\.133\.nip\.io)$ [NC]
+RewriteRule ^(.*)$ https://keynsoft.online/$1 [R=301,L]
 
-
-RewriteEngine On
+# Forcer HTTPS si ce n'est pas déjà le cas (sur keynsoft.online ou autre)
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Paramètres PHP
 php_value upload_max_filesize 10M
 php_value post_max_size 12M
 php_value memory_limit 256M
 php_value max_execution_time 300
 php_value max_input_time 300
+
 
 # ----------------------------
 # Mise en cache (cache navigateur)
