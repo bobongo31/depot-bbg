@@ -83,11 +83,11 @@
                 <textarea class="form-control" name="commentaires" rows="4" required></textarea>
             </div>
 
-            <!-- Annexes 
+            <!-- Annexes -->
             <div class="mb-3">
                 <label class="form-label"><i class="fas fa-paperclip"></i> Ajouter des Annexes</label>
                 <input type="file" class="form-control" name="annexes[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
-            </div>-->
+            </div>
 
             <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Envoyer</button>
             <a href="{{ route('reponses.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Retour</a>

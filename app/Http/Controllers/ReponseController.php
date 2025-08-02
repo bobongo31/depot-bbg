@@ -8,6 +8,7 @@ use App\Models\Telegramme;
 use App\Models\Annexe;
 use App\Models\AccuseReception;
 use Illuminate\Support\Facades\Log;
+use App\Models\ReponseFinale;
 
 
 
@@ -24,6 +25,13 @@ class ReponseController extends Controller
          
          return view('reponses.reponse_form', compact('accuseDeReception'));
      }
+
+     public function formAjouterReponseFinale($reponseId)
+{
+    $reponse = Reponse::findOrFail($reponseId);
+    return view('reponses.ajouter_finale', compact('reponse'));
+}
+
      
      public function ajouterReponseFinale(Request $request, $reponseId)
 {
@@ -31,6 +39,7 @@ class ReponseController extends Controller
     $request->validate([
         'numero_enregistrement' => 'required|string|max:255', // Validation pour numéro d'enregistrement
         'numero_reference' => 'required|string|max:255', // Validation pour numéro de référence
+        'service_concerne' => 'required|string|max:255',
         'observation' => 'nullable|string',
         'file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx|max:10240', // Validation pour les fichiers
     ]);
@@ -39,14 +48,16 @@ class ReponseController extends Controller
     $reponseExistante = Reponse::findOrFail($reponseId);
 
     // Créer une nouvelle réponse finale
-    $reponseFinale = new Reponse();
-    $reponseFinale->numero_enregistrement = $request->input('numero_enregistrement'); // Utiliser la saisie manuelle
-    $reponseFinale->numero_reference = $request->input('numero_reference'); // Utiliser la saisie manuelle
+    $reponseFinale = new ReponseFinale();
+    $reponseFinale->numero_enregistrement = $request->input('numero_enregistrement');
+    $reponseFinale->numero_reference = $request->input('numero_reference');
     $reponseFinale->service_concerne = $request->input('service_concerne');
     $reponseFinale->observation = $request->input('observation');
-    $reponseFinale->telegramme_id = $reponseExistante->telegramme_id; // Lier la réponse finale au même télégramme
-    $reponseFinale->reponse_id = $reponseId; // Lier cette réponse finale à la réponse existante
-    $reponseFinale->save(); // Sauvegarder la réponse finale dans la table "reponse"
+    $reponseFinale->telegramme_id = $reponseExistante->telegramme_id;
+    $reponseFinale->reponse_id = $reponseId;
+    $reponseFinale->user_id = auth()->id(); // ✅ Lien vers l'utilisateur connecté
+    $reponseFinale->save();
+
 
     // Lier l'annexe si un fichier est téléchargé
     if ($request->hasFile('file')) {
@@ -56,14 +67,15 @@ class ReponseController extends Controller
         // Créer une nouvelle annexe
         $annexe = new Annexe();
         $annexe->file_path = $filePath;
-        $annexe->reponse_id = $reponseFinale->id; // Lier l'annexe à la réponse finale
+        $annexe->reponse_finale_id = $reponseFinale->id;
         $annexe->telegramme_id = $reponseExistante->telegramme_id; // Lier l'annexe au télégramme
         $annexe->save();
     }
 
     // Retourner une réponse pour confirmer la création
-    return redirect()->route('dossier.view', ['id' => $reponseExistante->telegramme_id])
-        ->with('success', 'Réponse finale ajoutée avec succès et annexe téléchargée.');
+        return redirect()->route('reponses.showFinale', ['id' => $reponseFinale->id])
+    ->with('success', 'Réponse finale ajoutée avec succès et annexe téléchargée.');
+
 }
 
 
@@ -71,23 +83,30 @@ public function show($id)
 {
     // Récupère la première réponse associée au télégramme
     $reponse = Reponse::where('id', $id)->first();
-
+    $reponseFinale = ReponseFinale::where('reponse_id', $id)->first();
     // Retourne la vue avec la réponse
     return view('reponses.show', compact('reponse'));
 }
 
+public function showFinale($id)
+{
+    $reponseFinale = ReponseFinale::with(['reponse', 'annexes'])->findOrFail($id);
+    $reponse = $reponseFinale->reponse; // ← cette ligne
+    return view('reponses.show_finale', compact('reponseFinale', 'reponse'));
+}
+
 public function showWithTelegramme($id)
 {
-    // Récupération du télégramme
-    $telegramme = Telegramme::findOrFail($id);
+    // Récupération du télégramme avec ses annexes
+    $telegramme = Telegramme::with('annexes')->findOrFail($id);
 
-    // Récupération de l'accusé de réception correspondant selon le numéro d'enregistrement et le numéro de référence
+    // Récupération de l'accusé de réception correspondant avec ses annexes
     $accuseReception = AccuseReception::where('numero_enregistrement', $telegramme->numero_enregistrement)
         ->where('numero_reference', $telegramme->numero_reference)
-        ->with('annexes')  // Charge la relation annexes
+        ->with('annexes')
         ->first();
 
-    // Retourne la vue avec le télégramme et l'accusé de réception
+    // Retourne la vue avec les données
     return view('telegramme.show', compact('telegramme', 'accuseReception'));
 }
 
@@ -221,31 +240,30 @@ public function showWithTelegramme($id)
         'observation'           => 'nullable|string',
         'commentaires'          => 'nullable|string',
         'annexes'               => 'nullable|array',
-        'annexes.*'             => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-    ]);    
+        'annexes.*'             => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+    ]);
 
-    // Créer un enregistrement pour chaque service sélectionné
     foreach ($validated['service_concerne'] as $service) {
-        $telegramme = new Telegramme();
-        $telegramme->numero_enregistrement = $validated['numero_enregistrement'];
-        $telegramme->numero_reference      = $validated['numero_reference'];
-        $telegramme->service_concerne      = $service;
-        $telegramme->observation           = $validated['observation'];
-        $telegramme->commentaires          = $validated['commentaires'];
-        $telegramme->user_id                 = auth()->id();
-        $telegramme->save();
+        $telegramme = Telegramme::create([
+            'numero_enregistrement' => $validated['numero_enregistrement'],
+            'numero_reference'      => $validated['numero_reference'],
+            'service_concerne'      => $service,
+            'observation'           => $validated['observation'] ?? null,
+            'commentaires'          => $validated['commentaires'] ?? null,
+            'user_id'               => auth()->id(),
+        ]);
 
-         // Gérer les annexes (ajout des fichiers pour chaque télégramme)
-         if ($request->hasFile('annexes')) {
+        // Si des fichiers sont présents, on les enregistre
+        if ($request->hasFile('annexes')) {
             foreach ($request->file('annexes') as $file) {
                 if ($file->isValid()) {
-                    $filePath = $file->store('annexes', 'public'); // Stocke dans storage/app/public/annexes
+                    $filePath = $file->store('annexes', 'public');
 
-                    // Création correcte de l'annexe avec la liaison Telegramme
                     Annexe::create([
                         'file_path'     => $filePath,
-                        'telegramme_id' => $telegramme->id, // Ajout de l'ID du télégramme
+                        'telegramme_id' => $telegramme->id,
                     ]);
+
                     \Log::info("Annexe enregistrée : $filePath pour télégramme ID {$telegramme->id}");
                 }
             }
@@ -254,6 +272,7 @@ public function showWithTelegramme($id)
 
     return redirect()->route('reponses.index')->with('success', 'Télégramme(s) enregistré(s) avec succès !');
 }
+
 
    
     /**

@@ -2,12 +2,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\AccuseReception; // Correctement importé ici
 use App\Models\Annexe;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfReader;
 use setasign\Fpdf\Fpdf;  // Ajoute cette ligne pour FPDF
+
 
 
 class AccuseDeReceptionController extends Controller
@@ -93,7 +95,7 @@ class AccuseDeReceptionController extends Controller
 
 
 
-    public function store(Request $request) 
+   public function store(Request $request) 
 {
     $validated = $request->validate([
         'date_reception' => 'required|date',
@@ -107,7 +109,7 @@ class AccuseDeReceptionController extends Controller
 
     // Création de l'accusé de réception
     $accuse = AccuseReception::create([
-        'user_id' => auth()->id(), // 👈 Ajouté ici
+        'user_id' => auth()->id(),
         'date_reception' => $validated['date_reception'],
         'numero_enregistrement' => $validated['numero_enregistrement'],
         'receptionne_par' => $validated['receptionne_par'],
@@ -115,13 +117,49 @@ class AccuseDeReceptionController extends Controller
         'avis' => $validated['avis'] ?? null,
     ]);
 
-    // Initialisation du fichier PDF
     $pdf = new FPDI();
-    
+
     if ($request->hasFile('annexes')) {
-        foreach ($request->file('annexes') as $file) {
+    foreach ($request->file('annexes') as $file) {
+
+        // On ne compresse que si c'est un PDF
+        if ($file->getClientOriginalExtension() === 'pdf') {
+            $tempOriginalPath = storage_path('app/temp_original_' . uniqid() . '.pdf');
+            copy($file->getPathname(), $tempOriginalPath);
+
+            $compressedPath = storage_path('app/temp_compressed_' . uniqid() . '.pdf');
+
+            $command = "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook "
+                . "-dDownsampleColorImages=true -dColorImageResolution=100 "
+                . "-dDownsampleGrayImages=true -dGrayImageResolution=100 "
+                . "-dDownsampleMonoImages=true -dMonoImageResolution=100 "
+                . "-dNOPAUSE -dQUIET -dBATCH -sOutputFile="
+                . escapeshellarg($compressedPath) . ' ' . escapeshellarg($tempOriginalPath);
+
+            exec($command, $output, $resultCode);
+            logger()->info('Ghostscript command:', [
+                'command' => $command,
+                'output' => $output,
+                'result' => $resultCode
+            ]);
+
+            if ($resultCode !== 0 || !file_exists($compressedPath)) {
+                logger()->error('Compression échouée ou fichier introuvable.', ['compressedPath' => $compressedPath]);
+                $filePath = $file->store('annexes', 'public');
+            } else {
+                $filePath = 'annexes/compressed_' . uniqid() . '.pdf';
+                Storage::disk('public')->put($filePath, file_get_contents($compressedPath));
+                unlink($compressedPath);
+            }
+
+            unlink($tempOriginalPath); // Nettoyage
+            $annexePath = storage_path("app/public/{$filePath}");
+        } else {
+            // Gestion des autres types de fichiers (images, doc, etc)
             $filePath = $file->store('annexes', 'public');
             $annexePath = storage_path("app/public/{$filePath}");
+        }
+
 
             $pageCount = $pdf->setSourceFile($annexePath);
 
@@ -130,9 +168,8 @@ class AccuseDeReceptionController extends Controller
                 $pdf->AddPage();
                 $pdf->useTemplate($tplIdx, 0, 0, 210);
 
-                $user = Auth::user(); // récupère l'utilisateur connecté
+                $user = auth()->user();
 
-                // Ajouter du texte en superposition
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->SetTextColor(255, 0, 0);
                 $pdf->SetXY(20, 10);
@@ -154,21 +191,17 @@ class AccuseDeReceptionController extends Controller
         }
     }
 
-    // Sauvegarde du PDF modifié
     $outputFileName = 'accuse_' . $accuse->id . '.pdf';
     $outputPath = storage_path("app/public/{$outputFileName}");
     $pdf->Output($outputPath, 'F');
 
-    // Enregistrer le fichier annexes
     Annexe::create([
         'accuse_de_reception_id' => $accuse->id,
         'file_path' => $outputFileName,
     ]);
 
-    /// URL du fichier PDF pour le téléchargement
     $downloadUrl = asset("storage/{$outputFileName}");
 
-    // Redirection vers la page des accusés avec l'URL du PDF
     return redirect()->route('accuses.index')->with('download_url', $downloadUrl);
 }
 

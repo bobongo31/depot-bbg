@@ -2,10 +2,39 @@
   <!-- Top Row: Notifications et Profil / Connexion aligné à droite -->
   <div class="scroll-animated flex justify-between items-center py-4 px-8 bg-gradient-to-r from-blue-100 via-blue-50 to-blue-200 shadow-md">
     <div class="scroll-animated ml-auto flex items-center space-x-6">
-    <!-- Icône Notifications -->
-    <a href="#" class="notification-icon relative text-gray-600 hover:text-gray-900 transition duration-300 ease-in-out transform hover:scale-110">
-        <i class="scroll-animated fas fa-bell text-xl"></i>
-    </a>
+    <!-- Icône notification -->
+<a href="#" id="notification-icon" style="position: relative; display: inline-block; color: #4B5563;">
+    <i class="fas fa-bell" style="font-size: 24px;"></i>
+
+    @if($notifications->count() > 0)
+        <span style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%);
+            background-color: #dc2626; /* rouge */
+            color: white;
+            font-size: 12px;
+            border-radius: 9999px;
+            padding: 0 6px;
+            font-weight: bold;
+            line-height: 1;
+            ">
+            {{ $notifications->count() }}
+        </span>
+    @endif
+</a>
+
+
+<!-- Menu déroulant caché -->
+<!-- Menu déroulant caché avec Tailwind -->
+<div id="notification-dropdown" class="hidden absolute right-0 mt-2 bg-white shadow-lg w-80 max-h-96 overflow-y-auto z-50 rounded-md border border-gray-200">
+    <ul id="notification-list" class="list-none m-0 p-2">
+        <!-- Notifications insérées ici -->
+    </ul>
+</div>
+
+
 
 
       <!-- Profil / Connexion -->
@@ -54,6 +83,7 @@
     </div>
     </div>
  <!-- Menu Navigation -->
+  <nav class="bg-white py-2 px-4 shadow">
  <ul class="scroll-animated d-flex justify-content-between align-items-center list-unstyled flex-wrap w-100">
         @auth
             <li>
@@ -375,10 +405,6 @@
             modal.classList.add('hidden');
         }
     }
-    document.addEventListener('DOMContentLoaded', function () {
-        var myModal = new bootstrap.Modal(document.getElementById('iconHelpModal'));
-        myModal.show();
-    });
 </script>
 
 

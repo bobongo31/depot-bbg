@@ -21,6 +21,10 @@ use App\Http\Controllers\FondsDemandeController;
 use App\Http\Controllers\DepenseCaisseController;
 use App\Http\Controllers\RapportCaisseController;
 use App\Http\Controllers\UtilisateurController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\HomeController;
+
+
 
 
 // ✅ Auth routes (connexion / inscription)
@@ -78,10 +82,13 @@ Route::delete('/user/{id}', [UserController::class, 'supprimer'])->name('user.de
 
 
 // ✅ Toutes les routes protégées → middleware auth + code.acces
-Route::middleware(['auth'
-])->group(function () {
-    // ✅ Route d'accueil
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware(['auth'])->group(function () {
+    // Route d'accueil
+
+    // Route pour récupérer le nombre de notifications
+    Route::get('/notifications/count', [NotificationController::class, 'getNotificationCount'])->name('notifications.count');
+     Route::get('/notifications/list', [NotificationController::class, 'getNotificationsList'])->name('notifications.list');
+    
 
     // ✅ Profil utilisateur
     Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
@@ -100,12 +107,18 @@ Route::middleware(['auth'
     Route::post('/courriers/store', [CourrierRecuController::class, 'store'])->name('courriers.store');
 
     // ✅ Réponses
-    Route::get('reponse/ajouter/{reponseId}', [ReponseController::class, 'ajouterReponseFinale'])->name('reponse.ajouter');
+    Route::get('reponse/ajouter/{reponseId}', [ReponseController::class, 'formAjouterReponseFinale'])->name('reponse.ajouter');
+
+    Route::post('reponse/ajouter/{reponseId}', [ReponseController::class, 'ajouterReponseFinale'])->name('reponse.store');
+
+
     Route::get('/reponses/create', [ReponseController::class, 'create'])->name('reponses.create');
     Route::get('/reponses', [ReponseController::class, 'index'])->name('reponses.index');
     Route::get('/reponse/{id}', [ReponseController::class, 'show'])->name('reponse.show');
     Route::post('/reponses', [ReponseController::class, 'store'])->name('reponses.store');
     Route::delete('/reponses/{id}', [ReponseController::class, 'destroy'])->name('reponses.destroy');
+    Route::get('/reponses/finale/{id}', [ReponseController::class, 'showFinale'])->name('reponses.showFinale');
+
 
     // ✅ Télégrammes
     Route::get('/telegrammes/create', [ReponseController::class, 'createTelegramme'])->name('telegramme.create');
@@ -116,9 +129,7 @@ Route::middleware(['auth'
 
     // ✅ Archives
     Route::get('/archives/index', [ArchiveController::class, 'index'])->name('archives.index');
-    Route::post('/archives/archiver/{numero_enregistrement}', [ArchiveController::class, 'archiverDossier'])->name('archives.archiver');
-    Route::post('/archives/declarer-clos/{numero_enregistrement}', [ArchiveController::class, 'declarerClos'])->name('archives.declarer_clos');
-
+    
     // ✅ Annexes et impressions
     Route::get('/annexes/download/{id}', [AnnexeController::class, 'download'])->name('annexes.download');
     Route::get('/print-annexes', [PrintController::class, 'printAnnexes'])->name('annexes.print');
@@ -200,6 +211,14 @@ Route::delete('dossiers_personnels/{dossierPersonnel}', [DossierPersonnelControl
 
 
 
+Route::post('/archives/archiver/{numero_enregistrement}', [ArchiveController::class, 'archiverDossier'])
+    ->where('numero_enregistrement', '.*')
+    ->name('archives.archiver');
+
+Route::post('/archives/declarer-clos/{numero_enregistrement}', [ArchiveController::class, 'declarerClos'])
+    ->where('numero_enregistrement', '.*')
+    ->name('archives.declarer_clos');
 
 
 });
+

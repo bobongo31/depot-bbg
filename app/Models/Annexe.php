@@ -27,4 +27,9 @@ class Annexe extends Model
     {
         return $this->belongsTo(Telegramme::class, 'telegramme_id');
     }
+    public function reponseFinale()
+{
+    return $this->belongsTo(ReponseFinale::class, 'reponse_finale_id');
+}
+
 }

@@ -44,6 +44,32 @@
             </table>
         </div>
 
+{{--
+<h3 class="scroll-animated mt-5"><i class="fas fa-paperclip me-2"></i>Annexes liées au Télégramme</h3>
+
+<div class="scroll-animated card p-3 bg-light">
+    @if($telegramme->annexes && $telegramme->annexes->isNotEmpty())
+        <ul class="scroll-animated list-group list-group-flush">
+            @foreach ($telegramme->annexes as $annexe)
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <span><i class="fas fa-file-pdf text-danger me-2"></i>{{ basename($annexe->file_path) }}</span>
+                    <a href="{{ asset('storage/' . $annexe->file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                        <i class="fas fa-eye me-1"></i>Voir
+                    </a>
+                    <a href="{{ route('annexes.download', $annexe->id) }}" class="btn btn-sm btn-outline-success ms-2" download>
+                        <i class="fas fa-download me-1"></i>Télécharger
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+    @else
+        <p class="scroll-animated text-muted">Aucune annexe liée à ce télégramme.</p>
+    @endif
+</div>
+--}}
+
+
+
         <h3 class="scroll-animated mt-5"><i class="fas fa-paperclip me-2"></i>Annexes liées à l'Accusé de Réception</h3>
 
         <div class="scroll-animated card p-3 bg-light">

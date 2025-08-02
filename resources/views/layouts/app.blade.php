@@ -146,7 +146,7 @@
 
 
   body {
-    padding-top: 0px; /* Ajustez selon la hauteur réelle */
+    padding-top: 10px; /* Ajustez selon la hauteur réelle */
 }
 main {
     padding-top: 30px;
@@ -501,6 +501,27 @@ canvas {
     animation: fadeInScale 0.4s ease;
   }
 
+
+  #overlayMessage {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.6); /* la bande noire */
+  z-index: 1060; /* au-dessus des modals Bootstrap */
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+}
+
+/* Pour empêcher le scroll de la page */
+body.modal-open-scrollblock {
+  overflow: hidden !important;
+}
+
+
+  
   /* Animation d'apparition */
   @keyframes fadeInScale {
     from {
@@ -551,10 +572,12 @@ canvas {
   gtag('config', 'G-13LEHFNS9X');
 </script>
 </head>
+
+
 <body class="bg-gray-100 text-gray-900 {{ session('theme', 'light-theme') }}">
-  <div id="app" class="flex min-h-screen flex-col">
-    <!-- Inclusion du header contenant le menu -->
-    @include('partials.header')
+  <!--<div id="app" class="flex min-h-screen flex-col">
+     Inclusion du header contenant le menu 
+    @include('header')-->
 
     <!-- Zone de contenu principal -->
     <main class="flex-grow p-6">
@@ -562,7 +585,7 @@ canvas {
     </main>
 
     <!-- Inclusion du footer (le markup n'inclut plus le style et le script spécifiques) -->
-    @include('partials.footer')
+    @include('footer')
   </div>
 
   @auth
@@ -573,26 +596,102 @@ canvas {
 
   <!-- Scripts globaux -->
   <script>
+$(document).ready(function() {
+    // Mise à jour du badge
+    function updateNotificationIcon(count) {
+        var displayCount = count > 100 ? '100+' : count;
+        var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' + displayCount + '</span>';
+        $('.notification-icon').find('.notification-badge').remove();
+        if(count > 0) {
+            $('.notification-icon').append(badgeHtml);
+        }
+    }
+
+    // Charger le compteur de notifications au chargement
+    function loadNotificationCount() {
+        $.ajax({
+            url: '/notifications/count',
+            method: 'GET',
+            success: function(data) {
+                updateNotificationIcon(data.count);
+            },
+            error: function() {
+                console.error('Erreur lors du chargement du compteur de notifications');
+            }
+        });
+    }
+
+    // Charger la liste des notifications
+    function loadNotifications() {
+        $.ajax({
+            url: '/notifications/list',
+            method: 'GET',
+            success: function(data) {
+                $('#notification-list').empty();
+                if(data.length === 0) {
+                    $('#notification-list').append('<li>Aucune notification</li>');
+                } else {
+                    data.forEach(function(notif) {
+                        let date = new Date(notif.created_at);
+                        let dateStr = date.toLocaleString();
+                        let content = '<li style="border-bottom:1px solid #eee; padding:8px;">'
+                                    + '<strong>' + notif.type + '</strong><br>'
+                                    + 'ID: ' + notif.id + '<br>'
+                                    + '<small>' + dateStr + '</small>'
+                                    + '</li>';
+                        $('#notification-list').append(content);
+                    });
+                }
+            },
+            error: function() {
+                $('#notification-list').html('<li>Erreur lors du chargement des notifications</li>');
+            }
+        });
+    }
+
+    // Toggle menu au clic sur icône
+    $('#notification-icon').click(function(e) {
+        e.preventDefault();
+        $('#notification-dropdown').toggle();
+        if($('#notification-dropdown').is(':visible')) {
+            loadNotifications();
+        }
+    });
+
+    // Fermer menu si clic en dehors
+    $(document).click(function(event) {
+        if(!$(event.target).closest('#notification-icon, #notification-dropdown').length) {
+            $('#notification-dropdown').hide();
+        }
+    });
+
+    // Charger le compteur au démarrage
+    loadNotificationCount();
+
+    // Rafraîchir le compteur toutes les minutes
+    setInterval(loadNotificationCount, 60000);
+});
 
     
     // Script pour les notifications & autres fonctionnalités (exemple)
     jQuery(document).ready(function($) {
-      var notificationCount = 0;
+  var notificationCount = 0;
 
-      // Détecter les changements dans les inputs, selects et textareas de la table
-      $('#courriersTable').find('input, select, textarea').on('change', function(){
-        notificationCount++;
-        updateNotificationIcon(notificationCount);
-      });
+  // Sur tous les inputs/selects/textareas dans toutes les tables
+  $('table').find('input, select, textarea').on('change', function(){
+    notificationCount++;
+    updateNotificationIcon(notificationCount);
+  });
 
-      // Fonction qui met à jour l'icône de notification avec un badge
-      function updateNotificationIcon(count){
-        var displayCount = (count >= 2) ? 2 : count;
-        var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' 
-                        + displayCount + '</span>';
-        $('.notification-icon').find('.notification-badge').remove();
-        $('.notification-icon').append(badgeHtml);
-      }
+  function updateNotificationIcon(count){
+    var displayCount = (count >= 2) ? 2 : count;
+    var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' 
+                    + displayCount + '</span>';
+    $('.notification-icon').find('.notification-badge').remove();
+    $('.notification-icon').append(badgeHtml);
+  }
+
+
 
       // Gestion du menu profil
       const profileBtn = document.getElementById('profile-btn');
@@ -676,44 +775,32 @@ canvas {
       }, 100); // Donne un petit délai avant d'appliquer l'animation
     }
   });
+    window.onload = function () {
+        const overlay = document.getElementById('overlayMessage');
+        if (!overlay) return;
 
-  window.onload = function () {
-  const overlay = document.getElementById('overlayMessage');
-  if (!overlay) return; // ← Empêche l'erreur sur les pages sans overlay
+        // Gestion des vues
+        let viewCount = parseInt(localStorage.getItem('overlayMessageViewCount')) || 0;
 
-  const messageBox = overlay.querySelector('.message-box');
+        if (viewCount >= 8) {
+          overlay.style.display = 'none';
+          document.body.classList.remove('modal-open-scrollblock');
+        } else {
+          overlay.style.display = 'flex';
+          document.body.classList.add('modal-open-scrollblock');
+        }
+      };
 
-  // Appliquer flexbox pour centrer
-  overlay.style.display = 'flex';
-  overlay.style.justifyContent = 'center';
-  overlay.style.alignItems = 'center';
+      function closeOverlay() {
+        const overlay = document.getElementById('overlayMessage');
+        if (overlay) {
+          overlay.style.display = 'none';
+          document.body.classList.remove('modal-open-scrollblock');
+        }
 
-  // Compteur de vues
-  let viewCount = localStorage.getItem('overlayMessageViewCount');
-  viewCount = viewCount ? parseInt(viewCount) : 0;
-
-  if (viewCount >= 8) {
-    overlay.style.display = 'none';
-  } else {
-    overlay.style.display = 'flex';
-  }
-};
-
-
-  function closeOverlay() {
-    const overlay = document.getElementById('overlayMessage');
-    overlay.style.display = 'none';
-
-    let viewCount = localStorage.getItem('overlayMessageViewCount');
-    if (!viewCount) {
-      viewCount = 0;
-    } else {
-      viewCount = parseInt(viewCount);
-    }
-
-    viewCount++;
-    localStorage.setItem('overlayMessageViewCount', viewCount);
-}
+        let viewCount = parseInt(localStorage.getItem('overlayMessageViewCount')) || 0;
+        localStorage.setItem('overlayMessageViewCount', viewCount + 1);
+      }
 
 document.addEventListener('DOMContentLoaded', function () {
   const counters = document.querySelectorAll('.counter');
@@ -767,18 +854,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   </script>
   <!-- jQuery (si nécessaire) -->
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Bootstrap Bundle JS (inclut Popper.js nécessaire aux dropdowns et aux toggles) -->
+<!-- Bootstrap 5 Bundle JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Popper + Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
 
   @stack('scripts')
   <a id="whatsapp-btn" href="https://wa.me/243897604018" target="_blank" rel="noopener noreferrer" aria-label="Contact WhatsApp">

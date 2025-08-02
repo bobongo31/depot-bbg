@@ -11,9 +11,6 @@ class Reponse extends Model
 {
     use HasFactory;
 
-    /**
-     * Champ autorisés en écriture
-     */
     protected $fillable = [
         'numero_enregistrement',
         'numero_reference',
@@ -22,12 +19,9 @@ class Reponse extends Model
         'telegramme_id',
         'archive',
         'status_archive',
-        'user_id', // à ne pas oublier si relation avec User
+        'user_id',
     ];
 
-    /**
-     * Ajout d’un scope global pour filtrer selon l’entreprise de l’utilisateur connecté.
-     */
     protected static function booted()
     {
         static::addGlobalScope('entreprise', function (Builder $builder) {
@@ -39,27 +33,29 @@ class Reponse extends Model
         });
     }
 
-    /**
-     * Relation avec l’utilisateur propriétaire de la réponse.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relation avec les annexes.
-     */
     public function annexes()
     {
         return $this->hasMany(Annexe::class, 'reponse_id');
     }
 
-    /**
-     * Relation avec le télégramme.
-     */
     public function telegramme()
     {
         return $this->belongsTo(Telegramme::class, 'telegramme_id');
+    }
+
+    // Relation vers la réponse finale (table reponses_finales)
+    public function reponseFinale()
+    {
+        return $this->hasOne(ReponseFinale::class, 'reponse_id');
+    }
+
+    public function reponseParent()
+    {
+        return $this->belongsTo(Reponse::class, 'reponse_id');
     }
 }

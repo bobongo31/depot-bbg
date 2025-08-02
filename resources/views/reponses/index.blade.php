@@ -17,6 +17,15 @@
 
 <div class="scroll-animated container py-4">
 
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+
     @if(session('code_acces_valide'))
         <h2 class="mb-4"><i class="fas fa-list-alt"></i> Liste des Réponses</h2>
 
@@ -51,12 +60,19 @@
                                     <td>{{ $reponse->commentaires }}</td>
                                     <td>{{ $reponse->created_at->format('H:i') }}</td>
                                     <td>
-                                        @if(now()->diffInHours($reponse->created_at) > 72)
+                                        @php
+                                            $dateTelegramme = $reponse->telegramme ? \Carbon\Carbon::parse($reponse->telegramme->created_at) : null;
+                                            $dateReponse = \Carbon\Carbon::parse($reponse->created_at);
+                                            $diffHours = $dateTelegramme ? $dateTelegramme->diffInHours($dateReponse) : null;
+                                        @endphp
+
+                                        @if($dateTelegramme && $diffHours > 72)
                                             <span class="badge bg-danger"><i class="fas fa-times-circle"></i> En retard</span>
                                         @else
                                             <span class="badge bg-success"><i class="fas fa-check-circle"></i> Dans le délai</span>
                                         @endif
                                     </td>
+
                                     <td class="d-flex flex-wrap gap-2">
                                         <a href="{{ route('reponse.show', $reponse->id) }}" class="btn btn-outline-info btn-sm">
                                             <i class="fas fa-eye"></i>
@@ -79,7 +95,18 @@
                                                 <i class="fas fa-check-circle"></i> Finale
                                             </a>
 
-                                            <form action="{{ route('archives.archiver', $reponse->numero_enregistrement) }}" method="POST">
+                                                @if(optional($reponse->reponseFinale)->id)
+                                                    <a href="{{ route('reponses.showFinale', $reponse->reponseFinale->id) }}" class="btn btn-outline-primary btn-sm">
+                                                        Voir Réponse Finale
+                                                    </a>
+                                                @endif
+
+
+                                                
+
+
+
+                                            <form action="{{ route('archives.archiver', urlencode($reponse->numero_enregistrement)) }}" method="POST">
                                                 @csrf
                                                 <div class="d-flex align-items-center gap-2">
                                                     <select name="categorie" class="form-select form-select-sm">
@@ -95,7 +122,7 @@
                                                 </div>
                                             </form>
 
-                                            <form action="{{ route('archives.declarer_clos', $reponse->numero_enregistrement) }}" method="POST">
+                                            <form action="{{ route('archives.declarer_clos', urlencode($reponse->numero_enregistrement)) }}" method="POST">
                                                 @csrf
                                                 <div class="d-flex align-items-center gap-2">
                                                     <select name="status_archive" class="form-select form-select-sm">
@@ -121,75 +148,80 @@
         @endforeach
 
         {{-- TÉLÉGRAMMES EN ATTENTE --}}
-        <h3 class="mt-5 mb-3"><i class="fas fa-paper-plane"></i> Télégrammes en Attente</h3>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th># Enr.</th>
-                        <th>Référence</th>
-                        <th>Service</th>
-                        <th>Résumé</th>
-                        <th>Expéditeur</th>
-                        <!--<th>Annexes</th>-->
-                        <th>Délai</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($telegrammesEnAttente as $telegramme)
-                        <tr class="{{ $telegramme->isLate ? 'table-danger' : ($telegramme->isWarning ? 'table-warning' : 'table-success') }}">
-                            <td>{{ $telegramme->numero_enregistrement }}</td>
-                            <td>{{ $telegramme->numero_reference }}</td>
-                            <td>{{ $telegramme->service_concerne }}</td>
-                            <td>{{ $telegramme->commentaires }}</td>
-                            <td>{{ $telegramme->observation }}</td>
-                            <!--<td>
-                                @if($telegramme->annexes && $telegramme->annexes->isNotEmpty())
-                                    <ul class="list-unstyled">
-                                        @foreach ($telegramme->annexes as $annexe)
-                                            <li>
-                                                <a href="{{ asset('storage/' . $annexe->file_path) }}" class="text-decoration-none" download>
-                                                    <i class="fas fa-file-download"></i> {{ basename($annexe->file_path) }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </td> -->
-                            <td>
-                                @if ($telegramme->isLate)
-                                    <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Délai dépassé</span>
-                                @elseif ($telegramme->isWarning)
-                                    <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle"></i> {{ $telegramme->remainingHours }}h</span>
-                                @else
-                                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> {{ $telegramme->remainingHours }}h</span>
-                                @endif
-                            </td>
-                            <td class="d-flex flex-wrap gap-2">
-                                @if(auth()->user() && auth()->user()->isAdmin())
-                                    <form action="{{ route('telegrammes.destroy', $telegramme->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer ce télégramme ?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-outline-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                                <a href="{{ route('telegramme.show', ['id' => $telegramme->id]) }}" class="btn btn-outline-info btn-sm">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('reponses.create', ['telegramme_id' => $telegramme->id]) }}" class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-reply"></i> Répondre
-                                </a>
-                            </td>
+            <h3 class="mt-5 mb-3"><i class="fas fa-paper-plane"></i> Télégrammes en Attente</h3>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th># Enr.</th>
+                            <th>Référence</th>
+                            <th>Service</th>
+                            <th>Résumé</th>
+                            <th>Expéditeur</th>
+                            <!--<th>Annexes</th>-->
+                            <th>Délai</th>
+                            <th>Actions</th>
                         </tr>
-                    @empty
-                        <tr><td colspan="8" class="text-center">Aucun télégramme en attente.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @forelse ($telegrammesEnAttente as $telegramme)
+                            <tr class="{{ $telegramme->isLate ? 'table-danger' : ($telegramme->remainingHours > 24 ? 'table-success' : 'table-warning') }}">
+
+                                <td>{{ $telegramme->numero_enregistrement }}</td>
+                                <td>{{ $telegramme->numero_reference }}</td>
+                                <td>{{ $telegramme->service_concerne }}</td>
+                                <td>{{ $telegramme->commentaires }}</td>
+                                <td>{{ $telegramme->observation }}</td>
+                                <!--<td>
+                                    @if($telegramme->annexes && $telegramme->annexes->isNotEmpty())
+                                        <ul class="list-unstyled">
+                                            @foreach ($telegramme->annexes as $annexe)
+                                                <li>
+                                                    <a href="{{ asset('storage/' . $annexe->file_path) }}" class="text-decoration-none" download>
+                                                        <i class="fas fa-file-download"></i> {{ basename($annexe->file_path) }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </td> -->
+                                <td>
+                                    @if ($telegramme->isLate)
+                                        <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Délai dépassé</span>
+                                    @elseif ($telegramme->remainingHours > 24)
+                                        <span class="badge bg-success"><i class="fas fa-check-circle"></i> {{ $telegramme->remainingHours }}h</span>
+                                    @else
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-exclamation-triangle"></i> {{ $telegramme->remainingHours }}h restant
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <td class="d-flex flex-wrap gap-2">
+                                    @if(auth()->user() && auth()->user()->isAdmin())
+                                        <form action="{{ route('telegrammes.destroy', $telegramme->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer ce télégramme ?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <a href="{{ route('telegramme.show', ['id' => $telegramme->id]) }}" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('reponses.create', ['telegramme_id' => $telegramme->id]) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-reply"></i> Répondre
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="8" class="text-center">Aucun télégramme en attente.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
 
     @else
         {{-- FORMULAIRE DE CODE D'ACCÈS --}}

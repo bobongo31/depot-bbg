@@ -52,6 +52,7 @@ class ArchiveController extends Controller
     return view('archives.index', compact('accuses', 'telegrammes', 'reponses'));
 }
     // Mettre à jour la colonne 'archive' dans les 3 tables
+    
     public function archiverDossier(Request $request, $numero_enregistrement)
     {
         $request->validate([
@@ -81,6 +82,7 @@ class ArchiveController extends Controller
     }
 
     // Mettre à jour la colonne 'status_archive' pour déclarer le dossier clos ou autre
+
     public function declarerClos(Request $request, $numero_enregistrement)
     {
         // Par exemple, on peut envoyer un input qui définit le statut (ex: 'clos')

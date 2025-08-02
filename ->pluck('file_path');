@@ -1,0 +1,28 @@
+[90m= [39m[34;4mApp\Models\Telegramme[39;24m {#6342
+    [34mid[39m: [35m47[39m,
+    [34mnumero_enregistrement[39m: "[32m517/03[39m",
+    [34mnumero_reference[39m: "[32m01201/Winner.bet/NMB/2025[39m",
+    [34mservice_concerne[39m: "[32mComptabilité[39m",
+    [34mobservation[39m: "[32mttest[39m",
+    [34mcommentaires[39m: "[32mttdese[39m",
+    [34marchive[39m: [36mnull[39m,
+    [34mstatus_archive[39m: [36mnull[39m,
+    [34mannexes[39m: [34;4mIlluminate\Database\Eloquent\Collection[39;24m {#6343
+      [34mall[39m: [
+        [34;4mApp\Models\Annexe[39;24m {#6349
+          [34mid[39m: [35m162[39m,
+          [34maccuse_de_reception_id[39m: [36mnull[39m,
+          [34mfile_path[39m: "[32mannexes/QoJaYL5wFJMqfvcWFY9nQkE1P0WnnSt6iZfZV58h.pdf[39m",
+          [34mcreated_at[39m: "[32m2025-08-02 12:19:37[39m",
+          [34mupdated_at[39m: "[32m2025-08-02 12:19:37[39m",
+          [34mreponse_id[39m: [36mnull[39m,
+          [34mreponse_finale_id[39m: [36mnull[39m,
+          [34mtelegramme_id[39m: [35m47[39m,
+        },
+      ],
+    },
+    [34mcreated_at[39m: "[32m2025-08-02 12:19:37[39m",
+    [34mupdated_at[39m: "[32m2025-08-02 12:19:37[39m",
+    [34muser_id[39m: [35m3[39m,
+  }
+
