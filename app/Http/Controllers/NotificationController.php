@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -17,22 +18,23 @@ class NotificationController extends Controller
             return response()->json(['count' => 0]);
         }
 
-        $userIds = User::where('service', $user->service)->pluck('id')->toArray();
+        $totalCount = 0;
 
-        $tables = [
+        $tablesWithService = [
             'courriers',
             'accuse_receptions',
-            'messages',
             'telegrammes',
             'reponses',
         ];
 
-        $totalCount = 0;
-
-        foreach ($tables as $table) {
+        foreach ($tablesWithService as $table) {
             try {
                 $count = DB::table($table)
-                    ->whereIn('user_id', $userIds)
+                    ->where(function ($query) use ($user) {
+                        $query->where('service_concerne', $user->service)
+                              ->orWhere('user_id', $user->id);
+                    })
+                    ->where('user_id', '!=', $user->id)
                     ->count();
 
                 $totalCount += $count;
@@ -41,54 +43,86 @@ class NotificationController extends Controller
             }
         }
 
+        // Messages non lus reçus par l'utilisateur
+        try {
+            $messageCount = DB::table('messages')
+                ->where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->count();
+
+            $totalCount += $messageCount;
+        } catch (\Exception $e) {
+            // Ignorer l'erreur
+        }
+
         return response()->json(['count' => min($totalCount, 100)]);
     }
 
     // Liste détaillée des notifications
     public function getNotificationsList()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if (!$user) {
-            return response()->json([]);
-        }
-
-        $userIds = User::where('service', $user->service)->pluck('id')->toArray();
-
-        $tablesWithLabels = [
-            'courriers' => '📄 Nouveau courrier enregistré',
-            'accuse_receptions' => '✅ Nouvel accusé de réception',
-            'messages' => '💬 Nouveau message reçu',
-            'telegrammes' => '📨 Nouveau télégramme reçu',
-            'reponses' => '✉️ Nouvelle réponse envoyée',
-        ];
-
-        $notifications = collect();
-
-        foreach ($tablesWithLabels as $table => $message) {
-            try {
-                $rows = DB::table($table)
-                    ->whereIn('user_id', $userIds)
-                    ->orderBy('created_at', 'desc')
-                    ->limit(5)
-                    ->get(['id', 'created_at']);
-
-                foreach ($rows as $row) {
-                    $notifications->push([
-                        'id' => $row->id,
-                        'created_at' => $row->created_at,
-                        'message' => $message,
-                        'type' => $table,
-                    ]);
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-
-        // Trier toutes les notifications confondues par date
-        $sorted = $notifications->sortByDesc('created_at')->take(20)->values()->all();
-
-        return response()->json($sorted);
+    if (!$user) {
+        return response()->json([]);
     }
+
+    $tablesWithLabels = [
+        'courriers' => '📄 Vous avez reçu un nouveau courrier.',
+        'accuse_receptions' => '✅ Un accusé de réception a été enregistré.',
+        'telegrammes' => '📨 Un télégramme vous a été adressé.',
+        'reponses' => '✉️ Une réponse a été publiée.',
+    ];
+
+    $notifications = collect();
+
+    foreach ($tablesWithLabels as $table => $message) {
+        try {
+            $rows = DB::table($table)
+                ->where(function ($query) use ($user) {
+                    $query->where('service_concerne', $user->service)
+                          ->orWhere('user_id', $user->id);
+                })
+                ->where('user_id', '!=', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get(['created_at']);
+
+            foreach ($rows as $row) {
+                $notifications->push([
+                    'created_at' => $row->created_at,
+                    'content' => $message,
+                    'type' => $table,
+                ]);
+            }
+        } catch (\Exception $e) {
+            continue;
+        }
+    }
+
+    // Messages non lus reçus par l'utilisateur
+    try {
+        $rows = DB::table('messages')
+            ->where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get(['created_at']);
+
+        foreach ($rows as $row) {
+            $notifications->push([
+                'created_at' => $row->created_at,
+                'content' => '💬 Vous avez reçu un nouveau message.',
+                'type' => 'messages',
+            ]);
+        }
+    } catch (\Exception $e) {
+        // Ignorer l'erreur
+    }
+
+    $sorted = $notifications->sortByDesc('created_at')->take(20)->values()->all();
+
+    return response()->json($sorted);
+}
+
 }

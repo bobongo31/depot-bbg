@@ -2,6 +2,13 @@
 
 @section('content')
 {!! NoCaptcha::renderJs() !!}
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+    </div>
+@endif
+
 @if (session('alerte_abonnement'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{ session('alerte_abonnement') }}

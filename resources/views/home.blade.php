@@ -1,13 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+    </div>
+@endif
+
 <div id="overlayMessage" class="overlay-message">
 @if (session('alerte_abonnement'))
     <div class="alert alert-warning">
         {{ session('alerte_abonnement') }}
     </div>
 @endif
-
   <div class="message-box">
     <h5 class="mb-3">
       <i class="fas fa-home text-primary"></i> Bienvenue sur votre espace de gestion de courriers 📬
@@ -68,7 +74,7 @@
         {{-- Barre de recherche --}}
         <div class="scroll-animated row mb-4">
             <div class="col-md-12">
-                <form method="GET" action="{{ route('search') }}">
+                <form method="GET" action="{{ route('recherche.globale') }}">
                     <div class="input-group shadow-lg">
                         <input type="text" class="form-control" name="query" placeholder="Rechercher un accusé de réception..." aria-label="Rechercher avancée" value="{{ request('query') }}">
                         <button class="btn btn-primary" type="submit">

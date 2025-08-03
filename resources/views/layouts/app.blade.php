@@ -575,9 +575,15 @@ body.modal-open-scrollblock {
 
 
 <body class="bg-gray-100 text-gray-900 {{ session('theme', 'light-theme') }}">
+
+<form action="{{ route('recherche.globale') }}" method="GET" class="d-flex mb-3">
+    <input type="text" name="q" class="form-control me-2" placeholder="Rechercher..." required>
+    <button class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+</form>
+
   <!--<div id="app" class="flex min-h-screen flex-col">
      Inclusion du header contenant le menu 
-    @include('header')-->
+    @include('header')
 
     <!-- Zone de contenu principal -->
     <main class="flex-grow p-6">
@@ -596,6 +602,30 @@ body.modal-open-scrollblock {
 
   <!-- Scripts globaux -->
   <script>
+
+    $(document).ready(function() {
+    // Assure que le menu est bien caché au chargement
+    $('#notification-dropdown').hide();
+
+    // Toggle menu au clic sur l'icône
+    $('#notification-icon').click(function(e) {
+        e.preventDefault();
+        $('#notification-dropdown').toggle();
+        if ($('#notification-dropdown').is(':visible')) {
+            loadNotifications();
+        }
+    });
+
+    // Fermer menu si clic en dehors
+    $(document).click(function(event) {
+        if (!$(event.target).closest('#notification-icon, #notification-dropdown').length) {
+            $('#notification-dropdown').hide();
+        }
+    });
+
+    // Ton reste de code...
+});
+
 $(document).ready(function() {
     // Mise à jour du badge
     function updateNotificationIcon(count) {
@@ -621,33 +651,33 @@ $(document).ready(function() {
         });
     }
 
-    // Charger la liste des notifications
     function loadNotifications() {
-        $.ajax({
-            url: '/notifications/list',
-            method: 'GET',
-            success: function(data) {
-                $('#notification-list').empty();
-                if(data.length === 0) {
-                    $('#notification-list').append('<li>Aucune notification</li>');
-                } else {
-                    data.forEach(function(notif) {
-                        let date = new Date(notif.created_at);
-                        let dateStr = date.toLocaleString();
-                        let content = '<li style="border-bottom:1px solid #eee; padding:8px;">'
-                                    + '<strong>' + notif.type + '</strong><br>'
-                                    + 'ID: ' + notif.id + '<br>'
-                                    + '<small>' + dateStr + '</small>'
-                                    + '</li>';
-                        $('#notification-list').append(content);
-                    });
-                }
-            },
-            error: function() {
-                $('#notification-list').html('<li>Erreur lors du chargement des notifications</li>');
+    $.ajax({
+        url: '/notifications/list',
+        method: 'GET',
+        success: function(data) {
+            $('#notification-list').empty();
+            if(data.length === 0) {
+                $('#notification-list').append('<li class="text-gray-500 text-center p-4">Aucune notification</li>');
+            } else {
+                data.forEach(function(notif) {
+                    let dateStr = new Date(notif.created_at).toLocaleString();
+                    let message = notif.content && notif.content.trim() !== '' ? notif.content : 'Vous avez reçu un nouveau message';
+                    let li = `<li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">
+                                  <div class="text-xs text-gray-400">${dateStr}</div>
+                                  <div class="text-sm font-medium text-gray-700">${message}</div>
+                              </li>`;
+                    $('#notification-list').append(li);
+                });
             }
-        });
-    }
+        },
+        error: function() {
+            $('#notification-list').html('<li class="text-red-500 text-center p-4">Erreur lors du chargement des notifications</li>');
+        }
+    });
+}
+
+
 
     // Toggle menu au clic sur icône
     $('#notification-icon').click(function(e) {

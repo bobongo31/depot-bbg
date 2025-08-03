@@ -81,34 +81,58 @@ class ReponseController extends Controller
 
 public function show($id)
 {
-    // Récupère la première réponse associée au télégramme
-    $reponse = Reponse::where('id', $id)->first();
-    $reponseFinale = ReponseFinale::where('reponse_id', $id)->first();
-    // Retourne la vue avec la réponse
+    $user = auth()->user();
+
+    // Récupère la réponse et le télégramme associé
+    $reponse = Reponse::with('telegramme')->findOrFail($id);
+    $telegramme = $reponse->telegramme;
+
+    // Autoriser si admin OU si même service
+    if (!$user || ($user->role !== 'admin' && $user->service !== $telegramme->service_concerne)) {
+        return redirect()->route('home')->with('error', 'Accès refusé : service non autorisé.');
+    }
+
     return view('reponses.show', compact('reponse'));
 }
 
+
 public function showFinale($id)
 {
-    $reponseFinale = ReponseFinale::with(['reponse', 'annexes'])->findOrFail($id);
-    $reponse = $reponseFinale->reponse; // ← cette ligne
+    $user = auth()->user();
+
+    $reponseFinale = ReponseFinale::with(['reponse.telegramme', 'annexes'])->findOrFail($id);
+    $reponse = $reponseFinale->reponse;
+    $telegramme = $reponse->telegramme ?? null;
+
+    // Autoriser si admin OU si même service que le télégramme concerné
+    if (!$user || ($user->role !== 'admin' && $telegramme && $user->service !== $telegramme->service_concerne)) {
+        return redirect()->route('home')->with('error', 'Accès refusé : service non autorisé.');
+    }
+
     return view('reponses.show_finale', compact('reponseFinale', 'reponse'));
 }
 
 public function showWithTelegramme($id)
 {
-    // Récupération du télégramme avec ses annexes
+    $user = auth()->user();
+
+    // Récupère le télégramme avec ses annexes
     $telegramme = Telegramme::with('annexes')->findOrFail($id);
 
-    // Récupération de l'accusé de réception correspondant avec ses annexes
+    // Vérifie si l'utilisateur est autorisé
+    if (!$user || ($user->role !== 'admin' && $user->service !== $telegramme->service_concerne)) {
+        return redirect()->route('home')->with('error', 'Accès refusé : service non autorisé.');
+    }
+
+    // Récupère l'accusé de réception associé (avec annexes)
     $accuseReception = AccuseReception::where('numero_enregistrement', $telegramme->numero_enregistrement)
         ->where('numero_reference', $telegramme->numero_reference)
         ->with('annexes')
         ->first();
 
-    // Retourne la vue avec les données
     return view('telegramme.show', compact('telegramme', 'accuseReception'));
 }
+
 
    
     /**

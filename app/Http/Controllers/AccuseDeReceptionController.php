@@ -103,7 +103,7 @@ class AccuseDeReceptionController extends Controller
         'receptionne_par' => 'required|string|max:255',
         'objet' => 'required|string|max:255',
         'annexes' => 'nullable|array',
-        'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+        'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:9120',
         'avis' => 'nullable|string',
     ]);
 
@@ -206,11 +206,4 @@ class AccuseDeReceptionController extends Controller
 }
 
 
-
-
-    // Méthode pour générer un numéro d'enregistrement unique
-    //private function generateNumeroEnregistrement()
-    //{
-    //return 'REC-' . strtoupper(uniqid());
-    //}
 }

@@ -23,6 +23,9 @@ use App\Http\Controllers\RapportCaisseController;
 use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RechercheController;
+
+
 
 
 
@@ -88,6 +91,8 @@ Route::middleware(['auth'])->group(function () {
     // Route pour récupérer le nombre de notifications
     Route::get('/notifications/count', [NotificationController::class, 'getNotificationCount'])->name('notifications.count');
      Route::get('/notifications/list', [NotificationController::class, 'getNotificationsList'])->name('notifications.list');
+     Route::get('/recherche', [RechercheController::class, 'globale'])->name('recherche.globale');
+
     
 
     // ✅ Profil utilisateur

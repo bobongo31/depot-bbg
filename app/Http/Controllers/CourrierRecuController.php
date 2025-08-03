@@ -76,7 +76,7 @@ class CourrierRecuController extends Controller
             'numero_reference' => 'nullable|string|max:255',
             'resume' => 'required|string',
             'annexes' => 'nullable|array',
-            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5048',
         ]);
 
         // Recherche l'accusé existant grâce au numéro d'enregistrement
@@ -124,7 +124,7 @@ class CourrierRecuController extends Controller
             'commentaires' => 'nullable|string',
             'service_concerne' => 'required|string|max:255', // Nouveau champ service concerné
             'annexes' => 'nullable|array',
-            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5048',
         ]);
 
         $accuse = AccuseReception::where('numero_enregistrement', $validated['numero_enregistrement'])->first();
