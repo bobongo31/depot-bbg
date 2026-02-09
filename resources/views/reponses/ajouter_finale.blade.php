@@ -18,7 +18,7 @@
 
         <div class="form-group mb-3">
             <label for="numero_reference">Numéro de référence</label>
-            <input type="text" name="numero_reference" id="numero_reference" class="form-control" required
+            <input type="text" name="numero_reference" id="numero_reference" class="form-control"
                    value="{{ old('numero_reference', $reponse->numero_reference) }}">
             @error('numero_reference')
                 <small class="text-danger">{{ $message }}</small>

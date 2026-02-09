@@ -31,12 +31,33 @@
                 </tr>
                 <tr>
                     <th><i class="fas fa-building me-2 text-info"></i>Service Concerné :</th>
-                    <td>{{ $telegramme->service_concerne }}</td>
+                    <td>
+                        @if(is_string($telegramme->service_concerne))
+                            {{ implode(', ', json_decode($telegramme->service_concerne, true)) }}
+                        @else
+                            {{ $telegramme->service_concerne }}
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th><i class="fas fa-comment-dots me-2 text-secondary"></i>Commentaires :</th>
                     <td>{{ $telegramme->commentaires }}</td>
                 </tr>
+
+                <!-- Nouveau champ document_path juste après les annexes/commentaires -->
+                <tr>
+                    <th><i class="fas fa-file me-2 text-primary"></i>Document :</th>
+                    <td>
+                        @if($telegramme->document_path)
+                            <a href="{{ asset('storage/' . $telegramme->document_path) }}" target="_blank">
+                                {{ basename($telegramme->document_path) }}
+                            </a>
+                        @else
+                            <span class="text-muted">Aucun document</span>
+                        @endif
+                    </td>
+                </tr>
+
                 <tr>
                     <th><i class="fas fa-user me-2 text-warning"></i>Expéditeur :</th>
                     <td>{{ $telegramme->observation }}</td>
@@ -44,31 +65,27 @@
             </table>
         </div>
 
-{{--
-<h3 class="scroll-animated mt-5"><i class="fas fa-paperclip me-2"></i>Annexes liées au Télégramme</h3>
+        <h3 class="scroll-animated mt-5"><i class="fas fa-paperclip me-2"></i>Annexes liées au Télégramme</h3>
 
-<div class="scroll-animated card p-3 bg-light">
-    @if($telegramme->annexes && $telegramme->annexes->isNotEmpty())
-        <ul class="scroll-animated list-group list-group-flush">
-            @foreach ($telegramme->annexes as $annexe)
-                <li class="list-group-item d-flex align-items-center justify-content-between">
-                    <span><i class="fas fa-file-pdf text-danger me-2"></i>{{ basename($annexe->file_path) }}</span>
-                    <a href="{{ asset('storage/' . $annexe->file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                        <i class="fas fa-eye me-1"></i>Voir
-                    </a>
-                    <a href="{{ route('annexes.download', $annexe->id) }}" class="btn btn-sm btn-outline-success ms-2" download>
-                        <i class="fas fa-download me-1"></i>Télécharger
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-    @else
-        <p class="scroll-animated text-muted">Aucune annexe liée à ce télégramme.</p>
-    @endif
-</div>
---}}
-
-
+        <div class="scroll-animated card p-3 bg-light">
+            @if($telegramme->annexes && $telegramme->annexes->isNotEmpty())
+                <ul class="scroll-animated list-group list-group-flush">
+                    @foreach ($telegramme->annexes as $annexe)
+                        <li class="list-group-item d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-file-pdf text-danger me-2"></i>{{ basename($annexe->file_path) }}</span>
+                            <a href="{{ asset('storage/' . $annexe->file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-eye me-1"></i>Voir
+                            </a>
+                            <a href="{{ route('annexes.download', $annexe->id) }}" class="btn btn-sm btn-outline-success ms-2" download>
+                                <i class="fas fa-download me-1"></i>Télécharger
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="scroll-animated text-muted">Aucune annexe liée à ce télégramme.</p>
+            @endif
+        </div>
 
         <h3 class="scroll-animated mt-5"><i class="fas fa-paperclip me-2"></i>Annexes liées à l'Accusé de Réception</h3>
 
@@ -100,4 +117,5 @@
         <p class="scroll-animated text-danger">Télégramme non trouvé.</p>
     @endif
 </div>
+
 @endsection

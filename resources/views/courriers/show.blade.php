@@ -19,12 +19,19 @@
             <p><i class="fas fa-eye me-2 text-muted"></i><strong>Observation :</strong> {{ $courrier->observation ?? 'N/A' }}</p>
             <p><i class="fas fa-comment-dots me-2 text-muted"></i><strong>Commentaires :</strong> {{ $courrier->commentaires ?? 'N/A' }}</p>
             <p>
-                <i class="fas fa-info-circle me-2 text-muted"></i><strong>Statut :</strong>
-                <span class="badge 
-                    {{ $courrier->statut == 'reçu' ? 'bg-success' : ($courrier->statut == 'en attente' ? 'bg-warning text-dark' : 'bg-danger') }}">
+                <i class="fas fa-info-circle me-2 text-muted"></i>
+                <strong>Statut :</strong>
+
+                <span class="badge px-2 py-1 rounded-pill
+                    {{
+                        $courrier->statut === 'en attente' ? 'bg-danger' :
+                        ($courrier->statut === 'reçu' ? 'bg-success' :
+                        ($courrier->statut === 'traité' ? 'bg-info' : 'bg-secondary'))
+                    }}">
                     {{ ucfirst($courrier->statut) }}
                 </span>
             </p>
+
         </div>
     </div>
 
@@ -51,8 +58,11 @@
         </div>
     </div>
 
-    <!-- Bouton retour -->
+    <!-- Bouton retour / Éditer -->
     <div class="scroll-animated text-end">
+        <a href="{{ route('courriers.edit', $courrier->id) }}" class="btn btn-sm btn-outline-warning me-2" title="Éditer">
+            <i class="fas fa-edit me-1"></i>Éditer
+        </a>
         <a href="{{ route('courriers.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-1"></i> Retour à la liste
         </a>

@@ -60,15 +60,47 @@
                 <input type="text" id="manual_numero_reference" class="form-control mt-2" name="numero_reference" placeholder="Ou saisissez manuellement">
             </div>
 
-            <!-- Services Concernés -->
+            <!-- Directions et Services Concernés -->
             <div class="scroll-animated mb-3">
-                <label class="form-label"><i class="fas fa-building"></i> Services Concernés :</label>
-                @foreach(['RH' => 'Ressources Humaines', 'Comptabilité' => 'Comptabilité', 'Informatique' => 'Informatique', 'Logistique' => 'Logistique', 'caisse' => 'Caisse',] as $key => $service)
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="service_concerne[]" value="{{ $key }}" id="service{{ $key }}">
-                        <label class="form-check-label" for="service{{ $key }}">{{ $service }}</label>
+                <label class="form-label"><i class="fas fa-building"></i> Direction et Services Concernés :</label>
+
+                @php
+                    $directions = [
+                        'Direction Financière' => ['Comptabilité', 'Trésorerie'],
+                        'Ressources Humaines et Services Généraux' => ['Ressources Humaines', 'Services Généraux'],
+                        'Coordination des Provinces' => ['Coordination'],
+                        'Promotion Culturelle' => ['Services de la Promotion Culturelle'],
+                        'Contrôle et Inspection' => ['Audit interne'],
+                        'Mobilisation de la Redevance' => ['Taxation'],
+                        'Études, Planification et de la Formation' => ['Études', 'Planification', 'Formation'],
+                        'Direction du Recouvrement' => ['Recouvrement'],
+                        'Autres' => [
+                            'Informatique',
+                            'Juridique et Contentieux',
+                            'Secrétariat DG',
+                            'Assistant DG',
+                            'Assistant DGA'
+                        ],
+                    ];
+                @endphp
+
+
+                <div id="directions_services_container">
+                    <div class="direction_service_group mb-2">
+                        <select class="form-control select_direction mb-2">
+                            <option value="">Sélectionner une direction</option>
+                            @foreach($directions as $direction => $services)
+                                <option value="{{ $direction }}">{{ $direction }}</option>
+                            @endforeach
+                        </select>
+
+                        <div class="services_container"></div>
                     </div>
-                @endforeach
+                </div>
+
+                <button type="button" id="add_direction_service" class="btn btn-secondary btn-sm mt-2">
+                    <i class="fas fa-plus"></i> Ajouter une autre direction
+                </button>
             </div>
 
             <!-- Expéditeur -->
@@ -93,14 +125,59 @@
             <a href="{{ route('reponses.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Retour</a>
         </form>
 
-        <!-- Script pour synchroniser les champs -->
+        <!-- Scripts -->
         <script>
+            // Synchronisation des numéros
             document.getElementById('select_numero_enregistrement').addEventListener('change', function () {
                 document.getElementById('manual_numero_enregistrement').value = this.value;
             });
-
             document.getElementById('select_numero_reference').addEventListener('change', function () {
                 document.getElementById('manual_numero_reference').value = this.value;
+            });
+
+            // Directions et Services dynamiques
+            const directionsData = @json($directions);
+
+            function createServiceCheckboxes(direction) {
+                const container = document.createElement('div');
+                container.classList.add('services_group', 'mb-2');
+
+                if (direction && directionsData[direction]) {
+                    directionsData[direction].forEach(service => {
+                        const id = 'service_' + service.replace(/\s+/g, '_');
+                        const div = document.createElement('div');
+                        div.classList.add('form-check');
+
+                        div.innerHTML = `
+                            <input class="form-check-input" type="checkbox" name="service_concerne[]" value="${service}" id="${id}">
+                            <label class="form-check-label" for="${id}">${service}</label>
+                        `;
+                        container.appendChild(div);
+                    });
+                }
+
+                return container;
+            }
+
+            function handleDirectionChange(select) {
+                const group = select.closest('.direction_service_group');
+                const container = group.querySelector('.services_container');
+                container.innerHTML = '';
+                const checkboxes = createServiceCheckboxes(select.value);
+                container.appendChild(checkboxes);
+            }
+
+            document.querySelector('#directions_services_container').addEventListener('change', function(e) {
+                if (e.target.classList.contains('select_direction')) {
+                    handleDirectionChange(e.target);
+                }
+            });
+
+            document.getElementById('add_direction_service').addEventListener('click', function() {
+                const newGroup = document.querySelector('.direction_service_group').cloneNode(true);
+                newGroup.querySelector('.select_direction').value = '';
+                newGroup.querySelector('.services_container').innerHTML = '';
+                document.getElementById('directions_services_container').appendChild(newGroup);
             });
         </script>
     @else
@@ -110,14 +187,14 @@
         </h2>
 
         <div class="scroll-animated card shadow-lg">
-        <div class="card-header text-white bg-primary text-center">
-                            🔐 Authentification Sécurisée
-                        </div>
+            <div class="card-header text-white bg-primary text-center">
+                🔐 Authentification Sécurisée
+            </div>
             <div class="card-body">
                 <form method="POST" action="{{ route('code.verifier') }}">
                     @csrf
                     <div class="mb-3">
-                    <label for="code" class="form-label">
+                        <label for="code" class="form-label">
                             <i class="fas fa-key"></i> Veuillez saisir le code d'accès
                         </label>
                         <input type="text" class="form-control" name="code" id="code" required>

@@ -44,7 +44,7 @@
   <link rel="icon" type="image/png" href="{{ asset('image/favicon.png') }}">
 
   <!-- Feuilles de style -->
-  <link rel="stylesheet" href="/build/assets/app-D-ZV-3sJ.css">
+  {{-- Using Vite/@env block below to load compiled app CSS/JS. Removed hardcoded hashed filenames that caused 404. --}}
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
   <!-- Fonts & bibliothèques CSS -->
@@ -86,7 +86,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Scripts compilés et personnalisés -->
-  <script type="module" src="/build/assets/app-DBi3esb5.js"></script>
+  {{-- App JS is loaded via Vite in local env or from build/assets in production (see @env block below). --}}
   <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
   <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
   <script src="{{ asset('lib/waypoints/waypoints.min.js') }}"></script>
@@ -480,12 +480,12 @@ canvas {
     width: 100%;
     height: 100%;
     background: rgba(10, 30, 60, 0.7); /* Couleur de superposition personnalisée */
-    display: flex;
+    display: flex; /* centre le message-box */
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 100050; /* au-dessus de la plupart des éléments (whatsapp, header, etc.) */
     backdrop-filter: blur(4px); /* flou de fond optionnel */
-    padding: 1rem;
+    padding: 0; /* éviter bande noire créée par padding */
   }
 
   /* Contenu de la boîte */
@@ -493,26 +493,30 @@ canvas {
     background: white;
     color: #333;
     border-radius: 1rem;
-    padding: 2rem;
-    max-width: 500px;
-    width: 100%;
+    padding: 1.25rem 1.5rem; /* plus compact qu'avant */
+    max-width: 520px;
+    width: calc(100% - 2rem);
     text-align: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     animation: fadeInScale 0.4s ease;
+    position: relative;
+    z-index: 100060; /* au-dessus de l'overlay */
   }
 
-
+  /* ID overlay used ailleurs : assurer un comportement cohérent */
   #overlayMessage {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: none;
-  background-color: rgba(0, 0, 0, 0.6); /* la bande noire */
-  z-index: 1060; /* au-dessus des modals Bootstrap */
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: none; /* contrôlé par JS */
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 100050;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Pour empêcher le scroll de la page */
@@ -576,10 +580,58 @@ body.modal-open-scrollblock {
 
 <body class="bg-gray-100 text-gray-900 {{ session('theme', 'light-theme') }}">
 
+{{-- Messages de succès ou d'erreur --}}
+@if (session('success'))
+    <div class="container mt-4">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="container mt-4">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    </div>
+@endif
+
+@if ($errors->any())
+  <div class="container mt-4">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+  </div>
+@endif
+
+
 <form action="{{ route('recherche.globale') }}" method="GET" class="d-flex mb-3">
     <input type="text" name="q" class="form-control me-2" placeholder="Rechercher..." required>
     <button class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
 </form>
+
+<!-- Notification bell + dropdown -->
+<div class="d-inline-block align-middle ms-2">
+  <div class="notification-wrapper position-relative">
+    <button id="notification-icon" class="btn btn-light notification-icon" aria-label="Notifications" type="button">
+      <i class="fas fa-bell"></i>
+    </button>
+
+    <div id="notification-dropdown" class="card shadow-sm" style="display:none; position:absolute; right:0; top:38px; z-index:2000; width:340px; max-height:420px; overflow:auto;">
+      <div class="card-body p-2">
+        <ul id="notification-list" class="list-unstyled mb-0 p-0"></ul>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!--<div id="app" class="flex min-h-screen flex-col">
      Inclusion du header contenant le menu 
@@ -651,47 +703,40 @@ $(document).ready(function() {
         });
     }
 
-    function loadNotifications() {
-    $.ajax({
-        url: '/notifications/list',
-        method: 'GET',
-        success: function(data) {
+    // Charger la liste des notifications au clic (déjà présent behaviour uses loadNotifications)
+
+    // Nouvelle logique: mettre à jour le dropdown avec le endpoint unifié
+    async function loadNotifications() {
+        try {
+            const res = await fetch('/notifications/list');
+            if (!res.ok) throw new Error('Erreur réseau');
+            const data = await res.json();
             $('#notification-list').empty();
-            if(data.length === 0) {
+            if (!data || data.length === 0) {
                 $('#notification-list').append('<li class="text-gray-500 text-center p-4">Aucune notification</li>');
-            } else {
-                data.forEach(function(notif) {
-                    let dateStr = new Date(notif.created_at).toLocaleString();
-                    let message = notif.content && notif.content.trim() !== '' ? notif.content : 'Vous avez reçu un nouveau message';
-                    let li = `<li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">
-                                  <div class="text-xs text-gray-400">${dateStr}</div>
-                                  <div class="text-sm font-medium text-gray-700">${message}</div>
-                              </li>`;
-                    $('#notification-list').append(li);
-                });
+                return;
             }
-        },
-        error: function() {
+            data.forEach(function(notif) {
+                let dateStr = new Date(notif.created_at).toLocaleString();
+                let title = notif.type === 'message' ? (notif.from ? notif.from + ' : ' : '') + notif.content : notif.content;
+                let li = `<li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">
+                              <div class="text-xs text-gray-400">${dateStr}</div>
+                              <div class="text-sm font-medium text-gray-700"><a href="${notif.url}">${title}</a></div>
+                          </li>`;
+                $('#notification-list').append(li);
+            });
+        } catch (e) {
             $('#notification-list').html('<li class="text-red-500 text-center p-4">Erreur lors du chargement des notifications</li>');
         }
-    });
-}
+    }
 
-
-
-    // Toggle menu au clic sur icône
-    $('#notification-icon').click(function(e) {
+    // Charger la liste lors de l'ouverture du dropdown
+    $('#notification-icon').off('click').on('click', function(e) {
         e.preventDefault();
         $('#notification-dropdown').toggle();
-        if($('#notification-dropdown').is(':visible')) {
+        if ($('#notification-dropdown').is(':visible')) {
+            loadNotificationCount();
             loadNotifications();
-        }
-    });
-
-    // Fermer menu si clic en dehors
-    $(document).click(function(event) {
-        if(!$(event.target).closest('#notification-icon, #notification-dropdown').length) {
-            $('#notification-dropdown').hide();
         }
     });
 
@@ -881,6 +926,102 @@ document.addEventListener('DOMContentLoaded', function () {
     console.error('La section avec la classe .scroll-animated n\'a pas été trouvée.');
   }
 });
+
+    // Live notification poller + mark-as-read handler
+    (function(){
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        function updateNotificationIcon(count){
+            // remove existing
+            $('.notification-icon').find('.notification-badge').remove();
+            if(!count || parseInt(count) === 0){
+                return;
+            }
+            const badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-danger rounded-full">'+count+'</span>';
+            $('.notification-icon').append(badgeHtml);
+        }
+
+        async function fetchCount(){
+            try{
+                const res = await fetch('/notifications/count', { credentials: 'same-origin' });
+                if(!res.ok) return;
+                const json = await res.json();
+                const c = parseInt(json.unread_count || 0, 10);
+                updateNotificationIcon(c);
+            }catch(e){ console.warn('notif count error', e); }
+        }
+
+        async function fetchListAndBind(){
+            try{
+                const res = await fetch('/notifications/list', { credentials: 'same-origin' });
+                if(!res.ok) throw new Error('network');
+                const data = await res.json();
+                $('#notification-list').empty();
+                if(!data || data.length === 0){
+                    $('#notification-list').append('<li class="text-gray-500 text-center p-4">Aucune notification</li>');
+                    return;
+                }
+
+                data.forEach(function(notif){
+                    let dateStr = new Date(notif.created_at).toLocaleString();
+                    let title = notif.type === 'message' ? (notif.from ? notif.from + ' : ' : '') + notif.content : notif.content;
+                    let li = $(`<li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">\
+                                  <div class="text-xs text-gray-400">${dateStr}</div>\
+                                  <div class="text-sm font-medium text-gray-700"><a href="#" class="notif-link" data-type="${notif.type}" data-id="${notif.id}" data-url="${notif.url}">${$('<div/>').text(title).html()}</a></div>\
+                              </li>`);
+                    $('#notification-list').append(li);
+                });
+
+                // bind click to mark as read then navigate
+                $('.notif-link').off('click').on('click', async function(e){
+                    e.preventDefault();
+                    const $a = $(this);
+                    const type = $a.data('type');
+                    const id = $a.data('id');
+                    const url = $a.data('url');
+
+                    try{
+                        await fetch('/notifications/read', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({ type: type, id: id })
+                        });
+                    } catch(err) {
+                        console.warn('mark read failed', err);
+                    }
+
+                    // Small delay to allow server to update count (optional)
+                    setTimeout(function(){ window.location.href = url; }, 120);
+                });
+
+            }catch(e){
+                $('#notification-list').html('<li class="text-red-500 text-center p-4">Erreur lors du chargement des notifications</li>');
+            }
+        }
+
+        // initial fetch
+        fetchCount();
+
+        // fetch list when dropdown opens: keep existing binding for icon click which calls loadNotifications
+        $('#notification-icon').off('click.poll').on('click.poll', function(e){
+            e.preventDefault();
+            $('#notification-dropdown').toggle();
+            if($('#notification-dropdown').is(':visible')){
+                fetchListAndBind();
+            }
+        });
+
+        // poll every 10 seconds
+        setInterval(fetchCount, 10000);
+
+        // refresh immediately when window gains focus
+        window.addEventListener('focus', function(){ fetchCount(); });
+
+    })();
 
   </script>
   <!-- jQuery (si nécessaire) -->

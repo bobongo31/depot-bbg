@@ -3,50 +3,9 @@
   <div class="scroll-animated flex justify-between items-center py-4 px-8 bg-gradient-to-r from-blue-100 via-blue-50 to-blue-200 shadow-md">
     <div class="scroll-animated ml-auto flex items-center space-x-6">
     <!-- Icône notification -->
-<a href="#" id="notification-icon"  style="position: relative; display: inline-block; color: #4B5563;">
-    <i class="fas fa-bell" style="font-size: 24px;"></i>
-
-    @if($notifications->count() > 0)
-        <span style="
-            position: absolute;
-            top: 0;
-            right: 0;
-            transform: translate(50%, -50%);
-            background-color: #dc2626; /* rouge */
-            color: white;
-            font-size: 12px;
-            border-radius: 9999px;
-            padding: 0 6px;
-            font-weight: bold;
-            line-height: 1;
-            ">
-            {{ $notifications->count() }}
-        </span>
-    @endif
-</a>
 
 
-<!-- Menu déroulant caché avec Tailwind -->
-<div id="notification-dropdown" class="hidden absolute right-0 mt-2 bg-white shadow-lg w-80 max-h-96 overflow-y-auto z-50 rounded-md border border-gray-200">
-    <ul id="notification-list" class="list-none m-0 p-2">
-        @forelse ($notifications as $notif)
-            <li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">
-                <div class="text-xs text-gray-400">
-                    {{ \Carbon\Carbon::parse($notif['created_at'])->format('d/m/Y H:i:s') }}
-                </div>
-                <div class="text-sm font-medium text-gray-700">
-                    @if ($notif['type'] === 'messages')
-                        💬 Vous avez reçu un nouveau message.
-                    @else
-                        {{ $notif['content'] ?? 'Notification sans contenu' }}
-                    @endif
-                </div>
-            </li>
-        @empty
-            <li class="text-gray-500 text-center p-4">Aucune notification</li>
-        @endforelse
-    </ul>
-</div>
+
 
 
 
@@ -118,7 +77,8 @@
             </li>
         @endauth
 
-        @if(Auth::user() && Auth::user()->role === 'agent')
+        @if(Auth::user() && (Auth::user()->role === 'agent' || Auth::user()->role === 'admin'))
+
             <li>
                 <a href="{{ route('accuse.form') }}" class="btn btn-outline-info px-4 py-2">
                     <i class="fas fa-file-alt menu-icon {{ request()->routeIs('accuse.form') ? 'active' : '' }}" title="Accuser Réception"></i>
@@ -144,7 +104,7 @@
             </li>
         @endif
 
-        @if(Auth::user() && (Auth::user()->role === 'chef_service' || Auth::user()->role === 'admin'))
+        @if(Auth::user() && in_array(Auth::user()->role, ['chef_service', 'chef_direction','agent', 'admin']))
             <li>
                 <a href="{{ route('reponses.index') }}" class="btn btn-outline-dark px-4 py-2">
                     <i class="fas fa-inbox menu-icon {{ request()->routeIs('reponses.index') ? 'active' : '' }}" title="Boîte de réception"></i>

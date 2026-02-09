@@ -22,8 +22,13 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'password',
+        'entreprise',
+        'email',
+        'password',
+        'role',
+        'service',
         'entreprise', // ✅ Ajout du champ entreprise
-    ];
+        ];
 
     /**
      * Les attributs à masquer dans les tableaux.

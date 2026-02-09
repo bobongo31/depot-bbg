@@ -40,6 +40,27 @@
                 </div>
             </div>
 
+
+            <div class="scroll-animated row g-3 mt-3">
+            <div class="col-md-6">
+                <label for="date" class="form-label"><i class="fas fa-calendar-day me-2"></i>Filtrer par date</label>
+                <input type="date" name="date" id="date" class="form-control" value="{{ request('date') }}">
+            </div>
+
+            <div class="col-md-6">
+                <label for="mois" class="form-label"><i class="fas fa-calendar-alt me-2"></i>Filtrer par mois</label>
+                <select name="mois" id="mois" class="form-select">
+                    <option value="">-- Choisir un mois --</option>
+                    @foreach(range(1, 12) as $month)
+                        <option value="{{ $month }}" {{ request('mois') == $month ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($month)->locale('fr')->isoFormat('MMMM') }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+
             <div class="scroll-animated mt-3 text-end">
                 <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-2"></i>Filtrer</button>
             </div>

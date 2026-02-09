@@ -23,77 +23,104 @@
             </div>
 
             <div class="scroll-animated table-responsive">
-                <table id="courriersTable" class="table table-bordered table-hover align-middle text-center">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="small text-muted">
+                                Affichage {{ $courriers->firstItem() ?? 0 }}–{{ $courriers->lastItem() ?? 0 }} sur {{ $courriers->total() ?? 0 }}
+                            </div>
+                            <div class="small text-muted">Trié par date (plus récent d'abord)</div>
+                        </div>
+
+                        <table id="courriersTable" class="table table-bordered table-hover table-sm align-middle">
                     <thead class="table-light">
                 <tr>
-                    <th>Date d'accusé réception</th>
-                    <th>Numéro d'enregistrement</th>
-                    <th>Numéro de référence</th>
-                    <th>Nom de l'expéditeur</th>
-                    <th>Résumé</th>
-                    <th>Observation</th>
-                    <th>Commentaires</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
+                            <th class="text-start">Date</th>
+                            <th class="text-start">N° enreg.</th>
+                            <th class="text-start">N° réf.</th>
+                            <th class="text-start">Expéditeur</th>
+                            <th class="text-start">Résumé</th>
+                            <th class="text-start">Observation</th>
+                            <th class="text-start">Commentaires</th>
+                            <th class="text-center">Statut</th>
+                            <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($courriers as $courrier)
-                    <tr>
-                        <td>{{ $courrier->date_reception }}</td>
-                        <td>{{ $courrier->numero_enregistrement }}</td>
-                        <td>{{ $courrier->numero_reference ?? 'N/A' }}</td>
-                        <td>{{ $courrier->nom_expediteur }}</td>
-                        <td>{{ $courrier->resume }}</td>
-                        <td>{{ $courrier->observation ?? 'Aucune observation' }}</td>
+                        @foreach($courriers as $courrier)
+    <tr data-href="{{ route('courriers.show', $courrier->id) }}" class="clickable-row" tabindex="0" role="link" style="cursor:pointer;">
+                                <td class="text-start">{{ \Carbon\Carbon::parse($courrier->date_reception)->format('d/m/Y') }}</td>
+                                <td class="text-start"><span class="fw-medium">{{ $courrier->numero_enregistrement }}</span></td>
+                                <td class="text-start">{{ $courrier->numero_reference ?? '-' }}</td>
+                                <td class="text-start">{{ $courrier->nom_expediteur }}</td>
+                                <td class="text-start" style="max-width:320px;">
+                                    <div class="text-truncate" style="max-width:320px;">{!! nl2br(e(\Illuminate\Support\Str::limit($courrier->resume, 160))) !!}</div>
+                                </td>
+                                <td class="text-start" style="max-width:220px;">
+                                    <div class="text-truncate" style="max-width:220px;">{{ \Illuminate\Support\Str::limit($courrier->observation ?? 'Aucune observation', 120) }}</div>
+                                </td>
                         <td>
-                        <div class="scroll-animated commentaires-section mb-2">
-                            @if($courrier->commentaires)
-                                @foreach(explode("\n", $courrier->commentaires) as $commentaire)
-                                    <p class="mb-1">📝 {{ $commentaire }}</p>
-                                @endforeach
-                            @endif
-                        </div>
+                                    <div class="commentaires-section mb-2 small text-start">
+                                        @if($courrier->commentaires)
+                                            @foreach(array_slice(explode("\n", $courrier->commentaires), 0, 3) as $commentaire)
+                                                <div class="text-truncate">📝 {{ \Illuminate\Support\Str::limit($commentaire, 80) }}</div>
+                                            @endforeach
+                                        @else
+                                            <div class="text-muted">—</div>
+                                        @endif
+                                    </div>
 
-                        @if(Auth::user()->role === 'admin')
-                            <form class="comment-form" data-id="{{ $courrier->id }}">
-                                <div class="input-group">
-                                    <input type="text" name="commentaire" placeholder="Ajouter un commentaire" class="form-control" />
-                                    <button type="submit" class="btn btn-outline-info btn-sm">Ajouter</button>
-                                </div>
-                            </form>
-                        @endif
+                                    @if(Auth::user()->role === 'admin')
+                                        <form class="comment-form d-flex" data-id="{{ $courrier->id }}" style="gap:6px;">
+                                            <input type="text" name="commentaire" placeholder="Ajouter un commentaire" class="form-control form-control-sm" />
+                                            <button type="submit" class="btn btn-outline-info btn-sm">OK</button>
+                                        </form>
+                                    @endif
                     </td>
 
                         <td>
-                            {{ ucfirst($courrier->statut) }}
-                            @if(Auth::user()->role === 'admin')
-                                <select class="form-control mt-2 status-select" data-id="{{ $courrier->id }}">
-                                    <option value="reçu" {{ $courrier->statut == 'reçu' ? 'selected' : '' }}>Reçu</option>
-                                    <option value="en attente" {{ $courrier->statut == 'en attente' ? 'selected' : '' }}>En attente</option>
-                                    <option value="traité" {{ $courrier->statut == 'traité' ? 'selected' : '' }}>Traité</option>
-                                </select>
-                            @endif
+                                    @php
+                                        $badgeClass = match($courrier->statut) {
+                                            'reçu' => 'bg-success text-white',
+                                            'en attente' => 'bg-danger text-white',
+                                            'traité' => 'bg-info text-white',
+                                            default => 'bg-secondary text-white',
+                                        };
+                                    @endphp
+                                    <span class="badge px-2 py-1 {{ $badgeClass }} rounded-pill">{{ ucfirst($courrier->statut) }}</span>
+                                    @if(Auth::user()->role === 'admin')
+                                        <div class="mt-2">
+                                            <select class="form-select form-select-sm status-select" data-id="{{ $courrier->id }}">
+                                                <option value="reçu" {{ $courrier->statut == 'reçu' ? 'selected' : '' }}>Reçu</option>
+                                                <option value="en attente" {{ $courrier->statut == 'en attente' ? 'selected' : '' }}>En attente</option>
+                                                <option value="traité" {{ $courrier->statut == 'traité' ? 'selected' : '' }}>Traité</option>
+                                            </select>
+                                        </div>
+                                    @endif
                         </td>
                         <td>
-                            <a href="{{ route('courriers.show', $courrier->id) }}" class="btn btn-outline-info btn-sm">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('courriers.edit', $courrier->id) }}" class="btn btn-outline-warning btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form action="{{ route('courriers.destroy', $courrier->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce courrier ?');">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{{ route('courriers.show', $courrier->id) }}" class="btn btn-sm btn-outline-info" title="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('courriers.edit', $courrier->id) }}" class="btn btn-sm btn-outline-warning" title="Éditer">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('courriers.destroy', $courrier->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce courrier ?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+                {{-- Pagination --}}
+                <div class="d-flex justify-content-center mt-3">
+                    {!! $courriers->links('pagination::bootstrap-5') !!}
+                </div>
     @else
         {{-- FORMULAIRE DE CODE D'ACCÈS --}}
         <div class="scroll-animated container">
@@ -132,9 +159,41 @@
 @endauth
 @endsection
 
+@push('styles')
+<style>
+    .clickable-row { cursor: pointer; }
+    .clickable-row:focus { outline: 2px solid rgba(13,110,253,0.6); outline-offset: 2px; }
+
+    /* Overlay styling: visible and hidden states */
+    .overlay-message {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        z-index: 1050;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .overlay-message.hidden {
+        display: none;
+        pointer-events: none;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
+// Close overlay in a way that it won't block interactions
+function closeOverlay() {
+    const overlay = document.getElementById('overlayMessage');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+}
+
     $(document).ready(function() {
         // Ajouter un commentaire via AJAX
         $('.comment-form').submit(function(e) {
@@ -170,5 +229,36 @@
             }
         });
     });
+
+// Make table rows clickable, keyboard accessible, ignore clicks on controls
+document.addEventListener('DOMContentLoaded', function () {
+    const ignoredSelector = 'a,button,form,input,select,textarea,label';
+
+    document.querySelectorAll('table tbody tr[data-href]').forEach(function (row) {
+
+        // CLICK souris
+        row.addEventListener('click', function (e) {
+            if (e.target.closest(ignoredSelector)) return;
+
+            const href = row.dataset.href;
+            if (href) {
+                window.location.href = href;
+            }
+        });
+
+        // CLAVIER (accessibilité)
+        row.addEventListener('keydown', function (e) {
+            if (e.target.closest(ignoredSelector)) return;
+
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const href = row.dataset.href;
+                if (href) {
+                    window.location.href = href;
+                }
+            }
+        });
+    });
+});
 </script>
 @endpush

@@ -22,6 +22,7 @@ class AccuseReception extends Model
         'objet', // ✅ Champ ajouté ici
         'observation',
         'commentaires',
+        'avis', // ✅ AJOUT ICI
         'statut',
         'archive',
         'status_archive',

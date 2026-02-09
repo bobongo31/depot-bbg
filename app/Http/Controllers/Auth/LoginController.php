@@ -92,4 +92,19 @@ class LoginController extends Controller
         'message' => 'Nom d\'utilisateur, entreprise ou mot de passe incorrect.',
     ])->withInput($request->only('entreprise', 'name'));
 }
+protected function authenticated($request, $user)
+{
+    return redirect()->route('home');
+}
+protected function redirectTo($request)
+{
+    // Si c'est une requête AJAX ou notifications → pas d'intended
+    if ($request->is('notifications/*') || $request->expectsJson()) {
+        return route('login');
+    }
+
+    return route('login');
+}
+
+
 }

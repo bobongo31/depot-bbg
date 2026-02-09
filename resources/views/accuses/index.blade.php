@@ -38,7 +38,7 @@
                     </thead>
                     <tbody>
                         @forelse($accuses as $accuse)
-                            <tr>
+                            <tr data-href="{{ route('courriers.show', $accuse->id) }}" style="cursor:pointer;">
                                 <td>{{ \Carbon\Carbon::parse($accuse->date_reception)->format('d/m/Y') }}</td>
                                 <td>{{ $accuse->numero_enregistrement }}</td>
                                 <td>{{ $accuse->receptionne_par }}</td>
@@ -63,6 +63,11 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            {{-- Pagination --}}
+            <div class="d-flex justify-content-center mt-3">
+                {{-- Utilise le template Bootstrap 5 pour la pagination --}}
+                {!! $accuses->links('pagination::bootstrap-5') !!}
             </div>
         @else
         {{-- Formulaire de code d'accès --}}
@@ -114,3 +119,16 @@
     });
 </script>
 @endif
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('table tbody tr[data-href]').forEach(function(row){
+        row.addEventListener('click', function(e){
+            // ignore clicks on actionable elements
+            if (e.target.closest('a,button,form,input,select')) return;
+            const href = this.getAttribute('data-href');
+            if (href) window.location = href;
+        });
+    });
+});
+</script>

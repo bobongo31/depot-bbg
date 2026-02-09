@@ -18,7 +18,7 @@ class ArchiveController extends Controller
     $telegrammesQuery = Telegramme::query();
     $reponsesQuery = Reponse::query();
 
-    // Filtrer par archive (qui contient la catégorie)
+    // Filtrer par archive (catégorie)
     if ($request->filled('categorie')) {
         $categorie = $request->input('categorie');
         $accusesQuery->where('archive', $categorie);
@@ -43,15 +43,31 @@ class ArchiveController extends Controller
         });
     }
 
+    // ✅ Filtrer par date exacte (format Y-m-d)
+    if ($request->filled('date')) {
+        $date = Carbon::parse($request->input('date'))->toDateString();
+        $accusesQuery->whereDate('date_reception', $date);
+        $telegrammesQuery->whereDate('created_at', $date);
+        $reponsesQuery->whereDate('created_at', $date);
+    }
+
+    // ✅ Filtrer par mois (1 à 12)
+    if ($request->filled('mois')) {
+        $mois = (int) $request->input('mois');
+        $accusesQuery->whereMonth('date_reception', $mois);
+        $telegrammesQuery->whereMonth('created_at', $mois);
+        $reponsesQuery->whereMonth('created_at', $mois);
+    }
+
     // Récupérer les données filtrées
     $accuses = $accusesQuery->get();
     $telegrammes = $telegrammesQuery->get();
     $reponses = $reponsesQuery->get();
 
-    // Retourner la vue avec les résultats filtrés
+    // Retourner la vue
     return view('archives.index', compact('accuses', 'telegrammes', 'reponses'));
 }
-    // Mettre à jour la colonne 'archive' dans les 3 tables
+
     
     public function archiverDossier(Request $request, $numero_enregistrement)
     {

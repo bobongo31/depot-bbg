@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AccuseReception;
+
 
 class Reponse extends Model
 {
@@ -58,4 +60,13 @@ class Reponse extends Model
     {
         return $this->belongsTo(Reponse::class, 'reponse_id');
     }
+
+    public function accuseReception()
+{
+    return $this->belongsTo(
+        AccuseReception::class,
+        'numero_enregistrement',   // clé dans reponses
+        'numero_enregistrement'    // clé dans accuse_receptions
+    );
+}
 }

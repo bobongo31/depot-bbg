@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AccuseReception;
+
 
 class Telegramme extends Model
 {
@@ -20,6 +22,8 @@ class Telegramme extends Model
         'archive',
         'status_archive',
         'user_id', // 👈 Assure que c'est assignable
+        'document_path', // <-- ajouté ici
+        'statut',
     ];
 
     /**
@@ -35,6 +39,32 @@ class Telegramme extends Model
             }
         });
     }
+
+
+
+            public function accuseReception()
+        {
+            return $this->hasOne(
+                AccuseReception::class,
+                'numero_enregistrement',   // clé étrangère dans accuse_receptions
+                'numero_enregistrement'    // clé locale dans telegrammes
+            );
+        }
+
+            public function getStatutAttribute()
+    {
+        return optional($this->accuseReception)->statut;
+    }
+
+        public function getStatutFinalAttribute()
+        {
+            if ($this->relationLoaded('accuseReception') && $this->accuseReception) {
+                return $this->accuseReception->statut;
+            }
+
+            return $this->statut; // fallback
+        }
+
 
     /**
      * Relation avec l’utilisateur propriétaire du télégramme.

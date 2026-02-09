@@ -34,7 +34,6 @@ class UtilisateurController extends Controller
             'postal_code'   => 'required|string|max:10',
             'email'         => 'required|email|unique:utilisateurs,email',
             'phone'         => 'required|string|max:15',
-            'g-recaptcha-response' => 'required|captcha',
 
         ], [
             'first_name.required' => 'Le prénom est obligatoire.',

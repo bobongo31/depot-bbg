@@ -24,6 +24,7 @@ use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RechercheController;
+use App\Http\Controllers\UploadController;
 
 
 
@@ -88,10 +89,12 @@ Route::delete('/user/{id}', [UserController::class, 'supprimer'])->name('user.de
 Route::middleware(['auth'])->group(function () {
     // Route d'accueil
 
-    // Route pour récupérer le nombre de notifications
-    Route::get('/notifications/count', [NotificationController::class, 'getNotificationCount'])->name('notifications.count');
-     Route::get('/notifications/list', [NotificationController::class, 'getNotificationsList'])->name('notifications.list');
-     Route::get('/recherche', [RechercheController::class, 'globale'])->name('recherche.globale');
+    // Route pour récupérer le nombre de notifications (messages + télégrammes)
+    Route::get('/notifications/count', [MessageController::class, 'unreadCount'])->name('notifications.count');
+    Route::get('/notifications/list', [MessageController::class, 'notificationsList'])->name('notifications.list');
+    // Route pour marquer une notification comme lue
+    Route::post('/notifications/read', [MessageController::class, 'markNotificationRead'])->name('notifications.read');
+    Route::get('/recherche', [RechercheController::class, 'globale'])->name('recherche.globale');
 
     
 
@@ -102,6 +105,8 @@ Route::middleware(['auth'])->group(function () {
     // ✅ Accusés de réception
     Route::get('/accuse-de-reception', [AccuseDeReceptionController::class, 'showForm'])->name('accuse.form');
     Route::post('/accuse-de-reception', [AccuseDeReceptionController::class, 'store'])->name('accuse.store');
+    // Route pour sauvegarder un brouillon via AJAX
+    Route::post('/accuse-de-reception/draft', [AccuseDeReceptionController::class, 'saveDraft'])->name('accuse.draft');
 
     // ✅ Courriers reçus
     Route::get('/courriers/traites', [CourrierRecuController::class, 'indexTraite'])->name('courriers.traites');
@@ -110,6 +115,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/courriers/{id}/statut', [CourrierRecuController::class, 'updateStatut'])->name('courriers.update.statut');
     Route::get('/courriers/create', [CourrierRecuController::class, 'create'])->name('courriers.create');
     Route::post('/courriers/store', [CourrierRecuController::class, 'store'])->name('courriers.store');
+    // Route to save a courrier draft (autosave)
+    Route::post('/courriers/draft', [CourrierRecuController::class, 'saveDraft'])->name('courriers.draft');
 
     // ✅ Réponses
     Route::get('reponse/ajouter/{reponseId}', [ReponseController::class, 'formAjouterReponseFinale'])->name('reponse.ajouter');
@@ -128,6 +135,8 @@ Route::middleware(['auth'])->group(function () {
     // ✅ Télégrammes
     Route::get('/telegrammes/create', [ReponseController::class, 'createTelegramme'])->name('telegramme.create');
     Route::post('/telegrammes/store', [ReponseController::class, 'storeTelegramme'])->name('telegramme.store');
+    // Autosave draft for telegramme
+    Route::post('/telegrammes/draft', [ReponseController::class, 'saveDraftTelegramme'])->name('telegramme.draft');
     Route::get('/telegrammes', [ReponseController::class, 'index'])->name('telegrammes.index');
     Route::get('/telegramme/{id}', [ReponseController::class, 'showWithTelegramme'])->name('telegramme.show');
     Route::delete('/telegrammes/{id}', [ReponseController::class, 'destroyTelegramme'])->name('telegrammes.destroy');
@@ -223,6 +232,9 @@ Route::post('/archives/archiver/{numero_enregistrement}', [ArchiveController::cl
 Route::post('/archives/declarer-clos/{numero_enregistrement}', [ArchiveController::class, 'declarerClos'])
     ->where('numero_enregistrement', '.*')
     ->name('archives.declarer_clos');
+
+    // Chunk upload endpoint (used by annex upload UI)
+    Route::post('/upload/chunk', [AccuseDeReceptionController::class, 'uploadChunk'])->name('upload.chunk');
 
 
 });

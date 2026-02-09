@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @if(Auth::user() && Auth::user()->role !== 'admin')
+    @if(!Auth::user() || (Auth::user()->role !== 'admin' && Auth::user()->role !== 'agent'))
         <div class="alert alert-danger">
             <i class="fa-solid fa-triangle-exclamation"></i> Accès refusé. Vous n'avez pas les permissions nécessaires pour modifier ce courrier.
         </div>
@@ -21,42 +21,42 @@
                 <label for="date_reception">
                     <i class="fa-solid fa-calendar-day"></i> Date d'accusé de réception
                 </label>
-                <input type="date" name="date_reception" value="{{ old('date_reception', $courrier->date_reception) }}" class="form-control" readonly>
+                <input type="date" name="date_reception" value="{{ old('date_reception', $courrier->date_reception) }}" class="form-control">
             </div>
 
             <div class="scroll-animated form-group">
                 <label for="numero_enregistrement">
                     <i class="fa-solid fa-hashtag"></i> Numéro d'enregistrement
                 </label>
-                <input type="text" name="numero_enregistrement" value="{{ old('numero_enregistrement', $courrier->numero_enregistrement) }}" class="form-control" readonly>
+                <input type="text" name="numero_enregistrement" value="{{ old('numero_enregistrement', $courrier->numero_enregistrement) }}" class="form-control">
             </div>
 
             <div class="scroll-animated form-group">
                 <label for="numero_reference">
                     <i class="fa-solid fa-barcode"></i> Numéro de référence
                 </label>
-                <input type="text" name="numero_reference" value="{{ old('numero_reference', $courrier->numero_reference) }}" class="form-control" readonly>
+                <input type="text" name="numero_reference" value="{{ old('numero_reference', $courrier->numero_reference) }}" class="form-control">
             </div>
 
             <div class="scroll-animated form-group">
                 <label for="nom_expediteur">
                     <i class="fa-solid fa-user"></i> Nom de l'expéditeur
                 </label>
-                <input type="text" name="nom_expediteur" value="{{ old('nom_expediteur', $courrier->nom_expediteur) }}" class="form-control" readonly>
+                <input type="text" name="nom_expediteur" value="{{ old('nom_expediteur', $courrier->nom_expediteur) }}" class="form-control">
             </div>
 
             <div class="scroll-animated form-group">
                 <label for="resume">
                     <i class="fa-solid fa-file-lines"></i> Résumé
                 </label>
-                <textarea name="resume" class="form-control" readonly>{{ old('resume', $courrier->resume) }}</textarea>
+                <textarea name="resume" class="form-control">{{ old('resume', $courrier->resume) }}</textarea>
             </div>
 
             <div class="scroll-animated form-group">
                 <label for="observation">
                     <i class="fa-solid fa-eye"></i> Observation
                 </label>
-                <textarea name="observation" class="form-control" readonly>{{ old('observation', $courrier->observation) }}</textarea>
+                <textarea name="observation" class="form-control">{{ old('observation', $courrier->observation) }}</textarea>
             </div>
 
             <div class="scroll-animated form-group">

@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Models\AnnexeMessage;
 use App\Models\User; // Ajout de l'import
+use App\Models\Telegramme;
+use App\Models\Reponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ZipArchive;
+use Illuminate\Support\Facades\Log;
 
 
 class MessageController extends Controller 
@@ -148,13 +151,112 @@ public function store(Request $request)
 
 
     public function unreadCount()
-{
-    $unreadCount = Message::where('receiver_id', auth()->id())
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['unread_count' => 0]);
+        }
+
+        // unread direct messages
+        $messageCount = Message::where('receiver_id', $user->id)
                          ->where('is_read', false)
                          ->count();
 
-    return response()->json(['unread_count' => $unreadCount]);
-}
+        // telegrammes relevant to user's services or addressed to the user and not yet handled (no reponse)
+        $telegrammeCount = 0;
+        $userServices = json_decode($user->service, true) ?: [];
+
+        $tquery = Telegramme::query()->whereDoesntHave('reponses');
+
+        if (!empty($userServices) && is_array($userServices)) {
+            // try JSON contains first
+            foreach ($userServices as $svc) {
+                $tquery->orWhereJsonContains('service_concerne', $svc);
+                // also fallback to LIKE in case service_concerne is stored as CSV/text
+                $tquery->orWhere('service_concerne', 'like', '%' . $svc . '%');
+            }
+        }
+
+        // also telegrammes explicitly created by or for this user
+        $tquery->orWhere('user_id', $user->id);
+
+        $telegrammeCount = $tquery->distinct()->count();
+
+        return response()->json(['unread_count' => ($messageCount + $telegrammeCount)]);
+    }
+
+    /**
+     * Return a list of recent notifications (messages + telegrammes) for the user
+     */
+    public function notificationsList()
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json([]);
+        }
+
+        $notifications = [];
+
+        // unread messages
+        $messages = Message::where('receiver_id', $user->id)
+                    ->where('is_read', false)
+                    ->with('sender')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(20)
+                    ->get();
+
+        foreach ($messages as $m) {
+            $notifications[] = [
+                'type' => 'message',
+                'id' => $m->id,
+                'created_at' => $m->created_at->toDateTimeString(),
+                'content' => trim($m->content) ?: 'Nouveau message',
+                'from' => $m->sender ? $m->sender->name ?? $m->sender->email : null,
+                'url' => url('/messages/' . ($m->sender_id ?? $m->sender->id ?? '')),
+            ];
+        }
+
+        // telegrammes matching user's services or addressed to user and without responses
+        $userServices = json_decode($user->service, true) ?: [];
+
+        $tquery = Telegramme::with('annexes')->whereDoesntHave('reponses');
+
+        if (!empty($userServices) && is_array($userServices)) {
+            $tquery->where(function($q) use ($userServices) {
+                foreach ($userServices as $svc) {
+                    $q->orWhereJsonContains('service_concerne', $svc);
+                    $q->orWhere('service_concerne', 'like', '%' . $svc . '%');
+                }
+            });
+        } else {
+            // if user has no services, still include telegrammes explicitly addressed to them
+            $tquery->where('user_id', $user->id);
+        }
+
+        // also include telegrammes created for this user
+        $tquery->orWhere('user_id', $user->id);
+
+        $telegrammes = $tquery->orderBy('created_at', 'desc')->limit(20)->get();
+
+        foreach ($telegrammes as $t) {
+            $notifications[] = [
+                'type' => 'telegramme',
+                'id' => $t->id,
+                'created_at' => $t->created_at->toDateTimeString(),
+                'content' => 'Télégramme: ' . (
+                    strlen($t->objet ?? '') ? $t->objet : ($t->numero_enregistrement ?? 'Télégramme reçu')
+                ),
+                'from' => $t->user_id ? ('Utilisateur #' . $t->user_id) : null,
+                'url' => url('/telegramme/' . $t->id),
+            ];
+        }
+
+        // sort by created_at desc and limit to 20
+        usort($notifications, function($a, $b){ return strtotime($b['created_at']) <=> strtotime($a['created_at']); });
+        $notifications = array_slice($notifications, 0, 20);
+
+        return response()->json($notifications);
+    }
 
 public function startConversation(Request $request)
 {
@@ -294,4 +396,45 @@ public function show($userId)
     return view('messages.index', compact('conversations', 'messages', 'selectedUser', 'users'));
 }
 
+/**
+     * Mark a notification (message or telegramme) as read/acknowledged
+     */
+    public function markNotificationRead(Request $request)
+    {
+        $data = $request->validate([
+            'type' => 'required|string|in:message,telegramme',
+            'id' => 'required|integer',
+        ]);
+
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['ok' => false], 401);
+        }
+
+        if ($data['type'] === 'message') {
+            $msg = Message::find($data['id']);
+            if (!$msg) {
+                return response()->json(['ok' => false], 404);
+            }
+            if ($msg->receiver_id !== $user->id) {
+                return response()->json(['ok' => false], 403);
+            }
+            $msg->is_read = true;
+            $msg->save();
+            return response()->json(['ok' => true]);
+        }
+
+        if ($data['type'] === 'telegramme') {
+            // For telegramme we currently don't track per-user read state in DB.
+            // As a minimal acknowledgement we simply return success so frontend can navigate.
+            // Future: implement a telegramme_user_reads table to track per-user reads.
+            $t = Telegramme::find($data['id']);
+            if (!$t) {
+                return response()->json(['ok' => false], 404);
+            }
+            return response()->json(['ok' => true]);
+        }
+
+        return response()->json(['ok' => false], 400);
+    }
 }

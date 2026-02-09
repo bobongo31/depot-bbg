@@ -8,20 +8,25 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up(): void
     {
-        Schema::create('reponse_finales', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('telegrammes', function (Blueprint $table) {
+            $table->json('service_codes')->nullable()->after('service_concerne');
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down(): void
     {
-        Schema::dropIfExists('reponse_finales');
+        Schema::table('telegrammes', function (Blueprint $table) {
+            $table->dropColumn('service_codes');
+        });
     }
 };

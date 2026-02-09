@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AccuseReception;
 use App\Models\Annexe;
+use Illuminate\Validation\Rule;
+use Illuminate\Database\QueryException;
 
 class CourrierRecuController extends Controller
 {
@@ -14,7 +16,32 @@ class CourrierRecuController extends Controller
         // Récupérer la liste des numéros d'enregistrement existants
         // On suppose que la table accuse_receptions contient déjà ces numéros.
         $numEnregistrements = AccuseReception::pluck('numero_enregistrement', 'id');
-        return view('courriers.create', compact('numEnregistrements'));
+        $draft = null;
+        if (auth()->check()) {
+            // Prefer session (in-memory) draft to avoid DB drafts
+            $sessionKey = 'accuse_draft_' . auth()->id();
+            $sessionDraft = session($sessionKey, null);
+            if ($sessionDraft) {
+                // build a lightweight object compatible with the view
+                $draft = (object) [
+                    'date_reception' => $sessionDraft['date_reception'] ?? null,
+                    'numero_enregistrement' => $sessionDraft['numero_enregistrement'] ?? null,
+                    // match keys used by saveDraft()/JS
+                    'nom_expediteur' => $sessionDraft['nom_expediteur'] ?? null,
+                    'numero_reference' => $sessionDraft['numero_reference'] ?? null,
+                    'resume' => $sessionDraft['resume'] ?? null,
+                    'annexes' => collect(array_map(function($p){ return (object)['file_path' => $p]; }, $sessionDraft['uploaded_paths'] ?? [])),
+                    'id' => 'session-'.auth()->id(),
+                ];
+            } else {
+                $draft = AccuseReception::with('annexes')
+                    ->where('user_id', auth()->id())
+                    ->where('statut', 'brouillon')
+                    ->orderBy('updated_at', 'desc')
+                    ->first();
+            }
+        }
+        return view('courriers.create', compact('numEnregistrements', 'draft'));
     }
 
     public function addCommentaire(Request $request, $id)
@@ -49,7 +76,13 @@ class CourrierRecuController extends Controller
         // Affichage de la liste des courriers reçus
         public function indexCourriers()
         {
-            $courriers = AccuseReception::with('annexes')->get(); // Récupérer les courriers et leurs annexes
+            // Pagination des courriers (10 par page par défaut) et tri par date de réception décroissante
+            $perPage = 10; // modifier si nécessaire
+            $courriers = AccuseReception::with('annexes')
+                            ->orderBy('date_reception', 'desc')
+                            ->paginate($perPage)
+                            ->withQueryString();
+
             return view('courriers.index', compact('courriers'));
         }
 
@@ -66,96 +99,130 @@ class CourrierRecuController extends Controller
 
 
     public function store(Request $request)
-    {
-        // Validation des champs
-        // Ici, on utilise "exists" pour s'assurer que le numéro d'enregistrement existe déjà
-        $validated = $request->validate([
-            'date_reception' => 'required|date',
-            'numero_enregistrement' => 'required|string|exists:accuse_receptions,numero_enregistrement',
-            'nom_expediteur' => 'required|string|max:255',
-            'numero_reference' => 'nullable|string|max:255',
-            'resume' => 'required|string',
-            'annexes' => 'nullable|array',
-            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5048',
-        ]);
+{
+    $sessionKey   = 'accuse_draft_' . auth()->id();
+    $sessionDraft = $request->session()->get($sessionKey);
 
-        // Recherche l'accusé existant grâce au numéro d'enregistrement
+    // =========================
+    // VALIDATION
+    // =========================
+    $rules = [
+        'date_reception'        => 'required|date',
+        // numero must already exist in accuse_receptions so we update the existing record
+        'numero_enregistrement' => 'required|string|exists:accuse_receptions,numero_enregistrement',
+        'nom_expediteur'        => 'required|string|max:255',
+        'numero_reference'      => 'nullable|string|max:255',
+        'resume'                => 'required|string',
+        'annexes'               => 'nullable|array',
+        'annexes.*'             => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:55048',
+    ];
+
+    $validated = $request->validate($rules);
+
+    try {
+
+        // =========================
+        // FINALISE: lookup existing AccuseReception by numero_enregistrement and update it
+        // =========================
         $accuse = AccuseReception::where('numero_enregistrement', $validated['numero_enregistrement'])->first();
 
-        if (!$accuse) {
-            // Bien que la validation "exists" devrait empêcher ce cas, on peut ajouter une sécurité
-            return redirect()->back()->withErrors(['numero_enregistrement' => 'Le numéro d\'enregistrement sélectionné est invalide.']);
+        if ($accuse) {
+            $accuse->date_reception   = $validated['date_reception'];
+            $accuse->nom_expediteur   = $validated['nom_expediteur'];
+            $accuse->numero_reference = $validated['numero_reference'] ?? null;
+            $accuse->resume           = $validated['resume'];
+            $accuse->statut           = 'reçu';
+            $accuse->save();
+        } else {
+            // Safety fallback: create if not found (shouldn't happen because of validation)
+            $accuse = AccuseReception::create([
+                'user_id'             => auth()->id(),
+                'date_reception'      => $validated['date_reception'],
+                'numero_enregistrement'=> $validated['numero_enregistrement'],
+                'nom_expediteur'      => $validated['nom_expediteur'],
+                'numero_reference'    => $validated['numero_reference'] ?? null,
+                'resume'              => $validated['resume'],
+                'statut'              => 'reçu',
+            ]);
         }
 
-        // Mise à jour de l'enregistrement existant avec les nouvelles données
-        $accuse->update([
-            'date_reception' => $validated['date_reception'],
-            'nom_expediteur' => $validated['nom_expediteur'],
-            'numero_reference'=> $validated['numero_reference'] ?? null,
-            'resume' => $validated['resume'],
-            'statut' => 'reçu', // Par exemple, définir ou conserver le statut "reçu"
-        ]);
-
-        // Enregistrer les annexes si elles sont présentes
+        // =========================
+        // ANNEXES UPLOADÉES (FORM)
+        // =========================
         if ($request->hasFile('annexes')) {
             foreach ($request->file('annexes') as $file) {
                 $filePath = $file->store('annexes', 'public');
-                // Utiliser la relation définie dans le modèle pour créer l'annexe associée
-                $accuse->annexes()->create([
-                    'file_path' => $filePath,
+
+                Annexe::create([
                     'accuse_de_reception_id' => $accuse->id,
+                    'file_path' => $filePath,
                 ]);
             }
         }
 
-        return redirect()->route('courriers.index')->with('success', 'Courrier reçu mis à jour avec succès !');
-    }
-
-
-    public function storeWithService(Request $request)
-    {
-        $validated = $request->validate([
-            'date_reception' => 'required|date',
-            'numero_enregistrement' => 'required|string|exists:accuse_receptions,numero_enregistrement',
-            'nom_expediteur' => 'required|string|max:255',
-            'numero_reference' => 'nullable|string|max:255',
-            'resume' => 'required|string',
-            'observation' => 'nullable|string',
-            'commentaires' => 'nullable|string',
-            'service_concerne' => 'required|string|max:255', // Nouveau champ service concerné
-            'annexes' => 'nullable|array',
-            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:5048',
-        ]);
-
-        $accuse = AccuseReception::where('numero_enregistrement', $validated['numero_enregistrement'])->first();
-        if (!$accuse) {
-            return redirect()->back()->withErrors(['numero_enregistrement' => 'Le numéro d\'enregistrement est invalide.']);
-        }
-
-        $accuse->update([
-            'date_reception' => $validated['date_reception'],
-            'nom_expediteur' => $validated['nom_expediteur'],
-            'numero_reference' => $validated['numero_reference'] ?? null,
-            'resume' => $validated['resume'],
-            'observation' => $validated['observation'],
-            'commentaires' => $validated['commentaires'],
-            'service_concerne' => $validated['service_concerne'], // Enregistrement du service concerné
-            'statut' => 'reçu',
-        ]);
-
-        // Enregistrer les annexes
-        if ($request->hasFile('annexes')) {
-            foreach ($request->file('annexes') as $file) {
-                $filePath = $file->store('annexes', 'public');
-                $accuse->annexes()->create([
-                    'file_path' => $filePath,
+        // =========================
+        // ANNEXES DE LA SESSION (AUTOSAVE)
+        // =========================
+        if ($sessionDraft && !empty($sessionDraft['uploaded_paths'])) {
+            foreach ($sessionDraft['uploaded_paths'] as $p) {
+                Annexe::create([
                     'accuse_de_reception_id' => $accuse->id,
+                    'file_path' => $p,
                 ]);
             }
         }
 
-        return redirect()->route('courriers.index')->with('success', 'Courrier reçu pour un service mis à jour avec succès !');
-    }
+        // =========================
+        // NETTOYAGE SESSION
+        // =========================
+        $request->session()->forget($sessionKey);
 
+        return redirect()
+            ->route('courriers.index')
+            ->with('success', 'Courrier enregistré avec succès !');
+
+    } catch (QueryException $e) {
+
+        return redirect()
+            ->back()
+            ->withInput()
+            ->withErrors([
+                'database' => 'Erreur base de données : ' . $e->getMessage()
+            ]);
+    }
+}
+
+    // Save draft in session (autosave or explicit Save as Draft button)
+    public function saveDraft(Request $request)
+    {
+        $data = $request->only(['date_reception','numero_enregistrement','nom_expediteur','numero_reference','resume','uploaded_paths','draft_id']);
+
+        $userId = auth()->id();
+        $sessionKey = 'accuse_draft_' . $userId;
+
+        // load existing session draft
+        $draft = $request->session()->get($sessionKey, []);
+
+        // merge incoming fields
+        $draft['date_reception'] = $data['date_reception'] ?? ($draft['date_reception'] ?? null);
+        $draft['numero_enregistrement'] = $data['numero_enregistrement'] ?? ($draft['numero_enregistrement'] ?? null);
+        $draft['nom_expediteur'] = $data['nom_expediteur'] ?? ($draft['nom_expediteur'] ?? null);
+        $draft['numero_reference'] = $data['numero_reference'] ?? ($draft['numero_reference'] ?? null);
+        $draft['resume'] = $data['resume'] ?? ($draft['resume'] ?? null);
+
+        // merge uploaded_paths arrays
+        $incomingPaths = !empty($data['uploaded_paths']) ? json_decode($data['uploaded_paths'], true) : [];
+        if (!is_array($incomingPaths)) { $incomingPaths = []; }
+        $existingPaths = is_array($draft['uploaded_paths'] ?? null) ? $draft['uploaded_paths'] : [];
+        $merged = array_values(array_unique(array_merge($existingPaths, $incomingPaths)));
+        $draft['uploaded_paths'] = $merged;
+
+        $draft['updated_at'] = now()->toDateTimeString();
+
+        // persist in session only
+        $request->session()->put($sessionKey, $draft);
+
+        return response()->json(['status' => 'ok', 'id' => 'session-' . $userId, 'draft_key' => 'session-' . $userId]);
+    }
 
 }
