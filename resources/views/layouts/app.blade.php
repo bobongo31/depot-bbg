@@ -566,6 +566,68 @@ body.modal-open-scrollblock {
   height: 32px;
   fill: white;
 }
+
+/* =========================
+   NOTIFICATION BADGE (SAFE)
+========================= */
+.notification-icon {
+    position: relative; /* ancrage du badge */
+}
+
+.notification-icon .notif-count-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+
+    background-color: #dc3545; /* rouge Bootstrap */
+    color: #ffffff;
+
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+
+    box-shadow: 0 0 0 2px #ffffff; /* lisible sur fond clair/sombre */
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* =========================
+   NOTIFICATION DROPDOWN FIX
+========================= */
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 38px;
+    right: 0;
+
+    width: 340px;
+    max-width: calc(100vw - 20px); /* 👈 empêche le débordement */
+    max-height: 420px;
+    overflow-y: auto;
+
+    transform-origin: top right;
+}
+
+/* Si l'écran est petit, on centre */
+@media (max-width: 480px) {
+    .notification-dropdown {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100vw - 20px);
+    }
+}
+
+
   </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-13LEHFNS9X"></script>
@@ -613,25 +675,39 @@ body.modal-open-scrollblock {
 @endif
 
 
-<form action="{{ route('recherche.globale') }}" method="GET" class="d-flex mb-3">
-    <input type="text" name="q" class="form-control me-2" placeholder="Rechercher..." required>
-    <button class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
-</form>
+
 
 <!-- Notification bell + dropdown -->
+@auth
 <div class="d-inline-block align-middle ms-2">
   <div class="notification-wrapper position-relative">
-    <button id="notification-icon" class="btn btn-light notification-icon" aria-label="Notifications" type="button">
+
+    <button id="notification-icon"
+            class="btn btn-light notification-icon position-relative"
+            type="button"
+            aria-label="Notifications">
       <i class="fas fa-bell"></i>
+      <!-- badge injecté en JS -->
     </button>
 
-    <div id="notification-dropdown" class="card shadow-sm" style="display:none; position:absolute; right:0; top:38px; z-index:2000; width:340px; max-height:420px; overflow:auto;">
+    <div id="notification-dropdown"
+         class="card shadow-sm notification-dropdown"
+         style="display:none; position:absolute; right:0; top:38px; z-index:2000; width:340px; max-height:420px; overflow:auto;">
       <div class="card-body p-2">
         <ul id="notification-list" class="list-unstyled mb-0 p-0"></ul>
       </div>
     </div>
+
   </div>
 </div>
+@endauth
+
+@auth
+<form action="{{ route('recherche.globale') }}" method="GET" class="d-flex mb-3">
+    <input type="text" name="q" class="form-control me-2" placeholder="Rechercher..." required>
+    <button class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+</form>
+@endauth
 
   <!--<div id="app" class="flex min-h-screen flex-col">
      Inclusion du header contenant le menu 
@@ -653,377 +729,307 @@ body.modal-open-scrollblock {
   @endauth
 
   <!-- Scripts globaux -->
-  <script>
+ <script>
+/* ======================
+   NOTIFICATIONS (FINAL – SAFE)
+====================== */
+(function ($) {
+    'use strict';
 
-    $(document).ready(function() {
-    // Assure que le menu est bien caché au chargement
+    /* ----------------------
+       CONFIG
+    ---------------------- */
+    const COUNT_DELAY    = 20000; // 20s après login
+    const COUNT_INTERVAL = 60000;
+    const LOGIN_TS_KEY   = 'login_ts';
+    const csrfToken      = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    let dropdownOpen = false;
+
+    /* ----------------------
+       LOGIN TIMESTAMP
+    ---------------------- */
+    if (!localStorage.getItem(LOGIN_TS_KEY)) {
+        localStorage.setItem(LOGIN_TS_KEY, Date.now());
+    }
+
+    function canFetchCount() {
+        const ts = parseInt(localStorage.getItem(LOGIN_TS_KEY), 10);
+        return ts && (Date.now() - ts >= COUNT_DELAY);
+    }
+
+    /* ----------------------
+       BADGE (ANTI-CONFLIT)
+    ---------------------- */
+    function updateNotificationIcon(count) {
+        const $icon = $('.notification-icon');
+
+        // supprimer ancien badge
+        $icon.find('.notif-count-badge').remove();
+
+        if (!count || count <= 0) return;
+
+        const display = count > 99 ? '99+' : count;
+
+        $icon.append(
+            `<span class="notif-count-badge">${display}</span>`
+        );
+    }
+
+    /* ----------------------
+       FETCH COUNT
+    ---------------------- */
+    async function fetchCount() {
+        if (!canFetchCount()) return;
+        if (dropdownOpen) return;
+
+        try {
+            const res = await fetch('/notifications/count', {
+                credentials: 'same-origin'
+            });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            updateNotificationIcon(data.count || 0);
+        } catch {}
+    }
+
+    /* ----------------------
+       FETCH LIST
+    ---------------------- */
+    async function fetchList() {
+        try {
+            const res = await fetch('/notifications/list', {
+                credentials: 'same-origin'
+            });
+            if (!res.ok) throw new Error();
+
+            const data = await res.json();
+            const $list = $('#notification-list').empty();
+
+            if (!data || data.length === 0) {
+                $list.append(
+                    '<li class="text-muted text-center p-3">Aucune notification</li>'
+                );
+                return;
+            }
+
+            data.forEach(n => {
+                const title = n.type === 'message'
+                    ? `${n.from ? n.from + ' : ' : ''}${n.content}`
+                    : n.content;
+
+                $list.append(`
+                    <li class="notification-item mb-2 p-2 border-start border-3 border-primary bg-light rounded">
+                        <div class="small text-muted">
+                            ${new Date(n.created_at).toLocaleString()}
+                        </div>
+                        <div class="fw-semibold">
+                            <a href="#" class="notif-link text-decoration-none text-dark"
+                               data-id="${n.id}"
+                               data-type="${n.type}"
+                               data-url="${n.url}">
+                                ${$('<div/>').text(title).html()}
+                            </a>
+                        </div>
+                    </li>
+                `);
+            });
+        } catch {
+            $('#notification-list').html(
+                '<li class="text-danger text-center p-3">Erreur de chargement</li>'
+            );
+        }
+    }
+
+    /* ----------------------
+       MARK READ + REDIRECT
+    ---------------------- */
+    $(document).on('click', '.notif-link', async function (e) {
+        e.preventDefault();
+        const $a = $(this);
+
+        try {
+            await fetch('/notifications/read', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    id: $a.data('id'),
+                    type: $a.data('type')
+                })
+            });
+        } catch {}
+
+        window.location.href = $a.data('url');
+    });
+
+    /* ----------------------
+       DROPDOWN
+    ---------------------- */
     $('#notification-dropdown').hide();
 
-    // Toggle menu au clic sur l'icône
-    $('#notification-icon').click(function(e) {
-        e.preventDefault();
-        $('#notification-dropdown').toggle();
-        if ($('#notification-dropdown').is(':visible')) {
-            loadNotifications();
-        }
-    });
+    $('#notification-icon').on('click', function (e) {
+    e.preventDefault();
 
-    // Fermer menu si clic en dehors
-    $(document).click(function(event) {
-        if (!$(event.target).closest('#notification-icon, #notification-dropdown').length) {
+    const $dropdown = $('#notification-dropdown');
+    $dropdown.toggle();
+
+    dropdownOpen = $dropdown.is(':visible');
+
+    if (dropdownOpen) {
+        const rect = $dropdown[0].getBoundingClientRect();
+
+        if (rect.left < 10) {
+            $dropdown.css({
+                left: '10px',
+                right: 'auto'
+            });
+        }
+
+        if (rect.right > window.innerWidth - 10) {
+            $dropdown.css({
+                right: '10px',
+                left: 'auto'
+            });
+        }
+
+        fetchList();
+    }
+});
+
+
+    /* ----------------------
+       CLICK OUTSIDE
+    ---------------------- */
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#notification-icon, #notification-dropdown').length) {
             $('#notification-dropdown').hide();
+            dropdownOpen = false;
         }
     });
 
-    // Ton reste de code...
-});
+    /* ----------------------
+       POLLING SAFE
+    ---------------------- */
+    setInterval(fetchCount, COUNT_INTERVAL);
+    window.addEventListener('focus', fetchCount);
 
-$(document).ready(function() {
-    // Mise à jour du badge
-    function updateNotificationIcon(count) {
-        var displayCount = count > 100 ? '100+' : count;
-        var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' + displayCount + '</span>';
-        $('.notification-icon').find('.notification-badge').remove();
-        if(count > 0) {
-            $('.notification-icon').append(badgeHtml);
-        }
-    }
-
-    // Charger le compteur de notifications au chargement
-    function loadNotificationCount() {
-        $.ajax({
-            url: '/notifications/count',
-            method: 'GET',
-            success: function(data) {
-                updateNotificationIcon(data.count);
-            },
-            error: function() {
-                console.error('Erreur lors du chargement du compteur de notifications');
-            }
-        });
-    }
-
-    // Charger la liste des notifications au clic (déjà présent behaviour uses loadNotifications)
-
-    // Nouvelle logique: mettre à jour le dropdown avec le endpoint unifié
-    async function loadNotifications() {
-        try {
-            const res = await fetch('/notifications/list');
-            if (!res.ok) throw new Error('Erreur réseau');
-            const data = await res.json();
-            $('#notification-list').empty();
-            if (!data || data.length === 0) {
-                $('#notification-list').append('<li class="text-gray-500 text-center p-4">Aucune notification</li>');
-                return;
-            }
-            data.forEach(function(notif) {
-                let dateStr = new Date(notif.created_at).toLocaleString();
-                let title = notif.type === 'message' ? (notif.from ? notif.from + ' : ' : '') + notif.content : notif.content;
-                let li = `<li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">
-                              <div class="text-xs text-gray-400">${dateStr}</div>
-                              <div class="text-sm font-medium text-gray-700"><a href="${notif.url}">${title}</a></div>
-                          </li>`;
-                $('#notification-list').append(li);
-            });
-        } catch (e) {
-            $('#notification-list').html('<li class="text-red-500 text-center p-4">Erreur lors du chargement des notifications</li>');
-        }
-    }
-
-    // Charger la liste lors de l'ouverture du dropdown
-    $('#notification-icon').off('click').on('click', function(e) {
-        e.preventDefault();
-        $('#notification-dropdown').toggle();
-        if ($('#notification-dropdown').is(':visible')) {
-            loadNotificationCount();
-            loadNotifications();
-        }
-    });
-
-    // Charger le compteur au démarrage
-    loadNotificationCount();
-
-    // Rafraîchir le compteur toutes les minutes
-    setInterval(loadNotificationCount, 60000);
-});
-
-    
-    // Script pour les notifications & autres fonctionnalités (exemple)
-    jQuery(document).ready(function($) {
-  var notificationCount = 0;
-
-  // Sur tous les inputs/selects/textareas dans toutes les tables
-  $('table').find('input, select, textarea').on('change', function(){
-    notificationCount++;
-    updateNotificationIcon(notificationCount);
-  });
-
-  function updateNotificationIcon(count){
-    var displayCount = (count >= 2) ? 2 : count;
-    var badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">' 
-                    + displayCount + '</span>';
-    $('.notification-icon').find('.notification-badge').remove();
-    $('.notification-icon').append(badgeHtml);
-  }
+})(jQuery);
+</script>
 
 
 
-      // Gestion du menu profil
-      const profileBtn = document.getElementById('profile-btn');
-      const profileMenu = document.getElementById('profile-menu');
-      if (profileBtn && profileMenu) {
-        profileBtn.addEventListener('click', function () {
-          profileMenu.classList.toggle('hidden');
-        });
-      }
-
-      // Changement de thème
-      const themeToggleButton = document.getElementById('theme-toggle');
-      const currentTheme = localStorage.getItem('theme') || 'light-theme';
-      document.body.classList.add(currentTheme);
-      if (themeToggleButton) {
-        themeToggleButton.addEventListener('click', () => {
-          let newTheme = document.body.classList.contains('light-theme') ? 'dark-theme' : 'light-theme';
-          document.body.classList.remove('light-theme', 'dark-theme');
-          document.body.classList.add(newTheme);
-          localStorage.setItem('theme', newTheme);
-        });
-      }
-    });
-
-
-    // --- Animation d'apparition du footer au scroll ---
-    document.addEventListener('DOMContentLoaded', function () {
-      const footer = document.querySelector('.footer-animated');
-      if (footer) {
-        const observer = new IntersectionObserver(
-          entries => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                footer.classList.add('visible');
-                observer.unobserve(footer);
-              }
-            });
-          },
-          { threshold: 0.3 }
-        );
-        observer.observe(footer);
-      }
-    });
-
-    // --- Animation d'apparition des éléments au scroll (autres que le footer) ---
-    document.addEventListener('DOMContentLoaded', function () {
-  const animatedItems = document.querySelectorAll('.scroll-animated');
-
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    animatedItems.forEach(item => observer.observe(item));
-  } else {
-    // Fallback pour les anciens navigateurs (mobile ou IE)
-    animatedItems.forEach(item => {
-      item.classList.add('visible');
-    });
-  }
-});
-
-    // Ajouter une classe "zoom-in" à la page lors du chargement
-  document.addEventListener("DOMContentLoaded", function () {
-    // Sélectionner la balise body ou div qui contient l'ensemble du contenu de la page
-    const pageContent = document.querySelector('body');
-    if (pageContent) {
-      pageContent.classList.add('zoom-in');
-
-      // Lorsque la page est complètement chargée, ajouter la classe "zoom-in-active"
-      setTimeout(() => {
-        pageContent.classList.add('zoom-in-active');
-      }, 100); // Donne un petit délai avant d'appliquer l'animation
-    }
-  });
-    window.onload = function () {
-        const overlay = document.getElementById('overlayMessage');
-        if (!overlay) return;
-
-        // Gestion des vues
-        let viewCount = parseInt(localStorage.getItem('overlayMessageViewCount')) || 0;
-
-        if (viewCount >= 8) {
-          overlay.style.display = 'none';
-          document.body.classList.remove('modal-open-scrollblock');
-        } else {
-          overlay.style.display = 'flex';
-          document.body.classList.add('modal-open-scrollblock');
-        }
-      };
-
-      function closeOverlay() {
-        const overlay = document.getElementById('overlayMessage');
-        if (overlay) {
-          overlay.style.display = 'none';
-          document.body.classList.remove('modal-open-scrollblock');
-        }
-
-        let viewCount = parseInt(localStorage.getItem('overlayMessageViewCount')) || 0;
-        localStorage.setItem('overlayMessageViewCount', viewCount + 1);
-      }
-
+<script>
+/* ======================
+   UI / THEME / MENU
+====================== */
 document.addEventListener('DOMContentLoaded', function () {
-  const counters = document.querySelectorAll('.counter');
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    if (profileBtn && profileMenu) {
+        profileBtn.addEventListener('click', () => profileMenu.classList.toggle('hidden'));
+    }
 
-  // Fonction pour animer les compteurs
-  function animateCounters() {
-    counters.forEach(counter => {
-      if (!counter.classList.contains('animated')) {
-        const target = +counter.getAttribute('data-count');
-        let current = 0; // On commence à 0
-        const increment = target / 200; // Increment de l'animation
+    const themeToggle = document.getElementById('theme-toggle');
+    const theme = localStorage.getItem('theme') || 'light-theme';
+    document.body.classList.add(theme);
 
-        const updateCount = () => {
-          if (current < target) {
-            current += increment;
-            counter.innerText = Math.ceil(current); // On met à jour la valeur affichée
-            setTimeout(updateCount, 20); // Vitesse de l'animation
-          } else {
-            counter.innerText = target; // On s'assure que la valeur finale est bien atteinte
-            counter.classList.add('animated'); // On marque comme animé pour éviter les répétitions
-          }
-        };
-
-        updateCount();
-      }
-    });
-  }
-
-  // Observer la section pour savoir quand elle devient visible
-  const observer = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          console.log('Section visible, animation des compteurs lancée!');
-          animateCounters();
-          observer.unobserve(entry.target); // On désactive l'observation une fois l'animation lancée
-        }
-      });
-    },
-    { threshold: 0.2 } // L'animation démarre lorsque 20% de la section est visible
-  );
-
-  const counterSection = document.querySelector('.scroll-animated');
-  
-  if (counterSection) {
-    observer.observe(counterSection); // On observe la section contenant les compteurs
-  } else {
-    console.error('La section avec la classe .scroll-animated n\'a pas été trouvée.');
-  }
-});
-
-    // Live notification poller + mark-as-read handler
-    (function(){
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-
-        function updateNotificationIcon(count){
-            // remove existing
-            $('.notification-icon').find('.notification-badge').remove();
-            if(!count || parseInt(count) === 0){
-                return;
-            }
-            const badgeHtml = '<span class="notification-badge absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-danger rounded-full">'+count+'</span>';
-            $('.notification-icon').append(badgeHtml);
-        }
-
-        async function fetchCount(){
-            try{
-                const res = await fetch('/notifications/count', { credentials: 'same-origin' });
-                if(!res.ok) return;
-                const json = await res.json();
-                const c = parseInt(json.unread_count || 0, 10);
-                updateNotificationIcon(c);
-            }catch(e){ console.warn('notif count error', e); }
-        }
-
-        async function fetchListAndBind(){
-            try{
-                const res = await fetch('/notifications/list', { credentials: 'same-origin' });
-                if(!res.ok) throw new Error('network');
-                const data = await res.json();
-                $('#notification-list').empty();
-                if(!data || data.length === 0){
-                    $('#notification-list').append('<li class="text-gray-500 text-center p-4">Aucune notification</li>');
-                    return;
-                }
-
-                data.forEach(function(notif){
-                    let dateStr = new Date(notif.created_at).toLocaleString();
-                    let title = notif.type === 'message' ? (notif.from ? notif.from + ' : ' : '') + notif.content : notif.content;
-                    let li = $(`<li class="notification-item mb-2 p-2 border-l-4 border-blue-500 bg-gray-50 rounded">\
-                                  <div class="text-xs text-gray-400">${dateStr}</div>\
-                                  <div class="text-sm font-medium text-gray-700"><a href="#" class="notif-link" data-type="${notif.type}" data-id="${notif.id}" data-url="${notif.url}">${$('<div/>').text(title).html()}</a></div>\
-                              </li>`);
-                    $('#notification-list').append(li);
-                });
-
-                // bind click to mark as read then navigate
-                $('.notif-link').off('click').on('click', async function(e){
-                    e.preventDefault();
-                    const $a = $(this);
-                    const type = $a.data('type');
-                    const id = $a.data('id');
-                    const url = $a.data('url');
-
-                    try{
-                        await fetch('/notifications/read', {
-                            method: 'POST',
-                            credentials: 'same-origin',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken
-                            },
-                            body: JSON.stringify({ type: type, id: id })
-                        });
-                    } catch(err) {
-                        console.warn('mark read failed', err);
-                    }
-
-                    // Small delay to allow server to update count (optional)
-                    setTimeout(function(){ window.location.href = url; }, 120);
-                });
-
-            }catch(e){
-                $('#notification-list').html('<li class="text-red-500 text-center p-4">Erreur lors du chargement des notifications</li>');
-            }
-        }
-
-        // initial fetch
-        fetchCount();
-
-        // fetch list when dropdown opens: keep existing binding for icon click which calls loadNotifications
-        $('#notification-icon').off('click.poll').on('click.poll', function(e){
-            e.preventDefault();
-            $('#notification-dropdown').toggle();
-            if($('#notification-dropdown').is(':visible')){
-                fetchListAndBind();
-            }
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.body.classList.contains('light-theme') ? 'dark-theme' : 'light-theme';
+            document.body.className = newTheme;
+            localStorage.setItem('theme', newTheme);
         });
+    }
+});
+</script>
 
-        // poll every 10 seconds
-        setInterval(fetchCount, 10000);
+<script>
+/* ======================
+   ANIMATIONS & SCROLL
+====================== */
+document.addEventListener('DOMContentLoaded', function () {
+    const footer = document.querySelector('.footer-animated');
+    if (footer) {
+        const obs = new IntersectionObserver(e => {
+            if (e[0].isIntersecting) {
+                footer.classList.add('visible');
+                obs.disconnect();
+            }
+        }, { threshold: 0.3 });
+        obs.observe(footer);
+    }
 
-        // refresh immediately when window gains focus
-        window.addEventListener('focus', function(){ fetchCount(); });
+    document.querySelectorAll('.scroll-animated').forEach(el => {
+        const obs = new IntersectionObserver(e => {
+            if (e[0].isIntersecting) {
+                el.classList.add('visible');
+                obs.disconnect();
+            }
+        }, { threshold: 0.2 });
+        obs.observe(el);
+    });
 
-    })();
+    const counters = document.querySelectorAll('.counter');
+    if (counters.length) {
+        const obs = new IntersectionObserver(e => {
+            if (e[0].isIntersecting) {
+                counters.forEach(c => {
+                    let cur = 0, target = +c.dataset.count;
+                    const inc = target / 200;
+                    const step = () => {
+                        if (cur < target) {
+                            cur += inc;
+                            c.innerText = Math.ceil(cur);
+                            setTimeout(step, 20);
+                        } else {
+                            c.innerText = target;
+                        }
+                    };
+                    step();
+                });
+                obs.disconnect();
+            }
+        }, { threshold: 0.2 });
+        obs.observe(counters[0]);
+    }
+});
+</script>
 
-  </script>
+<script>
+/* ======================
+   OVERLAY & UX
+====================== */
+window.onload = function () {
+    const overlay = document.getElementById('overlayMessage');
+    if (!overlay) return;
+
+    const count = parseInt(localStorage.getItem('overlayMessageViewCount')) || 0;
+    if (count >= 8) {
+        overlay.style.display = 'none';
+        document.body.classList.remove('modal-open-scrollblock');
+    } else {
+        overlay.style.display = 'flex';
+        document.body.classList.add('modal-open-scrollblock');
+    }
+};
+
+function closeOverlay() {
+    const overlay = document.getElementById('overlayMessage');
+    if (!overlay) return;
+    overlay.style.display = 'none';
+    document.body.classList.remove('modal-open-scrollblock');
+    localStorage.setItem(
+        'overlayMessageViewCount',
+        (parseInt(localStorage.getItem('overlayMessageViewCount')) || 0) + 1
+    );
+}
+</script>
+
   <!-- jQuery (si nécessaire) -->
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
