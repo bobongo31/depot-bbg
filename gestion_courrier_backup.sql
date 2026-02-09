@@ -1,0 +1,936 @@
+-- MySQL dump 10.13  Distrib 8.0.43, for Linux (x86_64)
+--
+-- Host: localhost    Database: gestion_courrier
+-- ------------------------------------------------------
+-- Server version	8.0.43-0ubuntu0.22.04.2
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `accuse_receptions`
+--
+
+DROP TABLE IF EXISTS `accuse_receptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `accuse_receptions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `numero_enregistrement` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_accuse_reception` date DEFAULT NULL,
+  `date_reception` date DEFAULT NULL,
+  `receptionne_par` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `numero_reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nom_expediteur` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `objet` text COLLATE utf8mb4_unicode_ci,
+  `resume` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `observation` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `commentaires` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `avis` text COLLATE utf8mb4_unicode_ci,
+  `statut` enum('reçu','en attente','traité','brouillon') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `archive` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_archive` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `type_courrier` enum('externe','interne') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'externe',
+  `service_destinataire_id` bigint unsigned DEFAULT NULL,
+  `service_concerne` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_id` bigint unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `accuse_receptions_numero_enregistrement_unique` (`numero_enregistrement`),
+  KEY `fk_user_id` (`user_id`),
+  CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=493 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `accuse_receptions`
+--
+
+LOCK TABLES `accuse_receptions` WRITE;
+/*!40000 ALTER TABLE `accuse_receptions` DISABLE KEYS */;
+INSERT INTO `accuse_receptions` VALUES (81,'123/34',NULL,'2025-04-12','Sarah','DP03','brayane','test','test',NULL,NULL,NULL,'traité',NULL,NULL,'2025-04-12 10:57:26','2025-04-20 15:33:06','externe',NULL,NULL,8),(104,'1789/10',NULL,'2025-10-16','BOLANGA',NULL,'NUMBI KASONGO Alexis','DEMANDE D\'ASSISTANCE SOCIALE POUR LA FILLE NUMBI NDALA','DEMANDE D\'ASSISTANCE SOCIALE POUR MA FILLE NUMBI NDALA',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-16 08:47:10','2025-10-16 08:53:48','externe',NULL,NULL,145),(106,'1791/10',NULL,'2025-10-16','BOLANGA','071/FPC/CPKOC/2025','AKUNA RAMAZANI Calixte','REMBOURSEMENT DES FRAIS MEDICAUX','REMBOURSEMENT DES FRAIS MEDICAUX',NULL,NULL,NULL,'traité',NULL,NULL,'2025-10-16 11:35:02','2026-02-06 13:51:12','externe',NULL,NULL,145),(115,'1804/10',NULL,'2025-10-20','BOLANGA',NULL,'AKRAM','TRANSFERT DE L\'AGENT MBATSHO MUSONDOLI','TRANSFERT DE L\'AGENT MBATSHO MUSONDOLI',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-20 08:04:18','2025-10-20 09:08:59','externe',NULL,NULL,145),(120,'1805/10',NULL,'2025-10-20','BOLANGA',NULL,'KINGOMBE MAMBO FRANK','ASSISTANCE SOCIALE DE MON MARIAGE','ASSISTANCE SOCIALE DE MON MARIAGE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-20 09:13:00','2025-10-20 09:15:01','externe',NULL,NULL,145),(121,'1799/10',NULL,'2025-10-17','BOLANGA',NULL,'SIMBI NGEMBA MEDARD','NOTRE DEPART EN CONGE DE RECONSTITUTION EXERCICE 2025','NOTRE DEPART EN CONGE DE RECONSTITUTION EXERCICE 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-20 09:26:33','2025-10-20 09:28:14','externe',NULL,NULL,145),(122,'1806/10',NULL,'2025-10-21','BOLANGA',NULL,'NELSON DINZILA YA DINZILA','AUDIENCE','AUDIENCE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-21 08:58:27','2025-10-21 09:00:15','externe',NULL,NULL,145),(125,'1807/10',NULL,'2025-10-21','BOLANGA','ANEP/SEC.EX/SEK/01/421/2025','ANEP','TRANSMISSION INVITATION','TRANSMISSION INVITATION',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-21 09:04:34','2025-10-21 09:06:43','externe',NULL,NULL,145),(126,'1812/10',NULL,'2025-10-22','BOLANGA','22/MET/IGT/IPT-JYI/479/2025','INSPECTION GENERALE DU TRAVAIL','INVITATION DE SERVICE (DOSS. MANGOLE TSHIANGANA CLEMENT)','INVITATION DE SERVICE (DOSS. MANGOLE TSHIANGANA CLEMENT)',NULL,NULL,NULL,'reçu','Ministères',NULL,'2025-10-22 09:09:35','2025-10-22 09:31:06','externe',NULL,NULL,145),(127,'1816/10',NULL,'2025-10-22','BOLANGA',NULL,'IPK.CO.KONGO YA SOLO','DEMANDE DE SPONSOR','DEMANDE DE SPONSOR',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-22 12:26:04','2025-10-22 12:27:26','externe',NULL,NULL,145),(128,'1817/10',NULL,'2025-10-22','BOLANGA',NULL,'IPK.CO. KONGO YA SOLO','DEMANDE DE PARRAINAGE','DEMANDE DE PARRAINAGE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-22 12:32:38','2025-10-22 12:38:36','externe',NULL,NULL,145),(130,'1818/10',NULL,'2025-10-22','BOLANGA','026/MWK/2025','ENSEMBLE VOCAL \" BEL CANTO\"','ACCOMPAGNEMENT FINANCIER DE NOTRE ACTIVITE CULTURELLE','ACCOMPAGNEMENT FINANCIER DE NOTRE ACTIVITÉ CULTURELLE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-22 12:55:45','2025-10-22 13:03:34','externe',NULL,NULL,145),(136,'1827/10',NULL,'2025-10-23','BOLANGA','0153/DSF/SG/JMK/10/2025','DYNAMIQUE SYNDICALE DES FINANCES (DSF)','DEMANDE D\'AUTORISATION','DEMANDE D\'AUTORISATION',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-23 11:35:41','2025-10-23 11:41:45','externe',NULL,NULL,145),(137,'1819/10',NULL,'2025-10-22','BOLANGA',NULL,'AMURI KIRONGOZI REAGAN','DEMANDE DE TRANSFERT A LA DIRECTION GENERALE','DEMANDE DE TRANSFERT A LA DIRECTION GÉNÉRALE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-23 11:43:25','2025-10-23 11:45:59','externe',NULL,NULL,145),(138,'1828/10',NULL,'2025-10-23','BOLANGA','153/DSF/SADM/10/2025','DYNAMIQUE SYNDICALE DES FINANCES (DSF)','AFFECTATION D\'UN PERMANENT /FPC','AFFECTATION D\'UN PERMANENT  FPC',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-23 11:49:39','2025-10-23 11:52:07','externe',NULL,NULL,145),(139,'1829/10',NULL,'2025-10-23','BOLANGA','TMB/4648/COMM/DM-NH/10/25','T M  B','OFFRE DE SERVICE','OFFRE DE SERVICE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-23 12:09:59','2025-10-23 12:11:59','externe',NULL,NULL,145),(140,'1836/10',NULL,'2025-10-27','BOLANGA','072/FPC/CPOC/2025','AKUNA RAMAZANI CALIXTE/CP KONGO CENTRAL','TRANSMISSION POUR COMPETENCE -FINANCEMENT PROJET MADAME MIREILLE MAVINGA MBADU','TRANSMISSIONPOURCOMPETENCE- FINANCEMENT PROJET MADAME MIREILLE MAVINGA MBADU',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-27 08:40:51','2025-10-27 08:43:54','externe',NULL,NULL,145),(141,'1842/10',NULL,'2025-10-28','BOLANGA',NULL,'MPANZU  DIANA JEAN-PIERRE','ACCUSE DE RECEPTION - PREAVIS POUR DEPART A LA RETRAITE','ACCUSE DE RECEPTION - PREAVIS POUR DEPART A LA RETRAITE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-28 08:52:50','2025-10-28 08:55:24','externe',NULL,NULL,145),(142,'1843/10',NULL,'2025-10-28','BOLANGA',NULL,'MUTU PUNGI GABRIEL','PAIEMENT DE MES PÉCULES DE CONGÉ EXERCICES 2024 ET2025','PAIEMENT DE MES PECULES DE CONGE EXERCICES 2024 ET 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-10-28 09:53:04','2025-10-28 09:55:21','externe',NULL,NULL,145),(143,'1870/11',NULL,'2025-11-03','BOLANGA','156/AK/DG/ADM/M.M/2025','AKRAM','TRANSMISSION DE LA FACTURE DE PRESTATION MENSUELLE - MOIS DE NOVEMBRE 2025','TRANSMISSION DE LA FACTURE DE PRESTATION MENSUELLE MOIS DE NOVEMBRE 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-11-03 10:11:20','2025-11-03 10:21:08','externe',NULL,NULL,145),(148,'1871/11',NULL,'2025-11-03','BOLANGA','DG/AKRAM/CHA/JNM/288/10/2025','AKRAM','L\'INTEGRATION DU MONTANT DU A LA REDEVANCE DE REGULATION DES SERVICES ET SOINS DE SANTE ET PHARMACEUTIQUES \"RSSP\"','L\'INTEGRATION DU MONTANT DU A LA REDEVANCE DE REGULATION DE S SERVICES ET SOINS DE SANTEETPHARMACEUTIQUES \"RSSP\"',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-11-03 10:38:28','2025-11-03 10:41:59','externe',NULL,NULL,145),(149,'1948/11',NULL,'2025-11-18','BOLANGA','2025/LBG/002/11/SKYLTUP/DG','SKYLTUP SARL','DEMANDE D\'ASSISTANCE TECHNIQUE SUR LE PROGICIEL ODOO PERSONNALISE FPC','DEMANDE D\'ASSISTANCE TECHNIQUE SUR LE PROGICIEL ODOO PERSONNALISE FPC',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-11-18 10:11:17','2025-11-18 10:18:55','externe',NULL,NULL,145),(151,'1949/11',NULL,'2025-11-18','BOLANGA',NULL,'KAVIRA  SIVIHWA LYLY','DEMANDE DE CONGE','DEMANDE DE CONGE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-11-18 10:22:04','2025-11-18 10:23:41','externe',NULL,NULL,145),(152,'1950/11',NULL,'2025-11-18','BOLANGA',NULL,'CREEN MINDS ASSOCIATES  NATHALIE FODDERIE','INVITATION A L\'EMISSION \"MON PLAT PREFERE\" ET DEMANDE DE PARRAINAGE DE LA CAMPAGNE PROMOTION DE LA  GASTRONOMIE CONGOLAISE','INVITATION A L\'EMISSION MON PLAT PREFERE ET DEMANDE DE PARRAINAGE DE LA CAMPAGNE DE PROMOTION DE LA GASTRONOMIE CONGOLAISE',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-11-18 10:32:44','2025-11-18 10:37:00','externe',NULL,NULL,145),(153,'2003/11',NULL,'2025-11-27','BOLANGA Brigitte','304/AN/ECOFIN&CB/PR/GMK/11/2025','Hon Guy MAFUTA KABONGO','Invitation à la séance de travail','Invitation à la séance de travail pour le 28 novembre 2025 à 14h00',NULL,NULL,NULL,'reçu',NULL,NULL,'2025-12-09 10:39:57','2025-12-09 10:44:28','externe',NULL,NULL,145),(158,'003/01',NULL,'2026-01-06','BOLANGA',NULL,'KADIMA KALENDA','Demande d’audience','Demande d\'audience',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 08:26:54','2026-01-09 08:29:30','externe',NULL,NULL,146),(160,'005/01',NULL,'2026-01-06','BOLANGA','M.T/ART/MTM/002/2026','MINGLE TSHENGELE MALAKATA','Transmission d\'un projet de soutien musical','Transmission projet de soutien musical',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 08:42:16','2026-01-09 08:48:00','externe',NULL,NULL,146),(161,'007/01',NULL,'2026-01-06','BOLANGA','002/BBC/DG/AG/SAD/026','JIHAD HATOUN','Déclaration','Déclaration',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 08:52:52','2026-01-09 08:55:48','externe',NULL,NULL,146),(162,'010/01',NULL,'2026-01-06','BOLANGA','CAB/MIN/CAP/TNN/C-CULTU/MBJ/015820/2025','THEODORE NGANZI NDONI','Accuse de reception demande d\'appui institutionnel et de facilicitation de la foire internationale des arts de lubumbashi (FIALU)','Accuse de réception demande d\'appui intitutionnel',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 09:04:56','2026-01-09 09:09:09','externe',NULL,NULL,146),(163,'014/01',NULL,'2026-01-06','BOLANGA',NULL,'ONOKOKO LOKOLE','Demande de retraite anticipée','Demande de retraite anticipée',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 09:15:09','2026-01-09 09:16:51','externe',NULL,NULL,146),(164,'012/01',NULL,'2026-01-06','BOLANGA',NULL,'MBATSHO MUSONDOLI JOE','Demande d\'une lettre de recommandation pour l\'obtention d\'un crédit auprès d\'equityBCDC','Demande d\'une lettre de recommandation pour obtention d\'un crédit auprès d\'EQUITY',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 09:24:38','2026-01-09 09:28:51','externe',NULL,NULL,146),(165,'013/01',NULL,'2026-01-06','BOLANGA',NULL,'snel','Facture d\'energie','Facture d\'énergie',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 09:35:20','2026-02-04 09:35:50','externe',NULL,NULL,146),(166,'001/01',NULL,'2026-01-06','BOLANGA',NULL,'KATENGA BOFANDO','Décès de mon épouse','Décès de mon épouse',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 09:44:09','2026-01-09 09:47:29','externe',NULL,NULL,146),(167,'008/01',NULL,'2026-01-06','BOLANGA','CAB/MIN/CAP/YEM/C-ADM/FM/AKK/01540/2025','ELEBEMA NDEMBO YOLANDE','Transmission rapport d’activités instruction','Transmission rapport d\'activités instruction',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 09:52:25','2026-01-09 09:55:45','externe',NULL,NULL,146),(168,'009/01',NULL,'2026-01-06','BOLANGA','CAB/MIN/CAP/TNN/COJU/DMM/01534/2025','THEODORE NGANZI NDONI','Accusé de réception V/L n du 11 décembe 2025','Accusé de réception V/Ln 11 décembre 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 10:02:05','2026-01-09 10:07:03','externe',NULL,NULL,146),(169,'004/01',NULL,'2026-01-06','BOLANGA','0036/PNC/UPI-HP/COMDT/2026','KAMBALE AMBASU GUILLAUME','Bulletin de service','Bulletin de service',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 10:12:32','2026-01-09 10:15:07','externe',NULL,NULL,146),(170,'022/01',NULL,'2026-01-07','BOLANGA','204/12/KM/FJ/025','FAROUK JANMOHAMED','Arrét définitif des activités de notre société','Arrét définitif ds activités de notre sociétés',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 10:23:19','2026-01-09 10:26:36','externe',NULL,NULL,146),(171,'017/01',NULL,'2026-01-07','BOLANGA','001/FPC/ANT-Bbo/2026','KAMBALE KATSETSE','Demande d\'assistance decès de l\'enfant de l\'agent (FPC butembo)','Demande d\'assistance (décès de l\'enfant de l\'agent fpc butembo)',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 10:33:12','2026-01-09 10:37:50','externe',NULL,NULL,146),(172,'018/01',NULL,'2026-01-07','BOLANGA',NULL,'LIBULA ELIA','Candidature spontanée','Candidature spontanée',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 10:43:33','2026-01-09 10:47:16','externe',NULL,NULL,146),(173,'006/01',NULL,'2026-01-06','BOLANGA','CAB/AS/PU/001/026','JACQUES ASIKABIO GBAMO','Lettre de transmission de programme des formations du janvier au juin 2026','LETTRE DE TRANSMISSION DE PROGRAMME DES FORMATION DU JANVIER AU JUIN 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 10:51:56','2026-01-09 10:55:19','externe',NULL,NULL,146),(174,'011/01',NULL,'2026-01-06','BOLANGA','CAB/MIN/CAP/TNN/C-CULT/DMM/01505/2025','THEODORE NGANZI NDONI','Transmission demande de soutien pour lancement officiel de l\'albumfini les pleurs et autres chansons','Transmission demande de soutien pour lancemet officiel de l\'album fini les pleurs et autres chansons',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:01:45','2026-01-09 11:14:22','externe',NULL,NULL,146),(175,'021/01',NULL,'2026-01-07','BOLANGA','FPC/DG/DMR/2026','BGFI BANK RDC SA','Fiche de declaration de la redevance ad valorem','Fiche de declaration de la redevance ad valorem',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:20:04','2026-01-09 11:26:46','externe',NULL,NULL,146),(177,'023',NULL,'2026-01-07','BOLANGA','174/FPC/AKLM/2025','PILIPILI LUFUNGALA BENJAMIN','Transmission rapport annuel','Transmission rapport annuel',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:35:29','2026-01-09 11:38:08','externe',NULL,NULL,146),(178,'024/01',NULL,'2026-01-07','BOLANGA',NULL,'AKUNA RAMAZANIE','Message des voeux adresser à madame le dg','Message de voeux adresser à madame le dg',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:41:36','2026-01-09 11:43:19','externe',NULL,NULL,146),(179,'025/01',NULL,'2026-01-07','BOLANGA',NULL,'KAMBALE KATSETSE','Exercice 2026','Execice 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:46:37','2026-01-09 11:48:14','externe',NULL,NULL,146),(180,'020/01',NULL,'2026-01-07','BOLANGA','CAB/MIN/CAP/TNN/C-CULT/MBJ/01524/2025','THEODORE NGANZI NDONI','Transmission demande de partenariat','Transmission dossier demande de partenariat',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:52:21','2026-01-09 11:55:05','externe',NULL,NULL,146),(181,'026/01',NULL,'2026-01-07','BOLANGA',NULL,'Centre de creation et d\'initiation à la dance','Demande de soutien','Demande de soutien',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 11:57:29','2026-01-09 11:59:40','externe',NULL,NULL,146),(182,'029/01',NULL,'2026-01-08','BOLANGA',NULL,'SIMBI NGEMBA','Rappel remboursement des mes frais engagés pour l\'achat des équipements du bureau de l\'audit interne','Rappel remboursement des frais engagés pour l\'achat des équipement du bureau',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 12:07:53','2026-01-09 12:11:53','externe',NULL,NULL,146),(183,'031/01',NULL,'2026-01-08','BOLANGA','015/GLC-LLG/2026','LUKANU COMPANY SARL','Demande de collaboration pour l\'organisation du festival socioculturel des écoles de kinshasa','Demande de collaboration pour l\'organisation du festival socioculturel des écoles de Kinshasa',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 12:16:34','2026-01-09 12:20:03','externe',NULL,NULL,146),(184,'035/01',NULL,'2026-01-09','BOLANGA',NULL,'TSHIBOLA MPUTU','Demande de permission pour soin médicaux à cap-tow transmission attestation médicale','Demande de permission pour soin médicaux à cap-tow transmission attestation médicale',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 12:25:32','2026-01-09 12:28:45','externe',NULL,NULL,146),(185,'038/01',NULL,'2026-01-09','BOLANGA','001/FPC/DG/DEPF/SOA/2026','SHOKO ON\'ONTO ANTOINE','Transmission du rapport d\'activités annuelles de la direction d\'études,planification et la formation exercice 2025','Transmission du rapport d\'activités annuelles de la direction d\'études ;planification et de la formation exercice 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 12:35:23','2026-01-09 12:39:25','externe',NULL,NULL,146),(187,'041/01',NULL,'2026-01-09','BOLANGA',NULL,'MAISON BMK','Demande d\'appui et d\'accompagnement pour la promotion de la chanson dédiée à son excellence mon le président de la république','Demande d\'appui et d\'accompagnement pour la promotion de la chanson dédiée à son excellence',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 12:58:34','2026-01-09 13:02:15','externe',NULL,NULL,146),(188,'042/01',NULL,'2026-01-12','BOLANGA','22/AK/DG/ADM/M.M/2026','AKRAM','Rappel de non payement facture','Rappel de non payement facture',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 13:11:20','2026-01-09 13:14:25','externe',NULL,NULL,146),(189,'050/01',NULL,'2026-01-12','BOLANGA','N° 2388925400300','REGIDESO','FACURE MOIS DE DECEMBRE 2025/REGIDESO','FACTURE MOIS DE DECEMBRE 2025 REGIDESO',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 13:20:49','2026-02-03 12:25:09','externe',NULL,NULL,145),(190,'045/01',NULL,'2026-01-12','BOLANGA','02/FPC/CPNK/ABUT/2026','KAMBALE KATSETSE MARCEL','Transmission planning des congés fpc/butembo','TRANSMISSION PLANNING DES CONGES FPC/BUTEMBO',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-01-09 13:30:02','2026-02-02 13:49:22','externe',NULL,NULL,146),(193,'046/01',NULL,'2026-01-12','BOLANGA','001/FPC/PHU/AW/SOD/2026','OLEKO DJONGESONGO, CA WATSA','PLANNING DE CONGE 2026','PLANNING DE CONGE 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 08:18:57','2026-02-03 08:47:58','externe',NULL,NULL,145),(194,'170/02',NULL,'2026-02-02','BOLANGA','CDP/RDC/KIN/01/2026/0001','UPSILON','OFFRE DE CERTIFICATION PAR LE COLLEGE DE PARIS','Offre de certification par le collège de paris',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 08:44:21','2026-02-06 08:53:27','externe',NULL,NULL,146),(195,'171/02',NULL,'2026-02-02','BOLANGA',NULL,'DANIEL KABEMBA','DEMANDE D\'APPUI ET D\'ACCOMPAGNEMENT POUR L\'ORGANISATION DU GALA DE CHARITÉ POUR METTRE EN PLACE LA PREMIER CANTINE POPULAIRE POUR ENFANT DES RUES','Demande d\'appui et d\'accompagnement pour l\'organisation du gala de charité pour mettre en place la première cantine populaire pour enfant des rues',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 08:56:29','2026-02-06 09:18:14','externe',NULL,NULL,146),(197,'173/02',NULL,'2026-02-02','BOLANGA','ASSUR/DG/006/KIN/2026','ASSUR SARL','DEMANDE SPONSORING DE LA CLINIQUE DE LA FEMME','DEMANDE SPONSORING DE LA CLINIQUE DE LA FEMME',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 10:06:11','2026-02-06 09:30:31','externe',NULL,NULL,146),(198,'043/01',NULL,'2026-01-12','BOLANGA','01/FPC/CPTSHO/2026','Coordination provincial de la Tshopo','TRANSMISSION DOSSIER DE REAJUSTEMENT DE CONTRAT DE BAIL','TRANSMISSION DOSSIER DE REAJUSTEMENT DE CONTRAT DE BAIL',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 10:06:57','2026-02-03 10:41:52','externe',NULL,NULL,145),(199,'172/02',NULL,'2026-02-02','BOLANGA','185/AK/DG/ADM/M.M/2026','AKRAM','TRANSMISSION DE LA FACTURE DE PRESTATION MENSUELLE','Transmission de la facture de prestation mensuelle',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 10:26:30','2026-02-06 09:28:15','externe',NULL,NULL,146),(201,'176/02',NULL,'2026-02-02','BOLANGA',NULL,'SILO CONGO','PROPOSITION DE PRESTATION DE SERVICE IMPORTATION ET EXPORTATION','PROPOSITION DE PRESTATION DE SERVICE IMPORTATION ET EXPORTATION',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 10:44:15','2026-02-06 13:07:50','externe',NULL,NULL,146),(202,'169/02',NULL,'2026-02-02','BOLANGA','FPC/SAI/MSN/006/26','SIMBI NGEMBA Médard','NOTE EXPLICATIVE DU DOSSIER PORTANT SUR L\'ACHAT DES MEUBLES ET RIDEAUX POUR LE BUREAU DE MADAME LE DIRECTEUR DE LA PROMOTION CULTURELLE','Note  explicative du dossier portant sur l\'achat des meubles et rideaux pour le bureau de Madame le Directeur de la Promotion Culturelle',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 10:55:28','2026-02-06 11:53:07','externe',NULL,NULL,146),(203,'174/02',NULL,'2026-02-02','BOLANGA',NULL,'TSHAMALA WA TSHAMALA','RAPPEL PAIEMENT FRAIS DE MISSION DE MUANDA à MBANZA-NGUNGU','Rappel de paiement frais de  mission de Muanda à Mbanza-Ngungu',NULL,NULL,NULL,'traité',NULL,NULL,'2026-02-03 11:02:28','2026-02-06 13:57:56','externe',NULL,NULL,146),(204,'177/02',NULL,'2026-02-02','BOLANGA','Dem/Collab WD/01-2026','Shekinah BUTUMBI','DEMANDE DE PARRAINAGE INSTITUTIONNELLE POUR LE LANCEMENT OFFICIEL DU MAGAZINE WOMENS DELIGHT','Demande de parrainage institutionnelle pour le lancement officiel du magazine Women\'s Delight',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 11:37:12','2026-02-06 12:33:47','externe',NULL,NULL,146),(205,'175/02',NULL,'2026-02-02','BOLANGA',NULL,'TSHOMBA LOMANGO','VOTRE IMPLICATION SUR L’EXÉCUTION DE DEUX LETTRES ADRESSÉES AU FPC N 0418/MTP/SEC/ADG/PCN/OCI/VTP/2025 ET N 0400/MTP/SEC/ADG/PCNI/VHTP/2025','Votre implication sur l\'exécution de deux lettres adressées au FPC N°0418/MTP/SEC/ADG/PCN/OCI/VHTP/2025 et N°0400/MTP/SEC/ADG/PCN/OCI/VHTP/2025',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 11:50:07','2026-02-06 12:42:53','externe',NULL,NULL,146),(206,'178/02',NULL,'2026-02-02','BOLANGA','048/CAB/MIN.PF/LKM/SG.PF/CMC/JS/2026','Julie SHIKU MINISTÈRE DU PORTEFEUILLE','EVALUATIONS DE CLÔTURE DU PAIEMENT D\'ACOMPTE à VALOIR SUR L’EXCÉDENT DE GESTION DES ETABLISSEMENTS PUBLICS AU BUDGET DE L\'ETAT/EXERCICE 2025','Évaluation de clôture du paiement d\'Acompte à valoir sur l\'Excédent de Gestion des Etablissements Publiques au Budget de l\'Etat /exercice 2025',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 12:07:57','2026-02-06 12:58:41','externe',NULL,NULL,146),(207,'179/02',NULL,'2026-02-02','BOLANGA',NULL,'DINZALA YA DINZILA','DEMANDE DU FOND DE PROMOTION CULTURELLE POUR LES CHANSONS L\'OEUVRE DE FATSHI BETON TOUJOURS,BILAN YA FATSHI LARGEMENT POSITIF,CONGOLAIS TELEMA,KIN EZO BONGA','Demande du Fonds de Promotion Culturelle pour la chanson l\'oeuvre de FATSHI beton toujours ,bilan ya FATSHI largement positif congolais telema kin ezo bonga',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 12:26:10','2026-02-06 09:55:17','externe',NULL,NULL,146),(208,'180/02',NULL,'2026-02-02','BOLANGA',NULL,'COORDINATION LUALABA FPC','COMPTE COURANT DES REDEVABLES MOIS DE JANVIER 2026','COMPTE COURANT DES REDEVABLES MOIS DE JANVIER 2026',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-03 12:36:29','2026-02-06 09:45:30','externe',NULL,NULL,146),(209,'047/01',NULL,'2026-01-12','BOLANGA','002/FPC/PHU/AW/SOD/2026','OLEKO DJONGESONGO STEPHANE - WATSA','TRANSMISSION RAPPORT DE LA MISSION EFFECTUEE DANS LA PROVINCE DU HAUT-UELE','TRANSMISSION RAPPORT DE LAMISSION EFFECTUEE DANS LA PROVINCE DU HAUT-UELE',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 12:39:22','2026-02-03 12:44:42','externe',NULL,NULL,145),(211,'181/02',NULL,'2026-02-03','KANYEBA','003/FPC/DG/DCI/DSH/2026','SHOKO ON\'ONTO ANTOINE','DEMANDE DE RACCORDEMENT DU BUREAU DU DIRECTEUR DE CONTOLE ET INSPECTION AU GROUPE ÉLECTROGÈNE','Demande de raccordement du bureau du directeur de contrôle et inspection au groupe électrogène',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 12:44:35','2026-02-03 12:51:44','externe',NULL,NULL,146),(212,'182/02',NULL,'2026-02-03','KANYEBA','6112601521605/01','Snel','Facture d’énergie 6112601521605/01','Facture d’énergie',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 12:56:22','2026-02-04 09:30:45','externe',NULL,NULL,146),(215,'184/02',NULL,'2026-02-03','BOLANGA',NULL,'KAZADI KALALA MIKE','Rappel à-propos du paiement manquant à mon décompte final','Rappel à-propos du paiement manquant à mon décompte final',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 13:15:27','2026-02-03 13:17:39','externe',NULL,NULL,146),(216,'183/02',NULL,'2026-02-03','BOLANGA','003/FPC/DG/DCP/JPK/2026','KAPOYA WAMUKUBU','Demande d\'explications','Demande d\'explication à Mr ONOKOKO LOKOLE Jean michel',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 13:19:16','2026-02-06 10:37:03','externe',NULL,NULL,146),(217,'186/02',NULL,'2026-02-03','BOLANGA',NULL,'SHAKO KOKO','Demande de paiement arrisés pécules des congés pour faire face à l\' urgence d\'une garantie locative','Demande de paiements arriérés pécule des congés pour faire face à l\'urgence d\' une garantie locative',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-03 13:26:03','2026-02-03 13:28:47','externe',NULL,NULL,146),(218,'187/02',NULL,'2026-02-03','BOLANGA',NULL,'MARCO FASHION','Invitation','Invitation',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 07:50:48','2026-02-04 07:52:19','externe',NULL,NULL,146),(219,'188/02',NULL,'2026-02-03','BOLANGA','04/FPC/DP-KC/GNM/2026','NTUMBA MUNGANGA/COOD KASAI CENTAL','Transmission bulletin de congé annuel','Transmission bulletin de congé annuel',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 07:57:08','2026-02-04 08:00:47','externe',NULL,NULL,146),(220,'189/02',NULL,'2026-02-04','BOLANGA',NULL,'KIKWATA LIBANDILA JACKY','Déclaration','Déclaration mariage',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 08:05:06','2026-02-04 08:06:38','externe',NULL,NULL,146),(222,'O48/01',NULL,'2026-01-12','BOLANGA','003/FPC/PHU/AW/SOD/2026','OLEKO DJONGESONGO','Transmission rapport annuel 2025','Transmission rapport annuel 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 08:16:15','2026-02-04 09:39:25','externe',NULL,NULL,145),(223,'191/02',NULL,'2026-02-04','BOLANGA','021/SCD/CA/PCA/BBM/SEC.CA/DDT/26','SOCODA COOP-CA','Invitation à l\'assemblée générale ordinaire de la SOCODA COOP-CA','Invitation à l\'assemblée générale ordinaire de la SOCODA COOP-CA',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 08:23:35','2026-02-04 08:26:58','externe',NULL,NULL,146),(226,'049/01',NULL,'2026-01-12','BOLANGA',NULL,'SIMBI NGEMBA','Transmission du planning de congé exercice 2026','Transmission du planning de congé exercice 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 09:13:58','2026-02-04 11:40:56','externe',NULL,NULL,146),(228,'053/01',NULL,'2026-01-12','BOLANGA',NULL,'MARCO FASHION','Demande d\'accompagnement','Demande d\'accompagnement',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 09:27:21','2026-02-04 09:29:35','externe',NULL,NULL,145),(233,'060/01',NULL,'2026-01-12','BOLANGA',NULL,'INTERSYNDICALE DU FPC','Tenue de la 2ème session paritaire semestrielle','Tenue de la 2ème session paritaire semestrielle',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:09:50','2026-02-04 10:12:19','externe',NULL,NULL,146),(234,'056/01',NULL,'2026-01-12','BOLANGA','FPC/DG/DMR/2026','PYRAMIDE ENGINEERING','Fiche de déclaration de la redevance ad valorem','Fiche déclaration de la redevance ad valorem',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:19:19','2026-02-04 10:22:31','externe',NULL,NULL,146),(235,'192/02',NULL,'2026-02-04','BOLANGA','MESURSI/IGSC/COORD/ATW/082/KK/2026','MESURSI / Prof. Dr Antoine TSHIMPI WOLA YABA','Appel à partenariat financier et logistique pour le programme de formation aux métiers de la valorisation de la recherche, des inventions et des innovations en RDC','Appel à partenariat financier et logistique pour le Programme de formation aux métiers de la valorisation de la recherche, des inventions et des innovations en RDC',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:27:49','2026-02-04 10:34:11','externe',NULL,NULL,145),(236,'057/01',NULL,'2026-01-12','BOLANGA','FPC/DG/DMR/2025','PYRAMIDE','Fiche de déclaration de la redevance ad valorem','Fiche déclaration de la redevance ad valorem',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:30:33','2026-02-04 10:34:34','externe',NULL,NULL,146),(237,'193/02',NULL,'2026-02-04','BOLANGA','001/FPC/DPC/NKS/LMM/2026','LUHEMBWE MUKINGO M.','Transmission des programmes d\'activités culturelles 2025-2026','Transmission des programmes d\'activités culturelles 2025-2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:41:18','2026-02-04 10:43:50','externe',NULL,NULL,145),(238,'058/01',NULL,'2026-01-12','BOLANGA','FPC/DG/DMR/2025','PYARAMIDE ENGINEENG','Fiche déclaration de la redevance ad valorem','Fiche déclaration de la redevance ad valorem',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:45:38','2026-02-04 10:47:37','externe',NULL,NULL,146),(239,'059/01',NULL,'2026-01-12','BOLANGA',NULL,'Ferdinand djayerombe vaweka','Proposition de la formation professionnelle','Proposition de la formation professionnelle',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 10:58:43','2026-02-04 11:07:32','externe',NULL,NULL,146),(240,'194/02',NULL,'2026-02-04','BOLANGA',NULL,'MONOKO LESSORIA LOUISE','Demande d\'appui financier pour la création et le lancement d\'une structure culturelle','Demande d\'appui financier pour la création et le lancement d\'une structure culturelle',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:00:38','2026-02-04 11:03:24','externe',NULL,NULL,145),(241,'061/01',NULL,'2026-01-12','BOLANGA',NULL,'LEADERSHIP AWARDS','Demande de soutien pour le projet leadership awards','Demande de soutien pour le projet leadership awards',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:11:54','2026-02-04 11:15:24','externe',NULL,NULL,146),(242,'195/02',NULL,'2026-02-04','BOLANGA',NULL,'CFAO','Votre commande suivant le contrat du marché DAON N°001/FPC/2025 au lot 3','Votre commande suivant le contrat du marché DAON N°001-FPC-2025 au lot 3',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:13:23','2026-02-04 11:23:37','externe',NULL,NULL,145),(244,'196/02',NULL,'2026-02-04','BOLANGA','0132/PNC/UPI-HP/Comdt/2026','Police Nationale Congolaise','Bulletin de Service','Bulletin de Service',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:28:06','2026-02-04 11:34:25','externe',NULL,NULL,145),(245,'055/01',NULL,'2026-01-12','BOLANGA',NULL,'GINGER SOFRECO','Catalogue de formation','Catalogue de formation',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:29:08','2026-02-04 11:30:56','externe',NULL,NULL,146),(246,'197/02',NULL,'2026-02-04','BOLANGA','028/OA/02/2026','OLIVIER AGENCY','Offre de service','Offre de service',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:40:26','2026-02-04 11:42:49','externe',NULL,NULL,145),(247,'185/02',NULL,'2026-02-03','BOLANGA','001/FPC/DG/DEPF/2026','BOHOLO IYELE','Transmission dossier traité relatif à l\'annonce de la mission d\'appui technique du centre réginal d\'assistance technique d’Afrique centrale(afritac)du fonds monétaire international sur la revue qualité des programmes budgétaires et cadres de performance des ministères','Transmission dossier traité relatif à l\'annonce de la mission d\'appui technique du centre régional d\'assistance technique d\'afrique central (AFRITAC) du fonds monétaire international sur la revue qualité des programmes budgétaire et cadre de performances des ministères',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 11:51:21','2026-02-04 11:57:54','externe',NULL,NULL,146),(248,'071/01',NULL,'2026-01-14','BOLANGA','002/FPC/DCI/DG/NBG/2026','ASSINI KIRONGOZI Adalbert, DCI','Transmission rapport annuel 2025','Transmission rapport annuel 2025 DCI',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 12:27:28','2026-02-04 12:31:17','externe',NULL,NULL,145),(249,'069/01',NULL,'2026-01-12','BOLANGA','019/PR/JNN/2025','JN FONDATION','Demande d\'accompagnement','Demande d\'accompagnement',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 12:50:07','2026-02-04 12:51:39','externe',NULL,NULL,146),(250,'062/01',NULL,'2026-01-13','BOLANGA','001/FPC/CPKOC/2025','AKUNA RAMAZANI CALIXTE','Demande des carnets note de débit et fourniture de bureau','Demande des carnets de note de débit et fourniture de bureau',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 12:54:29','2026-02-04 12:56:44','externe',NULL,NULL,146),(251,'070/01',NULL,'2026-01-13','BOLANGA','36/FPC/DCP/MKG/2026','MUMBERE KALWANGERO GATIA','Transmission rapport annuel d\'activités de la direction de la coordination des provinces pour l\'exercice 2025','Transmission rapport annuel d\'activités de la direction de la coordination des provinces pour l’exercice 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:01:52','2026-02-04 13:04:57','externe',NULL,NULL,146),(252,'067/01',NULL,'2026-01-13','BOLANGA','CRED/MED/PUM/KM/rbk-n°2026/20937','RAWBANK','Mise en demeure pour vos engagements en nos livres','Mise en demeure pour vos engagements en nos livres',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:08:45','2026-02-04 13:13:28','externe',NULL,NULL,146),(253,'072/01',NULL,'2026-01-14','BOLANGA','001/FPC/DG/DF/2026','NKANGA DIMFUANA Hector, DF','Transmission Rapport D\'inventaires des Caisses au 31/12/2025','Transmission Rapport d\'inventaires des Caisses au 31/12/2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:10:44','2026-02-04 13:15:10','externe',NULL,NULL,145),(254,'063/01',NULL,'2026-01-13','BOLANGA','002/FPC/CPKOC/2026','AKUNA RAMAZANI Calixte','Transmission tableau synthèse des ordonnancées et recouvrées de la coordination provinciale du fpc/kongo central exercice 2025','Transmission tableau synthèse des ordonnancées de la coordination provinciale du fpc/kongo central exercice 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:21:11','2026-02-04 13:24:16','externe',NULL,NULL,146),(255,'198/02',NULL,'2026-02-04','BOLANGA','004/FPC/DG/DCI/DSH/2026','SHOKO ON\'ONTO Antoine, DCI','Transmission de la note technique ainsi que les projets des ordres de mission permanente sur l\'architecture','Transmission de la note technique ainsi que les projets des ordres de mission permanente sur l\'architecture',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:24:48','2026-02-04 13:28:56','externe',NULL,NULL,145),(256,'064/01',NULL,'2026-01-13','BOLANGA','003/FPC/CPKOC/2026','AKUNA RAMAZANI Calixte','Transmission tableau synthèse des ordonnancées et recouvrées de coordination provinciale du fpc/kongo central du mois de décembre2025','Transmission tableau synthèse des ordonnancées et recouvrées de la coordination provinciale du fpc/kongo central  du mois de décembre 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:33:11','2026-02-04 13:36:40','externe',NULL,NULL,146),(257,'079/02',NULL,'2026-01-14','BOLANGA',NULL,NULL,'Location bâtiment DG/ mois de Décembre 2025',NULL,NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:34:52','2026-02-04 13:34:52','externe',NULL,NULL,145),(258,'065/01',NULL,'2026-01-13','BOLANGA','02/FPC/CP.KC/CKK/2026','KASONGA KABELA','Transmission situation des ordonnancées mois de novembre','Transmission situation des ordonnancées et recouvrées   mois de novembre et décembre 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:42:53','2026-02-04 13:48:52','externe',NULL,NULL,146),(259,'066/01',NULL,'2026-01-13','BOLANGA',NULL,'BEMA MBALI','Rappel de ma demande d\'un prêt sur mon décompte finale de 3000','Rappel de ma demande d\' un prêt sur mon décompte finale de 3000',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-04 13:54:40','2026-02-04 13:56:34','externe',NULL,NULL,146),(288,'199/02',NULL,'2026-02-05','BOLANGA',NULL,'KUMBA WEMBO Idelphonse','Demande de paiement des mes pécules 2022, 2023, 2024, 2025 et 2026','Demande de paiement de mes pécules 2022, 2023, 2024, 2025 et 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:04:21','2026-02-05 07:07:41','externe',NULL,NULL,145),(289,'116/01',NULL,'2026-01-23','BOLANGA','001/FPC/DRHSG/2026','MUMBERE KALWENGERO Gratia, DRHSG','Demande de remboursement des frais de soins médicaux Doss : MWENGEVIVUYA (mon épouse','Demande de remboursement des frais de soins médicaux Doss - MWENGE VIVUYA Joyce (mon épouse',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:05:02','2026-02-05 07:21:19','externe',NULL,NULL,145),(292,'200/02',NULL,'2026-02-05','BOLANGA','03/FPC/ANT-Bbo/2026','KAMBALE KATSETSE Marcel, CB ai - Butembo','Demande des CARNETS DE NOTE (NOTE DEDEBIT) FPC Antenne de/Butembo','Demande des CARNETS DE NOTE (NOTE DE DEBIT) FPC Antenne/Butembo',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:16:53','2026-02-05 07:34:48','externe',NULL,NULL,145),(293,'079/01',NULL,'2026-01-14','KANYEBA','422/DCN/S-DPF/2025','RVF','Facture n°422','Facture n°422',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:30:16','2026-02-05 07:33:57','externe',NULL,NULL,146),(302,'078/01',NULL,'2026-01-14','KANYEBA','420/DCN/S-DPF/2025','RVF','Facture n°420','Facture n°420',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:34:33','2026-02-05 07:37:41','externe',NULL,NULL,146),(307,'201/02',NULL,'2026-02-05','BOLANGA',NULL,'MARSAVCO SA','Déclaration de la taxe mois de Janvier-26','Déclaration de la taxe mois de Janvier - 26',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:35:09','2026-02-05 09:05:41','externe',NULL,NULL,145),(312,'077/01',NULL,'2026-01-14','KANYEBA','01/TAJOJA/ADM/MR/26','TAJOJA INSTITUT','Fermeture momentanée d\' activités de notre salon','Fermeture momentanée d\'activités de notre salon',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:38:56','2026-02-05 07:44:35','externe',NULL,NULL,146),(320,'081/01',NULL,'2026-01-14','KANYEBA',NULL,'AMISI MELA REDDY','Demande de soutien financier  pour le projet de concerts musicaux','Demande de soutien de financier pour le projet de concerts musicaux',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:45:44','2026-02-05 07:52:10','externe',NULL,NULL,146),(327,'073/01',NULL,'2026-01-14','KANYEBA','JPK/DCP/FPC/026','KAPOYA WAMUKUBU','Accusé de réception mise en demeure de production des justificatifs-utime délai concernant la réclamation de rémunération','Accusé de réception mise en demeure de production des justicatifs-ultime délai concernant la réclamation de rémunération',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 07:53:02','2026-02-05 08:01:53','externe',NULL,NULL,146),(336,'202/02',NULL,'2026-02-05',NULL,'05/FPC/DP-KC/GNM/2026','NTUMBA MUNGANGA',NULL,'Transmission situation compte courant janvier 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 08:16:35','2026-02-05 08:52:59','externe',NULL,NULL,146),(356,'166/01',NULL,'2026-01-30','KANYEBA','29/2S/KC-MAT/01/026','SAMUEL MATINGU RENEDI','Demande de sponsoring pour le projet culturel et éducative NKETO ARTS','Demande de sponsoring pour le projet culturel et éducative \"NKETO\' ARTS\"',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 09:36:26','2026-02-06 07:18:19','externe',NULL,NULL,146),(367,'164/01',NULL,'2026-01-30','KANYEBA','FPC/SAI/MSN/005/26','SIMBI NGEMBA','Sollicitation de l\'achat d\'une imprimate camon image class pour le service audit interne','Sollicitation de l\'achat d\'une imprimante camon image class pour le Service Audit Intrne',NULL,NULL,NULL,'traité',NULL,NULL,'2026-02-05 09:59:57','2026-02-06 10:32:50','externe',NULL,NULL,146),(368,'163/01',NULL,'2026-01-30','KANYEBA','01/FPC/CP-MMA/ELD/2026','LUMUMBA DJUNGA','Demande des pécules de congés 2023,2024 et frais du transport','Demande des pécules de congés 2023,2024 et frais de transport',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-05 10:07:34','2026-02-06 07:41:09','externe',NULL,NULL,146),(389,'159/01',NULL,'2026-01-29','KANYEBA',NULL,'PATIENCE DIA','Demande de subvention-projet de documentaire historique','Demande de subvention-projet de documentaire historique',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-05 10:51:00','2026-02-06 08:21:45','externe',NULL,NULL,146),(464,'168/01',NULL,'2026-01-30','KANYEBA',NULL,'LOKONGA ELONGO','Déclaration de créance pour les soins chirurgicaux','Déclaration de créance pour les soins chirurgicaux',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-05 12:42:31','2026-02-06 08:27:30','externe',NULL,NULL,146),(465,'165/01',NULL,'2026-01-30','KANYEBA',NULL,'TALA ARTS','Demande de soutien financier pour la journée culturelle et la sortie officielle de TALA ARTS 28 mars 2026','Demande de soutien financier pour la journée culturelle et la sortie officielle de TALA ARTS 28 mars 2026',NULL,NULL,NULL,'en attente',NULL,NULL,'2026-02-05 12:51:15','2026-02-06 07:27:01','externe',NULL,NULL,146),(466,'203/02',NULL,'2026-02-05','BOLANGA','0566/DGRA/DG/2026','DGRAD','Paiement excédent de gestion des Etablissements publics du mois de janvier 2026','paiement excédent de gestion des Etablissements publics du mois de janvier 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 13:01:14','2026-02-05 13:07:06','externe',NULL,NULL,145),(467,'165/001',NULL,'2026-01-30','KANYEBA','002/JPK/DCP/FPC/2026','KAPOYA WAMUKUBU','Changement de banque pour le paiement de mon salaire de la rawbank à equity','Changement de banque pour le paiement de mon salaire de la rawbank à equity',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 13:06:34','2026-02-05 13:09:00','externe',NULL,NULL,146),(468,'204/02',NULL,'2026-02-05','BOLANGA','004/JPK/DCP/FPC/2026','KAPOYA WAMUKUBU Jean-Philippe','Mise au point sur la Mise en demeure de Production des justificatifs','Mise au point sur la Mise en demeure de Production des justificatifs',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 13:13:00','2026-02-05 13:16:58','externe',NULL,NULL,145),(469,'161/01',NULL,'2026-01-29','KANYEBA','013/01/MPW/PR/26','FONDATION PUTSHU POUR FEMME','Demande de parrainage culturel et d\'appui institutionnel','Demande de parrainage culturel et d\'appui institutionnel',NULL,NULL,NULL,'traité',NULL,NULL,'2026-02-05 13:14:09','2026-02-06 08:37:15','externe',NULL,NULL,146),(470,'148/01',NULL,'2026-01-28','KANYEBA',NULL,'MIPU MAYO JOSUE/FECEK','Transmission du projet FECEK','Transmission du projet FECEK',NULL,NULL,NULL,'traité',NULL,NULL,'2026-02-05 13:20:42','2026-02-06 08:31:00','externe',NULL,NULL,146),(471,'205/02',NULL,'2026-02-05','BOLANGA','006/dcn/s-dpf/2026','R V F','Facture location Rez-de-chaussée','Facture location Rez-de-chaussée mois de janvier 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-05 13:27:56','2026-02-05 13:30:01','externe',NULL,NULL,145),(472,'167/01',NULL,'2026-01-30','KANYEBA','002/FPC/DG/DCI/DSH/2026','SHOKO ON\'ONTO ANTOINE','Transmission des projets des ordres de mission de contrôle et inspection de 2022 à 2025 pour une durée de 30 jours','Transmission des projets des ordres de mission de contrôle et inspection de 2022 à 2025 pour une durée de 30 jours',NULL,NULL,NULL,'traité',NULL,NULL,'2026-02-05 13:29:33','2026-02-06 10:50:13','externe',NULL,NULL,146),(473,'206/02',NULL,'2026-02-05','KANYEBA','007/DCN/S-DPF/2026','RVF','Facture n° 007/DCN/S-DPF/2026','Facture n°007/DCN/S-DPF 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 06:57:06','2026-02-06 07:00:17','externe',NULL,NULL,146),(474,'208/02',NULL,'2026-02-05','KANYEBA','CAB.PCA/FPC/NDE/007/2026','NGOY DIOKO EMMANY','Rappel de paiement d\'arriérés','Rappel de paiement d\'arriérés',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 07:03:03','2026-02-06 08:31:09','externe',NULL,NULL,146),(475,'207/02',NULL,'2026-02-05','KANYEBA','CAB.PCA/FPC/NDE/010/2026','NGOY DIOKO EMMANY','Lettre d\'affirmation relative à l\'audit des états financier du fpc pour l\'exercice clos au 31 décembre 2023','Lettre d\'affirmation relative à l\'audit des états financiers du fpc pour l’exercice clos au 31 décembre 2023',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 07:14:58','2026-02-06 07:19:50','externe',NULL,NULL,146),(477,'209/02',NULL,'2026-02-05','KANYEBA','010/FPC/DG/DRHSG/MKG/2026','MUMBERE KALWENGERO GATIA','Transmission note explicative relative à la régularisation de la situation administrative de certains agents du FPC','Transmission note explicative relative à la régularisation de la situation administrative de certains agents du FPC',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 08:04:56','2026-02-06 08:09:06','externe',NULL,NULL,146),(478,'210/02',NULL,'2026-02-05','KANYEBA','011/FPC/DG/DRHSG/MKG/2026','MUMBERE KALWENGERO GATIA','Rappel à votre Autorité de la réponse à la demande d\'intervention financière exceptionnelle de l\' agent REHEMA RWANGO carine','Rappel à votre Autorité de la réponse à la demande d\'intervention financière exceptionnelle de l\'agent REHEMA RWANGO carine',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 08:19:10','2026-02-06 08:24:16','externe',NULL,NULL,146),(479,'211/02',NULL,'2026-02-05','KANYEBA',NULL,'MUTU PUNGI Gabri','Demande de mes pécules de congé.exercice 2024 et 2025','Demande de mes pécules de congé,exercice 2024 et 2025',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 08:34:53','2026-02-06 09:18:10','externe',NULL,NULL,146),(480,'212/02',NULL,'2026-02-06','KANYEBA','40/FEST.ESPOIR/2026','TSHIBANGU MUKENDI Serge','Transmission Note Technique relative à la demande de financement en faveur du FESTIVAL Espoir','Transmission Note Technique relative à la demande du financement en faveur du FESTIVAL Espoir',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 09:27:16','2026-02-06 09:37:11','externe',NULL,NULL,146),(482,'213/02',NULL,'2026-02-06','KANYEBA','02/FPC/DRHSG/SG/2026','MANTEZOLO NTUMFU Jeannette','Demande de Provision à Justifier pour 210 000,00 FC évacuation ordures','Demande de Provision à Justifier pour 21 000,00 FC, évacuation ordures',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 09:48:35','2026-02-06 09:55:10','externe',NULL,NULL,146),(483,'162/01',NULL,'2026-01-30','KANYEBA','FPC/SAI/MSN/004/026','SIMBI NGEMBA Médard','Transmission du Bulletin de Cotation de l\'Agent MWENELWATA WISOBA Germain','Transmission du Bulletin de Cotation de l\'Agent MWENELWATA WISOBA Germain',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 10:13:02','2026-02-06 10:15:35','externe',NULL,NULL,146),(484,'214/02',NULL,'2026-02-06','KANYEBA','016/02/VBRC/KIN/FIN/DG/AHK/2026','NKIERE Rollly/VARUN BEVERAGES RDC SAS','Déclaration des retenue FPC-janvier 2026','Déclaration des retenue FPC-janvier 2026',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 10:41:34','2026-02-06 10:46:52','externe',NULL,NULL,146),(485,'215/02',NULL,'2026-02-06','KANYEBA','ML/DS/006/2026','BOOTO bo LOLIMBA King','Demande de partenariat et sponsoring Concours Miss Lualaba 1ere Edition','Demande de partenariat et sponsoring Concours Miss Lualaba',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 10:55:32','2026-02-06 11:01:23','externe',NULL,NULL,146),(486,'216/02',NULL,'2026-02-06','KANYEBA','CAB.PCA/FPC/NDE/009/2026','NGOY DIOKO Emmany','Refus injustifié de délivrance d\'une lettre de garantie à première demande','Refus injustifié de délivrance d\'une lettre de garantie à première demande',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 11:08:09','2026-02-06 11:11:17','externe',NULL,NULL,146),(487,'217/02',NULL,'2026-02-06','KANYEBA','026/CERHOL/CORDON/CAB.....026','MIKOBI MIKOBI Séraphin','Invitation officielle et demande d\'accompagnement au salon Culturel Universitaire','Invitation officielle et demande d\'accompagnement au salon Culturel Universitaire',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 11:17:46','2026-02-06 11:21:27','externe',NULL,NULL,146),(488,'123/01',NULL,'2026-01-23','KANYEBA','004/FPC/DG/DCP/JPK/2026','KAPOYA WAMUKUBU Jean-philippe','Transmission des procès-verbaux de remise et reprise','Transmission des procès-verbaux de remise et reprise',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 12:53:20','2026-02-06 12:55:55','externe',NULL,NULL,146),(489,'222/02',NULL,'2026-02-06','KANYEBA','001/DG/FPC/SI/JKL/2026','KIKWATA LIBANDILA Jacky','Transmission Note Explicative','Transmission Note Explicative',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 13:24:21','2026-02-06 13:26:25','externe',NULL,NULL,146),(490,'223/02',NULL,'2026-02-06','KANYEBA','V.E....CPHJ/MAT2025','MINISTÈRE DE LA JUSTICE ET GARDE DES SCEAUX','Iteratif-commandement avec instruction de payer','Iteratif-commandement avec instruction de payer',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 13:28:40','2026-02-06 13:31:53','externe',NULL,NULL,146),(491,'219/02',NULL,'2026-02-06','KANYEBA','035/CONAFI/PR/2026','MPUTU Albert','Remplacement d\'un délégué syndical en mutation','Remplacement d\'un délégué syndical en mutation',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 13:33:31','2026-02-06 13:37:23','externe',NULL,NULL,146),(492,'221/02',NULL,'2026-02-06','KANYEBA',NULL,'MINISTÈRE DE L\'ENSEIGNEMENT SUPÉRIEUR,UNIVERSITAIRE,RECHERCHE SCIENTIFIQUE ET INNOVATION','Invitation à la cermonie de la journée intrnationale des femmes et filles des sciences','Invitation à la cérémonie de la journée internationale des Femmes et Fille des sciences',NULL,NULL,NULL,'reçu',NULL,NULL,'2026-02-06 13:52:14','2026-02-06 13:57:26','externe',NULL,NULL,146);
+/*!40000 ALTER TABLE `accuse_receptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `annexe_messages`
+--
+
+DROP TABLE IF EXISTS `annexe_messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `annexe_messages` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `message_id` bigint unsigned NOT NULL,
+  `file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `annexe_messages_message_id_foreign` (`message_id`),
+  CONSTRAINT `annexe_messages_message_id_foreign` FOREIGN KEY (`message_id`) REFERENCES `messages` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `annexe_messages`
+--
+
+LOCK TABLES `annexe_messages` WRITE;
+/*!40000 ALTER TABLE `annexe_messages` DISABLE KEYS */;
+INSERT INTO `annexe_messages` VALUES (17,128,'annexes/ymM418OOgEfQvSHIflAzUDJQQjxwwKfDTSn11U3q.docx','2025-10-16 09:39:09','2025-10-16 09:39:09'),(18,135,'annexes/fkVyv7clblKvfv41m2c0GHoQ9Olia9bpk0YcJ5ZP.pdf','2026-01-09 02:38:06','2026-01-09 02:38:06'),(19,137,'annexes/ghVh3OoVUh9poUVfrXeNloqQxb2BidQNb10PF7r6.pdf','2026-01-09 02:53:34','2026-01-09 02:53:34');
+/*!40000 ALTER TABLE `annexe_messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `annexes`
+--
+
+DROP TABLE IF EXISTS `annexes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `annexes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `accuse_de_reception_id` bigint unsigned DEFAULT NULL,
+  `file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `reponse_id` bigint unsigned DEFAULT NULL,
+  `reponse_finale_id` int DEFAULT NULL,
+  `telegramme_id` bigint unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_accuse_de_reception_id` (`accuse_de_reception_id`),
+  KEY `fk_telegramme_id` (`telegramme_id`),
+  KEY `fk_annexes_reponse_finale` (`reponse_finale_id`),
+  CONSTRAINT `fk_accuse_de_reception_id` FOREIGN KEY (`accuse_de_reception_id`) REFERENCES `accuse_receptions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_annexes_reponse_finale` FOREIGN KEY (`reponse_finale_id`) REFERENCES `reponses_finales` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_telegramme_id` FOREIGN KEY (`telegramme_id`) REFERENCES `telegrammes` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=622 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `annexes`
+--
+
+LOCK TABLES `annexes` WRITE;
+/*!40000 ALTER TABLE `annexes` DISABLE KEYS */;
+INSERT INTO `annexes` VALUES (6,NULL,'annexes/jFTYYyqadPhVXlamfh9hN3dE6eazTcRjFMWfKGrh.pdf','2025-03-07 16:40:05','2025-03-07 16:40:05',NULL,NULL,NULL),(7,NULL,'annexes/Zn51V20MLDDKYYCukYdkZbJX2eu88Ba4hENrtbeQ.pdf','2025-03-07 17:21:09','2025-03-07 17:21:09',NULL,NULL,NULL),(8,NULL,'annexes/lz9b2nhf6RvjU3RhVGldITb3CyEaWJCoCQivbZYi.pdf','2025-03-09 09:23:34','2025-03-09 09:23:34',NULL,NULL,NULL),(9,NULL,'annexes/tY9Wivy93GNxzWWetnPFsJSMGmtlN30XAQoxTelX.pdf','2025-03-09 09:25:44','2025-03-09 09:25:44',NULL,NULL,NULL),(10,NULL,'annexes/9ynfWJyubhPq9tt9z0MtofIKwVTiWelzZRVCS1U8.docx','2025-03-09 09:34:00','2025-03-09 09:34:00',NULL,NULL,NULL),(11,NULL,'annexes/wRtI2UswuhVBGdshZiyP0gBl0MkFRi2QYU6QVXSG.pdf','2025-03-09 10:00:18','2025-03-09 10:00:18',NULL,NULL,NULL),(40,NULL,'annexes/5LOk8XWVjsKBb84nv7z07nXk8iCDHEqSORSGPfHR.pdf','2025-03-13 04:44:23','2025-03-13 04:44:23',3,NULL,NULL),(41,NULL,'annexes/AyKdGaYLchQVZgpMvYUxfZ14QEu7lMzmAiMwPBbH.pdf','2025-03-13 05:38:15','2025-03-13 05:38:15',4,NULL,NULL),(42,NULL,'annexes/ne4F4VZNb5007CZ8cADOeOoMi2KBY62NWusZ17Ch.pdf','2025-03-13 05:58:01','2025-03-13 05:58:01',5,NULL,NULL),(47,NULL,'annexes/KBCia52xlweaGCppTtgIIpnQczJ6g2FOUsq51RO1.pdf','2025-03-13 06:56:33','2025-03-13 06:56:33',NULL,NULL,NULL),(48,NULL,'annexes/zgeLzifc4UkfJWum6SFHwlC2dukQdxP6dwv4gIaZ.pdf','2025-03-13 06:56:51','2025-03-13 06:56:51',NULL,NULL,NULL),(52,NULL,'annexes/c0rkBxeB4HKDYvl9rL8sPHYbD0UMlZu20WBt8InM.pdf','2025-03-13 07:16:51','2025-03-13 07:16:51',8,NULL,NULL),(54,NULL,'annexes/2mTN6i6JM39osfbfBzKGTdpS3Tc5QZtfOsDnyPmp.pdf','2025-03-14 00:00:32','2025-03-14 00:00:32',9,NULL,NULL),(56,NULL,'annexes/CBKFiytPDI5L5ApAPA5ye01b5BUWpIa1Dnrmz5no.pdf','2025-03-14 00:12:28','2025-03-14 00:12:28',10,NULL,NULL),(59,NULL,'annexes/gWtI7rx3I8u6SOmFpY2woARenqOaiQ7lSbZapvUl.pdf','2025-03-14 01:13:47','2025-03-14 01:13:47',11,NULL,NULL),(60,NULL,'annexes/6FcQ2z80VaZtTKGydDjyQeQz4qQufJ36dXMhiVJy.pdf','2025-03-14 01:20:27','2025-03-14 01:20:27',12,NULL,NULL),(61,NULL,'annexes/Cxm55rQciq5YacVzh5SAXtuIRCoihYUKlsswwk5a.pdf','2025-03-14 01:27:51','2025-03-14 01:27:51',13,NULL,NULL),(62,NULL,'annexes/DAtZ0XeaIQIiiMO1N9xoW2RfDrcYbp8FpCalQu0D.pdf','2025-03-14 01:45:44','2025-03-14 01:45:44',14,NULL,NULL),(63,NULL,'annexes/2ckjmHypAzQbJdlHVdgZE22gYmlmGbmRJ8cGvBYR.pdf','2025-03-14 01:51:27','2025-03-14 01:51:27',15,NULL,NULL),(64,NULL,'annexes/mRX0tnRMo3tLyAmZhFM1Hv47Fxe5DTrQNjA3niGC.pdf','2025-03-14 01:57:31','2025-03-14 01:57:31',16,NULL,NULL),(65,NULL,'annexes/Wwn31ijBGOZ5FdTV1HtCCNzX5ouAxvsKlKKmMVED.pdf','2025-03-14 01:59:33','2025-03-14 01:59:33',17,NULL,NULL),(68,NULL,'annexes/LF2us9YMu28t22ZCZaGAVHVmrr5aIg88Jqv2OF06.pdf','2025-03-14 02:30:18','2025-03-14 02:30:18',18,NULL,NULL),(69,NULL,'annexes/7C16D9OUc2BBz8iKhlDhFLXNVHzSpdWN2RasmzSO.pdf','2025-03-14 10:50:21','2025-03-14 10:50:21',19,NULL,NULL),(70,NULL,'annexes/urVq6iIkyzoTrgsKzpRUJQA8XTN2QTfxqQg27pHb.pdf','2025-03-14 11:10:45','2025-03-14 11:10:45',20,NULL,NULL),(71,NULL,'annexes/4eivtJRQK1A3WBARJDpPuVPxNzWVy6IyzEweaSAl.pdf','2025-03-14 11:29:38','2025-03-14 11:29:38',21,NULL,NULL),(73,NULL,'annexes/rfwRpNzl8asqnusUPg3kZ1JJmuNLNABNEoPmgJAI.pdf','2025-03-14 12:16:04','2025-03-14 12:16:04',22,NULL,NULL),(76,NULL,'annexes/VNu0iUt21iBzHRqdenhYmAZ1PXeriGCYL8Crzhz8.pdf','2025-03-14 13:17:35','2025-03-14 13:17:35',23,NULL,NULL),(78,NULL,'annexes/V74zVVUq0kKG3dKArVOpv4BzO1rib5JZdeRzENXd.pdf','2025-03-14 13:23:45','2025-03-14 13:23:45',24,NULL,NULL),(79,NULL,'annexes/DZlN2hqYAwev6ZCRdH8JVnvFasPVBpG0nysXUtKO.pdf','2025-03-14 13:25:02','2025-03-14 13:25:02',25,NULL,NULL),(81,NULL,'annexes/6yMLSZoXm4nzmrNBmcMDTSG8dJhrhGxJZbm5XhPM.pdf','2025-03-14 13:40:49','2025-03-14 13:40:49',26,NULL,NULL),(84,NULL,'annexes/rPNgrAXB4rKEdaMvVyAtWJUkAMSabibbb1tFvJQy.pdf','2025-03-14 17:45:32','2025-03-14 17:45:32',27,NULL,NULL),(85,NULL,'annexes/Hokr0sZocdJagdDFctxPTyawRaIFqTm5NilFeMHE.pdf','2025-03-14 17:47:28','2025-03-14 17:47:28',28,NULL,NULL),(87,NULL,'annexes/tdiz9ZAO16B2w2VyRz2fOII7xhvqPXqE3TOKfzil.pdf','2025-03-15 09:53:56','2025-03-15 09:53:56',29,NULL,NULL),(90,NULL,'annexes/NQopdCFMnKdeZKSj2Oe4A2L3n318edjbmCDv7ppx.pdf','2025-03-16 13:25:28','2025-03-16 13:25:28',30,NULL,NULL),(93,NULL,'annexes/WwAEyYYBxPG50wPTKlLe2B0oay3kjZ5y0h33qcey.pdf','2025-03-16 19:28:54','2025-03-16 19:28:54',31,NULL,NULL),(95,NULL,'annexes/Ee3NZOcxSyAideBIVob85lTtw6lCNehVSK2Fjo73.pdf','2025-03-16 21:18:46','2025-03-16 21:18:46',32,NULL,NULL),(97,NULL,'annexes/hq0O35313RKvGtZPtzbDuChzmOA4IPFdNEfAah0b.pdf','2025-03-16 21:49:22','2025-03-16 21:49:22',33,NULL,NULL),(99,NULL,'annexes/kFwoXRcSij2hrv9A3wd3PVMKkBgIEXLDva8tPTJY.pdf','2025-03-16 22:09:27','2025-03-16 22:09:27',34,NULL,NULL),(107,NULL,'annexes/XJ4MKe3Hr42OjaTF7T5WB2sOgDFlkUdS7BbPNI1y.pdf','2025-03-17 21:13:24','2025-03-17 21:13:24',36,NULL,NULL),(108,NULL,'annexes/HbRBTHdPXgPaqYCBnBdNDhuplwqh0yXW1VEXPcw3.docx','2025-03-18 11:16:29','2025-03-18 11:16:29',37,NULL,NULL),(113,NULL,'annexes/Mo5n41UXjvBvVFV2eIKndhTmZVnX6vMbX5YUedQJ.docx','2025-03-18 16:55:43','2025-03-18 16:55:43',38,NULL,NULL),(116,NULL,'annexes/PsHKqP1jvU8Y8VW9V3mKhNu9iq3zIqrxLZ8KuzwP.docx','2025-03-18 19:29:38','2025-03-18 19:29:38',39,NULL,NULL),(121,NULL,'annexes/ic4NEX6QUjLTREDMr7M1mOgFx02wHR4dfiL2nGyA.pdf','2025-03-18 19:44:22','2025-03-18 19:44:22',40,NULL,NULL),(122,NULL,'annexes/qUD1osvriJkevofPbDL22IdCWc9LuJqu7CdYgMTr.pdf','2025-03-20 06:39:15','2025-03-20 06:39:15',41,NULL,NULL),(132,NULL,'annexes/Wf8ePFrfySrIPtIFfPHGgkJBK9KGXilJIwERbPZV.pdf','2025-03-23 20:07:45','2025-03-23 20:07:45',42,NULL,NULL),(136,81,'accuse_81.pdf','2025-04-12 10:57:26','2025-04-12 10:57:26',NULL,NULL,NULL),(137,81,'annexes/EXXIHgbNdzgSALC0Ya6ybsBCQpoEwOTsSz0GneeE.pdf','2025-04-12 18:25:15','2025-04-12 18:25:15',NULL,NULL,NULL),(139,NULL,'annexes/HpUXXKTYLiOYPuStQmDFqEPWPq4YT6cJL0GSzYox.pdf','2025-04-14 07:56:45','2025-04-14 07:56:45',43,NULL,NULL),(140,NULL,'annexes/LTkJq3zbSixbcG48hDzZTnm7CRfJ6OmaUmhNRV6V.pdf','2025-04-14 22:17:47','2025-04-14 22:17:47',44,NULL,NULL),(150,NULL,'annexes/HhzHzvfn9UEdVgkLy08UUWLGwYBkugm4I7cnsx5J.pdf','2025-08-02 03:31:36','2025-08-02 03:31:36',45,NULL,NULL),(153,NULL,'annexes/gOgCZqcJBcawXG60uzewelTeaDcT0Rj6xyPv296E.pdf','2025-08-02 08:38:02','2025-08-02 08:38:02',49,NULL,NULL),(155,NULL,'annexes/Jp8O05IQKeClG0SJJpX6XNVbaEbz4W2FVJNl2zJX.pdf','2025-08-02 09:16:48','2025-08-02 09:16:48',51,NULL,NULL),(159,NULL,'annexes/gVZ6yaDZNYgdkan7CmIojtfH4JYX13CSzDZozNRN.pdf','2025-08-02 10:20:03','2025-08-02 10:20:03',52,NULL,NULL),(169,NULL,'annexes/m3JqO154rsvTDla78oS7IhUoOymx8YjUt0KI5wtO.pdf','2025-08-02 18:43:10','2025-08-02 18:43:10',53,NULL,NULL),(173,104,'accuse_104.pdf','2025-10-16 08:47:10','2025-10-16 08:47:10',NULL,NULL,NULL),(176,106,'accuse_106.pdf','2025-10-16 11:35:02','2025-10-16 11:35:02',NULL,NULL,NULL),(178,115,'accuse_115.pdf','2025-10-20 08:04:23','2025-10-20 08:04:23',NULL,NULL,NULL),(179,120,'accuse_120.pdf','2025-10-20 09:13:00','2025-10-20 09:13:00',NULL,NULL,NULL),(180,121,'accuse_121.pdf','2025-10-20 09:26:34','2025-10-20 09:26:34',NULL,NULL,NULL),(181,122,'accuse_122.pdf','2025-10-21 08:58:32','2025-10-21 08:58:32',NULL,NULL,NULL),(182,125,'accuse_125.pdf','2025-10-21 09:04:35','2025-10-21 09:04:35',NULL,NULL,NULL),(184,126,'accuse_126.pdf','2025-10-22 09:09:38','2025-10-22 09:09:38',NULL,NULL,NULL),(185,127,'accuse_127.pdf','2025-10-22 12:26:08','2025-10-22 12:26:08',NULL,NULL,NULL),(186,128,'accuse_128.pdf','2025-10-22 12:32:38','2025-10-22 12:32:38',NULL,NULL,NULL),(188,130,'accuse_130.pdf','2025-10-22 12:55:46','2025-10-22 12:55:46',NULL,NULL,NULL),(193,136,'accuse_136.pdf','2025-10-23 11:35:45','2025-10-23 11:35:45',NULL,NULL,NULL),(194,137,'accuse_137.pdf','2025-10-23 11:43:26','2025-10-23 11:43:26',NULL,NULL,NULL),(195,138,'accuse_138.pdf','2025-10-23 11:49:39','2025-10-23 11:49:39',NULL,NULL,NULL),(196,139,'accuse_139.pdf','2025-10-23 12:10:02','2025-10-23 12:10:02',NULL,NULL,NULL),(197,140,'accuse_140.pdf','2025-10-27 08:40:56','2025-10-27 08:40:56',NULL,NULL,NULL),(198,141,'accuse_141.pdf','2025-10-28 08:52:50','2025-10-28 08:52:50',NULL,NULL,NULL),(199,142,'accuse_142.pdf','2025-10-28 09:53:08','2025-10-28 09:53:08',NULL,NULL,NULL),(201,148,'accuse_148.pdf','2025-11-03 10:38:29','2025-11-03 10:38:29',NULL,NULL,NULL),(202,149,'accuse_149.pdf','2025-11-18 10:11:22','2025-11-18 10:11:22',NULL,NULL,NULL),(203,151,'accuse_151.pdf','2025-11-18 10:22:05','2025-11-18 10:22:05',NULL,NULL,NULL),(204,152,'accuse_152.pdf','2025-11-18 10:32:45','2025-11-18 10:32:45',NULL,NULL,NULL),(205,153,'accuse_153.pdf','2025-12-09 10:40:01','2025-12-09 10:40:01',NULL,NULL,NULL),(207,158,'accuse_158.pdf','2026-01-09 08:26:58','2026-01-09 08:26:58',NULL,NULL,NULL),(208,158,'annexes/pnUpLvKklINzjeYqX61Lm0VAqLtHpfUYyNcDiaXu.pdf','2026-01-09 08:29:30','2026-01-09 08:29:30',NULL,NULL,NULL),(210,160,'accuse_160.pdf','2026-01-09 08:42:16','2026-01-09 08:42:16',NULL,NULL,NULL),(211,160,'annexes/6Y4ypIJdxxsksinGtYdtdzEhyR5Uxq9O9j27XYnH.pdf','2026-01-09 08:48:00','2026-01-09 08:48:00',NULL,NULL,NULL),(212,161,'accuse_161.pdf','2026-01-09 08:52:53','2026-01-09 08:52:53',NULL,NULL,NULL),(213,161,'annexes/mlFVPHDVjTV3xnbVnkmEJe8Fb6XstfZYEZUmkIrb.pdf','2026-01-09 08:55:48','2026-01-09 08:55:48',NULL,NULL,NULL),(214,162,'accuse_162.pdf','2026-01-09 09:04:57','2026-01-09 09:04:57',NULL,NULL,NULL),(215,162,'annexes/RmGE4nPmEN6zjsu3MrAka8C162XG04AwuUMYIuws.pdf','2026-01-09 09:09:09','2026-01-09 09:09:09',NULL,NULL,NULL),(216,163,'accuse_163.pdf','2026-01-09 09:15:10','2026-01-09 09:15:10',NULL,NULL,NULL),(217,163,'annexes/TQc3QObgc3MHf3Redj08y8P11Q3gE4mhZxed2T38.pdf','2026-01-09 09:16:51','2026-01-09 09:16:51',NULL,NULL,NULL),(218,164,'accuse_164.pdf','2026-01-09 09:24:39','2026-01-09 09:24:39',NULL,NULL,NULL),(219,164,'annexes/21wjPEGBzsyuqRqZIjLrZwUB6HNDYCtRyk8vQjEq.pdf','2026-01-09 09:28:51','2026-01-09 09:28:51',NULL,NULL,NULL),(220,165,'accuse_165.pdf','2026-01-09 09:35:21','2026-01-09 09:35:21',NULL,NULL,NULL),(221,165,'annexes/G7uT8i8MKZW3Vm6wWY1HstWRbLQ6l5r2tkEv2msp.pdf','2026-01-09 09:37:08','2026-01-09 09:37:08',NULL,NULL,NULL),(222,166,'accuse_166.pdf','2026-01-09 09:44:09','2026-01-09 09:44:09',NULL,NULL,NULL),(223,166,'annexes/NQQtKXHn44Rl4ptFBNKuLAYcxFKmgoj7RUhlrSRx.pdf','2026-01-09 09:47:29','2026-01-09 09:47:29',NULL,NULL,NULL),(224,167,'accuse_167.pdf','2026-01-09 09:52:26','2026-01-09 09:52:26',NULL,NULL,NULL),(225,167,'annexes/mPP9kcTz6URhlbiQpzzXTElTZT9aLP34czREH39d.pdf','2026-01-09 09:55:45','2026-01-09 09:55:45',NULL,NULL,NULL),(226,168,'accuse_168.pdf','2026-01-09 10:02:06','2026-01-09 10:02:06',NULL,NULL,NULL),(227,168,'annexes/IQPVrz5es6ybkcyGqcG1LLAQx6CJMOyTzChJt94e.pdf','2026-01-09 10:07:03','2026-01-09 10:07:03',NULL,NULL,NULL),(228,169,'accuse_169.pdf','2026-01-09 10:12:33','2026-01-09 10:12:33',NULL,NULL,NULL),(229,169,'annexes/ONbNQV6KlwoUuqGloyoU7RveuRaa8wiP9EJhhbAQ.pdf','2026-01-09 10:15:07','2026-01-09 10:15:07',NULL,NULL,NULL),(230,170,'accuse_170.pdf','2026-01-09 10:23:19','2026-01-09 10:23:19',NULL,NULL,NULL),(231,170,'annexes/qhFPYMCzL3DGKkeqYan6S71ETMhtOTXJPBOmnS3u.pdf','2026-01-09 10:26:36','2026-01-09 10:26:36',NULL,NULL,NULL),(232,171,'accuse_171.pdf','2026-01-09 10:33:13','2026-01-09 10:33:13',NULL,NULL,NULL),(233,171,'annexes/OGb81kQKEBXa3fXxEXniYJd3XPoV0huP0H3nM7HV.pdf','2026-01-09 10:37:50','2026-01-09 10:37:50',NULL,NULL,NULL),(234,172,'accuse_172.pdf','2026-01-09 10:43:34','2026-01-09 10:43:34',NULL,NULL,NULL),(235,172,'annexes/UOY9K4WoyGfBXeDrtjp29kpm6cN0D94pSptjYqfK.pdf','2026-01-09 10:47:16','2026-01-09 10:47:16',NULL,NULL,NULL),(236,173,'accuse_173.pdf','2026-01-09 10:51:56','2026-01-09 10:51:56',NULL,NULL,NULL),(237,173,'annexes/NBdDxactWwRkAXI7sNGgspHQcsmFhsMGh1xCprsg.pdf','2026-01-09 10:55:19','2026-01-09 10:55:19',NULL,NULL,NULL),(238,174,'accuse_174.pdf','2026-01-09 11:01:46','2026-01-09 11:01:46',NULL,NULL,NULL),(239,174,'annexes/Tem3YmasALUIepl4pCTYR3MmyiOrRLh8bkZQRe1P.pdf','2026-01-09 11:09:00','2026-01-09 11:09:00',NULL,NULL,NULL),(240,174,'annexes/KrXLGxhbpGMqN9X2HaRLC4Wh0BXY80awh5LMP42M.pdf','2026-01-09 11:14:22','2026-01-09 11:14:22',NULL,NULL,NULL),(241,175,'accuse_175.pdf','2026-01-09 11:20:05','2026-01-09 11:20:05',NULL,NULL,NULL),(242,175,'annexes/tHAlNkhfHPKgqPsCkP59WYY9CbH9sschzoXGSqRb.pdf','2026-01-09 11:26:46','2026-01-09 11:26:46',NULL,NULL,NULL),(243,177,'accuse_177.pdf','2026-01-09 11:35:31','2026-01-09 11:35:31',NULL,NULL,NULL),(244,177,'annexes/VnajDuB7LqJNqliRel6WLjgIiw2cR0N3tko2DoEa.pdf','2026-01-09 11:38:08','2026-01-09 11:38:08',NULL,NULL,NULL),(245,178,'accuse_178.pdf','2026-01-09 11:41:36','2026-01-09 11:41:36',NULL,NULL,NULL),(246,178,'annexes/tqhOK9TnegmGqTLHjeXBJRFUPgJ5COsVqCiUCi4K.pdf','2026-01-09 11:43:19','2026-01-09 11:43:19',NULL,NULL,NULL),(247,179,'accuse_179.pdf','2026-01-09 11:46:38','2026-01-09 11:46:38',NULL,NULL,NULL),(248,179,'annexes/8sYwax5j8ovCCoTU31R1NjnCxE67xKksmVwshGtH.pdf','2026-01-09 11:48:14','2026-01-09 11:48:14',NULL,NULL,NULL),(249,180,'accuse_180.pdf','2026-01-09 11:52:22','2026-01-09 11:52:22',NULL,NULL,NULL),(250,180,'annexes/dZAefXQ14bnBmKNK7CCY8PjmK2rCJsxH3t3akmZF.pdf','2026-01-09 11:55:05','2026-01-09 11:55:05',NULL,NULL,NULL),(251,181,'accuse_181.pdf','2026-01-09 11:57:29','2026-01-09 11:57:29',NULL,NULL,NULL),(252,181,'annexes/M16nQIkeS1OBUUO0vdHteo0taJaUX9hQau7vCIzv.pdf','2026-01-09 11:59:40','2026-01-09 11:59:40',NULL,NULL,NULL),(253,182,'accuse_182.pdf','2026-01-09 12:07:55','2026-01-09 12:07:55',NULL,NULL,NULL),(254,182,'annexes/T6mZTyxhpGPzX6mk4xhgF06QqsMif49GJu4NxKeK.pdf','2026-01-09 12:11:53','2026-01-09 12:11:53',NULL,NULL,NULL),(255,183,'accuse_183.pdf','2026-01-09 12:16:34','2026-01-09 12:16:34',NULL,NULL,NULL),(256,183,'annexes/OeqLADd9bJMFm3hqvjhwAwZhBYN0cShuAXhyScBD.pdf','2026-01-09 12:20:03','2026-01-09 12:20:03',NULL,NULL,NULL),(257,184,'accuse_184.pdf','2026-01-09 12:25:33','2026-01-09 12:25:33',NULL,NULL,NULL),(258,184,'annexes/9Ag2aieRXc4fEPpKv7YYlgc1B8yAxAGgroEh9cf1.pdf','2026-01-09 12:28:45','2026-01-09 12:28:45',NULL,NULL,NULL),(259,185,'accuse_185.pdf','2026-01-09 12:35:25','2026-01-09 12:35:25',NULL,NULL,NULL),(260,185,'annexes/opCoWEdTrrZ3HeZVEWvw7iYP1FI3Qkc1yP8bSwi8.pdf','2026-01-09 12:39:25','2026-01-09 12:39:25',NULL,NULL,NULL),(263,187,'accuse_187.pdf','2026-01-09 12:58:36','2026-01-09 12:58:36',NULL,NULL,NULL),(264,187,'annexes/MyGipPiZQi8E5aeZIBQumr3bIVQGdJ26kxCJqKVp.pdf','2026-01-09 13:02:15','2026-01-09 13:02:15',NULL,NULL,NULL),(265,188,'accuse_188.pdf','2026-01-09 13:11:20','2026-01-09 13:11:20',NULL,NULL,NULL),(266,188,'annexes/856M2f9Vu1LAymKImj8zyiWzmCvG2IELZhwqwTnE.pdf','2026-01-09 13:14:25','2026-01-09 13:14:25',NULL,NULL,NULL),(267,189,'accuse_189.pdf','2026-01-09 13:20:49','2026-01-09 13:20:49',NULL,NULL,NULL),(268,190,'accuse_190.pdf','2026-01-09 13:30:04','2026-01-09 13:30:04',NULL,NULL,NULL),(269,190,'annexes/QyfIqPXDHO5xoDTBnQ7YHAomtOu4E2nvc7rAaxJj.pdf','2026-02-02 13:49:22','2026-02-02 13:49:22',NULL,NULL,NULL),(271,193,'accuse_193.pdf','2026-02-03 08:19:01','2026-02-03 08:19:01',NULL,NULL,NULL),(272,194,'accuse_194.pdf','2026-02-03 08:44:22','2026-02-03 08:44:22',NULL,NULL,NULL),(273,194,'annexes/gTbbPadfdpzCa9Jetkh8jWlKeFyAlWBc0lQRlaGQ.pdf','2026-02-03 08:47:20','2026-02-03 08:47:20',NULL,NULL,NULL),(274,195,'accuse_195.pdf','2026-02-03 08:56:30','2026-02-03 08:56:30',NULL,NULL,NULL),(275,195,'annexes/kxVRjqQXmPZwQFc5MZQcoN2iqouaTRrIKBpRBmzb.pdf','2026-02-03 09:38:25','2026-02-03 09:38:25',NULL,NULL,NULL),(276,197,'accuse_197.pdf','2026-02-03 10:06:13','2026-02-03 10:06:13',NULL,NULL,NULL),(277,198,'accuse_198.pdf','2026-02-03 10:06:59','2026-02-03 10:06:59',NULL,NULL,NULL),(278,198,'annexes/compressed_6981d6ba8ce08.pdf','2026-02-03 10:06:59','2026-02-03 10:06:59',NULL,NULL,NULL),(279,197,'annexes/WnKKaCt6Wd2kkOg2I86tab9Dup9yQ72UFqnZtFt2.pdf','2026-02-03 10:08:16','2026-02-03 10:08:16',NULL,NULL,NULL),(280,199,'accuse_199.pdf','2026-02-03 10:26:35','2026-02-03 10:26:35',NULL,NULL,NULL),(281,198,'annexes/oFAkWu4un7EM8Hc2DWgPN6txBi2LYdSSA0aAcsIT.pdf','2026-02-03 10:41:52','2026-02-03 10:41:52',NULL,NULL,NULL),(282,201,'accuse_201.pdf','2026-02-03 10:44:16','2026-02-03 10:44:16',NULL,NULL,NULL),(283,201,'annexes/compressed_6981df8bcbc29.pdf','2026-02-03 10:44:16','2026-02-03 10:44:16',NULL,NULL,NULL),(284,201,'annexes/Wjfwmmcn4xdqbcwHi6RJGIs5yG9zWZ4z9wO3duEX.pdf','2026-02-03 10:45:58','2026-02-03 10:45:58',NULL,NULL,NULL),(285,202,'accuse_202.pdf','2026-02-03 10:55:31','2026-02-03 10:55:31',NULL,NULL,NULL),(286,202,'annexes/compressed_6981e22c47ae4.pdf','2026-02-03 10:55:31','2026-02-03 10:55:31',NULL,NULL,NULL),(287,202,'annexes/eeWXeJW07BqddPmvJBovycTjeP06gU62hqYO1YJF.pdf','2026-02-03 10:58:56','2026-02-03 10:58:56',NULL,NULL,NULL),(288,203,'accuse_203.pdf','2026-02-03 11:02:29','2026-02-03 11:02:29',NULL,NULL,NULL),(289,203,'annexes/compressed_6981e3cf8e429.pdf','2026-02-03 11:02:29','2026-02-03 11:02:29',NULL,NULL,NULL),(290,203,'annexes/T6GSwXBRWgayP8labtllm8bHCt5M3Ths2iNgUjPT.pdf','2026-02-03 11:04:39','2026-02-03 11:04:39',NULL,NULL,NULL),(291,204,'accuse_204.pdf','2026-02-03 11:37:13','2026-02-03 11:37:13',NULL,NULL,NULL),(292,204,'annexes/compressed_6981ebf4a9deb.pdf','2026-02-03 11:37:13','2026-02-03 11:37:13',NULL,NULL,NULL),(293,204,'annexes/OjN04txbCK4qpEM2mbxCIvBjTdeFIR1vfE17dRCw.pdf','2026-02-03 11:40:32','2026-02-03 11:40:32',NULL,NULL,NULL),(294,205,'accuse_205.pdf','2026-02-03 11:50:09','2026-02-03 11:50:09',NULL,NULL,NULL),(295,205,'annexes/compressed_6981eefd2de5c.pdf','2026-02-03 11:50:09','2026-02-03 11:50:09',NULL,NULL,NULL),(296,205,'annexes/7FzEcBAwjFyibiVm5M40VxWBKV6UwofjikUi2vbs.pdf','2026-02-03 11:55:40','2026-02-03 11:55:40',NULL,NULL,NULL),(297,206,'accuse_206.pdf','2026-02-03 12:07:58','2026-02-03 12:07:58',NULL,NULL,NULL),(298,206,'annexes/compressed_6981f326acff2.pdf','2026-02-03 12:07:58','2026-02-03 12:07:58',NULL,NULL,NULL),(299,206,'annexes/4hXuhtoprHPu3YgzX54ZMKedlpRioaXUi5gCt4LB.pdf','2026-02-03 12:15:23','2026-02-03 12:15:23',NULL,NULL,NULL),(300,207,'accuse_207.pdf','2026-02-03 12:26:11','2026-02-03 12:26:11',NULL,NULL,NULL),(301,207,'annexes/compressed_6981f76e8b425.pdf','2026-02-03 12:26:11','2026-02-03 12:26:11',NULL,NULL,NULL),(302,207,'annexes/mORMgRSwDE43AIKsBQzdvwlSIsCVLHcDtUHwdUXp.pdf','2026-02-03 12:30:52','2026-02-03 12:30:52',NULL,NULL,NULL),(303,208,'accuse_208.pdf','2026-02-03 12:36:30','2026-02-03 12:36:30',NULL,NULL,NULL),(304,208,'annexes/compressed_6981f9da80c73.pdf','2026-02-03 12:36:30','2026-02-03 12:36:30',NULL,NULL,NULL),(305,208,'annexes/flbdc5lMdMbIVNvcIxuyBrG1QJvnes6FS8u0F0oP.pdf','2026-02-03 12:38:36','2026-02-03 12:38:36',NULL,NULL,NULL),(306,209,'accuse_209.pdf','2026-02-03 12:39:24','2026-02-03 12:39:24',NULL,NULL,NULL),(307,209,'annexes/compressed_6981fa7eb305b.pdf','2026-02-03 12:39:24','2026-02-03 12:39:24',NULL,NULL,NULL),(308,211,'accuse_211.pdf','2026-02-03 12:44:35','2026-02-03 12:44:35',NULL,NULL,NULL),(309,211,'annexes/compressed_6981fbbdc1341.pdf','2026-02-03 12:44:35','2026-02-03 12:44:35',NULL,NULL,NULL),(310,211,'annexes/Hf6LrCeoBLgPaWKiy1AmdbDENRSmzXzJDVrCn5oJ.pdf','2026-02-03 12:51:45','2026-02-03 12:51:45',NULL,NULL,NULL),(311,212,'accuse_212.pdf','2026-02-03 12:56:22','2026-02-03 12:56:22',NULL,NULL,NULL),(312,212,'annexes/compressed_6981fe821c37e.pdf','2026-02-03 12:56:22','2026-02-03 12:56:22',NULL,NULL,NULL),(313,212,'annexes/SeWy3jy9JAmJRl4f5gdTvQkrcUsOSzWqpSBjgakO.pdf','2026-02-03 12:58:20','2026-02-03 12:58:20',NULL,NULL,NULL),(318,215,'accuse_215.pdf','2026-02-03 13:15:29','2026-02-03 13:15:29',NULL,NULL,NULL),(319,215,'annexes/compressed_698202fddc370.pdf','2026-02-03 13:15:29','2026-02-03 13:15:29',NULL,NULL,NULL),(320,215,'annexes/Nd3uSHiVOnAoJJdOi7PsrTFpWuuE8TyJomKC7pu2.pdf','2026-02-03 13:17:39','2026-02-03 13:17:39',NULL,NULL,NULL),(321,216,'accuse_216.pdf','2026-02-03 13:19:16','2026-02-03 13:19:16',NULL,NULL,NULL),(322,216,'annexes/compressed_698203e18d332.pdf','2026-02-03 13:19:16','2026-02-03 13:19:16',NULL,NULL,NULL),(323,216,'annexes/n6eH40SmHg4hOlq1xnT1FueVcdLPOzhMnRvCLur6.pdf','2026-02-03 13:21:13','2026-02-03 13:21:13',NULL,NULL,NULL),(324,217,'accuse_217.pdf','2026-02-03 13:26:04','2026-02-03 13:26:04',NULL,NULL,NULL),(325,217,'annexes/compressed_698205779c617.pdf','2026-02-03 13:26:04','2026-02-03 13:26:04',NULL,NULL,NULL),(326,217,'annexes/f2mqpdsnL0fM4wJHIf5tBOcsli4tzro2qjIaTvTJ.pdf','2026-02-03 13:28:47','2026-02-03 13:28:47',NULL,NULL,NULL),(327,218,'accuse_218.pdf','2026-02-04 07:50:56','2026-02-04 07:50:56',NULL,NULL,NULL),(328,218,'annexes/eUcQfsN3AmJPbJhVGv3nfHvGQptwKdIXqPS4vNLs.pdf','2026-02-04 07:52:19','2026-02-04 07:52:19',NULL,NULL,NULL),(329,219,'accuse_219.pdf','2026-02-04 07:57:08','2026-02-04 07:57:08',NULL,NULL,NULL),(330,219,'annexes/compressed_698309d61b7a2.pdf','2026-02-04 07:57:08','2026-02-04 07:57:08',NULL,NULL,NULL),(331,219,'annexes/ow6PCAjt9gGFoc6C1BjjyopXm9wSC7h6F8BzbOga.pdf','2026-02-04 08:00:47','2026-02-04 08:00:47',NULL,NULL,NULL),(332,220,'accuse_220.pdf','2026-02-04 08:05:07','2026-02-04 08:05:07',NULL,NULL,NULL),(333,220,'annexes/compressed_69830bbfded80.pdf','2026-02-04 08:05:07','2026-02-04 08:05:07',NULL,NULL,NULL),(334,220,'annexes/M7iJgRLpf0eImz0BCqsZm709LddNWzleMEzkllXS.pdf','2026-02-04 08:06:39','2026-02-04 08:06:39',NULL,NULL,NULL),(338,222,'accuse_222.pdf','2026-02-04 08:16:19','2026-02-04 08:16:19',NULL,NULL,NULL),(339,223,'accuse_223.pdf','2026-02-04 08:23:36','2026-02-04 08:23:36',NULL,NULL,NULL),(340,223,'annexes/compressed_69831013afef4.pdf','2026-02-04 08:23:36','2026-02-04 08:23:36',NULL,NULL,NULL),(341,223,'annexes/NOILHm4TsNchyimjcP6mNpY3ETYdcRt3oPvX0nV2.pdf','2026-02-04 08:26:59','2026-02-04 08:26:59',NULL,NULL,NULL),(349,226,'accuse_226.pdf','2026-02-04 09:13:59','2026-02-04 09:13:59',NULL,NULL,NULL),(350,226,'annexes/compressed_69831bd6e22ad.pdf','2026-02-04 09:13:59','2026-02-04 09:13:59',NULL,NULL,NULL),(351,228,'accuse_228.pdf','2026-02-04 09:27:21','2026-02-04 09:27:21',NULL,NULL,NULL),(352,228,'annexes/compressed_69831f0683082.pdf','2026-02-04 09:27:21','2026-02-04 09:27:21',NULL,NULL,NULL),(355,233,'accuse_233.pdf','2026-02-04 10:09:50','2026-02-04 10:09:50',NULL,NULL,NULL),(356,233,'annexes/compressed_698328fb4bf7b.pdf','2026-02-04 10:09:50','2026-02-04 10:09:50',NULL,NULL,NULL),(357,233,'annexes/1r88cYnLCBepV8rSZiJ3PWmZ4F2uZB01HK4oIBfY.pdf','2026-02-04 10:12:19','2026-02-04 10:12:19',NULL,NULL,NULL),(358,234,'accuse_234.pdf','2026-02-04 10:19:20','2026-02-04 10:19:20',NULL,NULL,NULL),(359,234,'annexes/compressed_69832b353ff01.pdf','2026-02-04 10:19:20','2026-02-04 10:19:20',NULL,NULL,NULL),(360,234,'annexes/rjBChKBfKkOMUhqudcsp90CXDWWJqC3648dluuy5.pdf','2026-02-04 10:22:31','2026-02-04 10:22:31',NULL,NULL,NULL),(361,235,'accuse_235.pdf','2026-02-04 10:27:52','2026-02-04 10:27:52',NULL,NULL,NULL),(362,236,'accuse_236.pdf','2026-02-04 10:30:34','2026-02-04 10:30:34',NULL,NULL,NULL),(363,236,'annexes/compressed_69832dd6ba0f6.pdf','2026-02-04 10:30:34','2026-02-04 10:30:34',NULL,NULL,NULL),(364,236,'annexes/g6YOo4ysulH2RSI9i5irKM0gXcLColdS5asTtTxq.pdf','2026-02-04 10:34:34','2026-02-04 10:34:34',NULL,NULL,NULL),(365,237,'accuse_237.pdf','2026-02-04 10:41:19','2026-02-04 10:41:19',NULL,NULL,NULL),(366,237,'annexes/compressed_69833057a7231.pdf','2026-02-04 10:41:19','2026-02-04 10:41:19',NULL,NULL,NULL),(367,238,'accuse_238.pdf','2026-02-04 10:45:39','2026-02-04 10:45:39',NULL,NULL,NULL),(368,238,'annexes/compressed_6983315fc2905.pdf','2026-02-04 10:45:39','2026-02-04 10:45:39',NULL,NULL,NULL),(369,238,'annexes/tU1wtZkjTF3ie7hgre6xuTrf5FSRlRi6BJa5utSb.pdf','2026-02-04 10:47:37','2026-02-04 10:47:37',NULL,NULL,NULL),(370,239,'accuse_239.pdf','2026-02-04 10:58:44','2026-02-04 10:58:44',NULL,NULL,NULL),(371,239,'annexes/compressed_698334707eb27.pdf','2026-02-04 10:58:44','2026-02-04 10:58:44',NULL,NULL,NULL),(372,240,'accuse_240.pdf','2026-02-04 11:00:39','2026-02-04 11:00:39',NULL,NULL,NULL),(373,240,'annexes/compressed_698334d4321bd.pdf','2026-02-04 11:00:39','2026-02-04 11:00:39',NULL,NULL,NULL),(374,239,'annexes/lpqYYrNd5pV3xFc3oNXd9hD5a4ab21bIYxnQDh1r.pdf','2026-02-04 11:07:32','2026-02-04 11:07:32',NULL,NULL,NULL),(375,241,'accuse_241.pdf','2026-02-04 11:11:55','2026-02-04 11:11:55',NULL,NULL,NULL),(376,241,'annexes/compressed_6983378833f0f.pdf','2026-02-04 11:11:55','2026-02-04 11:11:55',NULL,NULL,NULL),(377,242,'accuse_242.pdf','2026-02-04 11:13:25','2026-02-04 11:13:25',NULL,NULL,NULL),(378,242,'annexes/compressed_698337decef9e.pdf','2026-02-04 11:13:25','2026-02-04 11:13:25',NULL,NULL,NULL),(379,241,'annexes/BSkb9WTJmCnUXVE3IQi0ny9FyMxvTdh76GQGLIcL.pdf','2026-02-04 11:15:24','2026-02-04 11:15:24',NULL,NULL,NULL),(380,244,'accuse_244.pdf','2026-02-04 11:28:07','2026-02-04 11:28:07',NULL,NULL,NULL),(381,244,'annexes/compressed_69833b545e4d1.pdf','2026-02-04 11:28:07','2026-02-04 11:28:07',NULL,NULL,NULL),(382,245,'accuse_245.pdf','2026-02-04 11:29:08','2026-02-04 11:29:08',NULL,NULL,NULL),(383,245,'annexes/compressed_69833b9140a03.pdf','2026-02-04 11:29:08','2026-02-04 11:29:08',NULL,NULL,NULL),(384,246,'accuse_246.pdf','2026-02-04 11:40:30','2026-02-04 11:40:30',NULL,NULL,NULL),(385,246,'annexes/compressed_69833e32471a3.pdf','2026-02-04 11:40:30','2026-02-04 11:40:30',NULL,NULL,NULL),(386,226,'annexes/29Dtejt5juQjDX0Oafz8OYxesaIdsOKj4TCbFxJu.pdf','2026-02-04 11:40:56','2026-02-04 11:40:56',NULL,NULL,NULL),(387,247,'accuse_247.pdf','2026-02-04 11:51:24','2026-02-04 11:51:24',NULL,NULL,NULL),(388,247,'annexes/compressed_698340bf402c9.pdf','2026-02-04 11:51:24','2026-02-04 11:51:24',NULL,NULL,NULL),(389,247,'annexes/p5TnSNZ5E7r7ZPw3ztTWLjsyXKuxzrWXXEDD47ls.pdf','2026-02-04 11:57:54','2026-02-04 11:57:54',NULL,NULL,NULL),(390,248,'accuse_248.pdf','2026-02-04 12:27:36','2026-02-04 12:27:36',NULL,NULL,NULL),(391,249,'accuse_249.pdf','2026-02-04 12:50:08','2026-02-04 12:50:08',NULL,NULL,NULL),(392,249,'annexes/compressed_69834e8bd8ad8.pdf','2026-02-04 12:50:08','2026-02-04 12:50:08',NULL,NULL,NULL),(393,249,'annexes/86ZetAx4NJ5LyHr3sCSJ6l27iBSHVdmHrzZAmlp6.pdf','2026-02-04 12:51:39','2026-02-04 12:51:39',NULL,NULL,NULL),(394,250,'accuse_250.pdf','2026-02-04 12:54:30','2026-02-04 12:54:30',NULL,NULL,NULL),(395,250,'annexes/compressed_69834f9264bbb.pdf','2026-02-04 12:54:30','2026-02-04 12:54:30',NULL,NULL,NULL),(396,250,'annexes/Zi6OmenoIt4HhgkC5nvbM2nDZNRkdUklkGGcHR18.pdf','2026-02-04 12:56:44','2026-02-04 12:56:44',NULL,NULL,NULL),(397,251,'accuse_251.pdf','2026-02-04 13:01:53','2026-02-04 13:01:53',NULL,NULL,NULL),(398,251,'annexes/compressed_6983514d06e99.pdf','2026-02-04 13:01:53','2026-02-04 13:01:53',NULL,NULL,NULL),(399,251,'annexes/dkIHso91aM2D42okbVMiTW3IOvNbUVxDCH6wykMD.pdf','2026-02-04 13:04:57','2026-02-04 13:04:57',NULL,NULL,NULL),(400,252,'accuse_252.pdf','2026-02-04 13:08:45','2026-02-04 13:08:45',NULL,NULL,NULL),(401,252,'annexes/compressed_698352eb271b0.pdf','2026-02-04 13:08:45','2026-02-04 13:08:45',NULL,NULL,NULL),(402,253,'accuse_253.pdf','2026-02-04 13:10:48','2026-02-04 13:10:48',NULL,NULL,NULL),(403,253,'annexes/compressed_69835358ed77a.pdf','2026-02-04 13:10:48','2026-02-04 13:10:48',NULL,NULL,NULL),(404,252,'annexes/mcfM8HYtPh7KDFvNt12ZH67PDRqLANQAPBL2gEec.pdf','2026-02-04 13:13:28','2026-02-04 13:13:28',NULL,NULL,NULL),(405,254,'accuse_254.pdf','2026-02-04 13:21:12','2026-02-04 13:21:12',NULL,NULL,NULL),(406,254,'annexes/compressed_698355d41f4a7.pdf','2026-02-04 13:21:12','2026-02-04 13:21:12',NULL,NULL,NULL),(407,254,'annexes/TYhhFYbWVMWqMiMpwZYepPJQ9lQbcSwAY5KlElv7.pdf','2026-02-04 13:24:16','2026-02-04 13:24:16',NULL,NULL,NULL),(408,255,'accuse_255.pdf','2026-02-04 13:24:52','2026-02-04 13:24:52',NULL,NULL,NULL),(409,255,'annexes/compressed_698356abb34d2.pdf','2026-02-04 13:24:52','2026-02-04 13:24:52',NULL,NULL,NULL),(410,256,'accuse_256.pdf','2026-02-04 13:33:11','2026-02-04 13:33:11',NULL,NULL,NULL),(411,256,'annexes/compressed_698358a42fb8a.pdf','2026-02-04 13:33:12','2026-02-04 13:33:12',NULL,NULL,NULL),(412,257,'accuse_257.pdf','2026-02-04 13:34:52','2026-02-04 13:34:52',NULL,NULL,NULL),(413,257,'annexes/compressed_6983590906f34.pdf','2026-02-04 13:34:52','2026-02-04 13:34:52',NULL,NULL,NULL),(414,256,'annexes/mYgtvXfmt784WVr6pfdDPQJ1cf18OE6mKcAuq4Rb.pdf','2026-02-04 13:36:40','2026-02-04 13:36:40',NULL,NULL,NULL),(415,258,'accuse_258.pdf','2026-02-04 13:42:54','2026-02-04 13:42:54',NULL,NULL,NULL),(416,258,'annexes/compressed_69835aea0915b.pdf','2026-02-04 13:42:54','2026-02-04 13:42:54',NULL,NULL,NULL),(417,258,'annexes/MqD6X3vOXWGnlXa5xwwTGAm7MulY6fKLUfYd8rR6.pdf','2026-02-04 13:45:42','2026-02-04 13:45:42',NULL,NULL,NULL),(418,258,'annexes/DPNalAsfEdbjsbeCtn0sNDFbcevfzFKx1h3YDy9d.pdf','2026-02-04 13:48:52','2026-02-04 13:48:52',NULL,NULL,NULL),(419,259,'accuse_259.pdf','2026-02-04 13:54:41','2026-02-04 13:54:41',NULL,NULL,NULL),(420,259,'annexes/compressed_69835dad20c78.pdf','2026-02-04 13:54:41','2026-02-04 13:54:41',NULL,NULL,NULL),(421,259,'annexes/1jQVkTfQNPpEVtqJqUQ4VBibOchUK4J9b3aveIor.pdf','2026-02-04 13:56:34','2026-02-04 13:56:34',NULL,NULL,NULL),(422,288,'annexes/compressed_69844f05ab8e6.pdf','2026-02-05 07:04:21','2026-02-05 07:04:21',NULL,NULL,NULL),(423,288,'accuse_288.pdf','2026-02-05 07:04:29','2026-02-05 07:04:29',NULL,NULL,NULL),(424,288,'annexes/compressed_69844f05ab8e6.pdf','2026-02-05 07:04:29','2026-02-05 07:04:29',NULL,NULL,NULL),(425,289,'annexes/compressed_698451cc2a18a.pdf','2026-02-05 07:16:12','2026-02-05 07:16:12',NULL,NULL,NULL),(426,289,'accuse_289.pdf','2026-02-05 07:16:18','2026-02-05 07:16:18',NULL,NULL,NULL),(427,289,'annexes/compressed_698451cc2a18a.pdf','2026-02-05 07:16:18','2026-02-05 07:16:18',NULL,NULL,NULL),(428,292,'annexes/compressed_69845567158fc.pdf','2026-02-05 07:31:35','2026-02-05 07:31:35',NULL,NULL,NULL),(429,292,'accuse_292.pdf','2026-02-05 07:31:39','2026-02-05 07:31:39',NULL,NULL,NULL),(430,292,'annexes/compressed_69845567158fc.pdf','2026-02-05 07:31:39','2026-02-05 07:31:39',NULL,NULL,NULL),(431,293,'annexes/compressed_69845595e3b9d.pdf','2026-02-05 07:32:22','2026-02-05 07:32:22',NULL,NULL,NULL),(432,293,'accuse_293.pdf','2026-02-05 07:32:26','2026-02-05 07:32:26',NULL,NULL,NULL),(433,293,'annexes/compressed_69845595e3b9d.pdf','2026-02-05 07:32:26','2026-02-05 07:32:26',NULL,NULL,NULL),(434,293,'annexes/6WTzOg2bbEOOgFv4x2gaouBbCfJEDNEzY7LNTQUR.pdf','2026-02-05 07:33:57','2026-02-05 07:33:57',NULL,NULL,NULL),(435,302,'accuse_302.pdf','2026-02-05 07:36:19','2026-02-05 07:36:19',NULL,NULL,NULL),(436,302,'annexes/compressed_69845682b5c12.pdf','2026-02-05 07:36:19','2026-02-05 07:36:19',NULL,NULL,NULL),(437,302,'annexes/6JG8NANr19GYuyhd6ejpE6Bmwb2meSug6pb4vxjO.pdf','2026-02-05 07:37:41','2026-02-05 07:37:41',NULL,NULL,NULL),(438,312,'accuse_312.pdf','2026-02-05 07:41:17','2026-02-05 07:41:17',NULL,NULL,NULL),(439,312,'annexes/compressed_698457acc220f.pdf','2026-02-05 07:41:17','2026-02-05 07:41:17',NULL,NULL,NULL),(440,312,'annexes/n2O80MhbYWIKN1T5av43V4EDpmbK8Aps5jaLIQ73.pdf','2026-02-05 07:44:35','2026-02-05 07:44:35',NULL,NULL,NULL),(441,320,'accuse_320.pdf','2026-02-05 07:50:01','2026-02-05 07:50:01',NULL,NULL,NULL),(442,320,'annexes/compressed_698459b8ba898.pdf','2026-02-05 07:50:01','2026-02-05 07:50:01',NULL,NULL,NULL),(443,320,'annexes/V4CyDs8vWZnUpCncDXGlH73WkuyDdaj7zY0EGtae.pdf','2026-02-05 07:52:10','2026-02-05 07:52:10',NULL,NULL,NULL),(444,327,'annexes/compressed_69845bd604421.pdf','2026-02-05 07:59:02','2026-02-05 07:59:02',NULL,NULL,NULL),(445,327,'accuse_327.pdf','2026-02-05 07:59:06','2026-02-05 07:59:06',NULL,NULL,NULL),(446,327,'annexes/compressed_69845bd604421.pdf','2026-02-05 07:59:06','2026-02-05 07:59:06',NULL,NULL,NULL),(447,327,'annexes/FrBhVlbCCbXywP3ITdTRngCfA6UozOr5XzGJpSwW.pdf','2026-02-05 08:01:53','2026-02-05 08:01:53',NULL,NULL,NULL),(450,336,'annexes/i3pdyGiYRK1IVZGkcRUEMfgjtfQaPSnJQV1TbQGK.pdf','2026-02-05 08:19:31','2026-02-05 08:19:31',NULL,NULL,NULL),(451,336,'annexes/yCpO4LQMF3Egk54Qw3oXmR2VdSmnvyjSLSiDJkwE.pdf','2026-02-05 08:29:30','2026-02-05 08:29:30',NULL,NULL,NULL),(452,336,'annexes/b8AjAvJfKhuUTMZVlUHjrgZbv8EcAJ3twaU7ZBXk.pdf','2026-02-05 08:52:59','2026-02-05 08:52:59',NULL,NULL,NULL),(453,307,'annexes/compressed_69846b099d2c4.pdf','2026-02-05 09:03:53','2026-02-05 09:03:53',NULL,NULL,NULL),(454,307,'accuse_307.pdf','2026-02-05 09:04:01','2026-02-05 09:04:01',NULL,NULL,NULL),(455,307,'annexes/compressed_69846b099d2c4.pdf','2026-02-05 09:04:01','2026-02-05 09:04:01',NULL,NULL,NULL),(458,356,'annexes/RFsXp44OrWQ9L6ujvx3LeimR2OPbL4klw5Nr2STx.pdf','2026-02-05 09:38:36','2026-02-05 09:38:36',NULL,NULL,NULL),(459,356,'annexes/compressed_698475250e1a3.pdf','2026-02-05 09:47:01','2026-02-05 09:47:01',NULL,NULL,NULL),(460,356,'accuse_356.pdf','2026-02-05 09:47:17','2026-02-05 09:47:17',NULL,NULL,NULL),(461,356,'annexes/compressed_698475250e1a3.pdf','2026-02-05 09:47:17','2026-02-05 09:47:17',NULL,NULL,NULL),(462,356,'annexes/2q5Pk7TclQkQSo89n714H2KUn8FUdIEfW92981JS.pdf','2026-02-05 09:50:11','2026-02-05 09:50:11',NULL,NULL,NULL),(465,367,'annexes/qvVCQJnvEPA4XMi7GfT7GSyECWR2dqbh6STaUjEw.pdf','2026-02-05 10:02:07','2026-02-05 10:02:07',NULL,NULL,NULL),(466,367,'annexes/compressed_698479d1828cb.pdf','2026-02-05 10:06:57','2026-02-05 10:06:57',NULL,NULL,NULL),(467,367,'accuse_367.pdf','2026-02-05 10:07:00','2026-02-05 10:07:00',NULL,NULL,NULL),(468,367,'annexes/compressed_698479d1828cb.pdf','2026-02-05 10:07:00','2026-02-05 10:07:00',NULL,NULL,NULL),(469,368,'annexes/SKeX9fWFdVFp5YWom6GWqS9OFSGzeHx2vwXn77Vd.pdf','2026-02-05 10:09:48','2026-02-05 10:09:48',NULL,NULL,NULL),(470,368,'annexes/compressed_69847b72ea757.pdf','2026-02-05 10:13:55','2026-02-05 10:13:55',NULL,NULL,NULL),(471,368,'accuse_368.pdf','2026-02-05 10:13:59','2026-02-05 10:13:59',NULL,NULL,NULL),(472,368,'annexes/compressed_69847b72ea757.pdf','2026-02-05 10:13:59','2026-02-05 10:13:59',NULL,NULL,NULL),(473,368,'annexes/TtNbBWhFXxXLICSc68HhOPD8s5cTk1qjwWMXPHXx.pdf','2026-02-05 10:16:16','2026-02-05 10:16:16',NULL,NULL,NULL),(474,367,'annexes/compressed_69847cf4b0ceb.pdf','2026-02-05 10:20:20','2026-02-05 10:20:20',NULL,NULL,NULL),(475,367,'accuse_367.pdf','2026-02-05 10:20:23','2026-02-05 10:20:23',NULL,NULL,NULL),(476,367,'annexes/compressed_69847cf4b0ceb.pdf','2026-02-05 10:20:23','2026-02-05 10:20:23',NULL,NULL,NULL),(477,367,'annexes/nktbR7yuRWWmso21U0ma7SV0BMBh4nTrJCcSQ3DA.pdf','2026-02-05 10:22:45','2026-02-05 10:22:45',NULL,NULL,NULL),(489,389,'annexes/compressed_6984859616cc9.pdf','2026-02-05 10:57:10','2026-02-05 10:57:10',NULL,NULL,NULL),(490,389,'accuse_389.pdf','2026-02-05 10:57:17','2026-02-05 10:57:17',NULL,NULL,NULL),(491,389,'annexes/compressed_6984859616cc9.pdf','2026-02-05 10:57:17','2026-02-05 10:57:17',NULL,NULL,NULL),(492,389,'annexes/w2ijf8Xa3OaJiijLDMo1fFVheh4N4MXeywQTjdPj.pdf','2026-02-05 10:59:41','2026-02-05 10:59:41',NULL,NULL,NULL),(493,389,'annexes/uxFzAATbyHWDIFVzEJ71mYxiB2cA1IkIoW8CQRQD.pdf','2026-02-05 11:01:26','2026-02-05 11:01:26',NULL,NULL,NULL),(501,464,'accuse_464.pdf','2026-02-05 12:42:33','2026-02-05 12:42:33',NULL,NULL,NULL),(502,464,'annexes/compressed_69849e2ea00f7.pdf','2026-02-05 12:42:33','2026-02-05 12:42:33',NULL,NULL,NULL),(503,464,'annexes/compressed_69849e2ea00f7.pdf','2026-02-05 12:42:33','2026-02-05 12:42:33',NULL,NULL,NULL),(504,464,'annexes/dn6Lb3lm5nQOnrZhTT9cIXNtS5xijPvd1JJpbyO9.pdf','2026-02-05 12:47:23','2026-02-05 12:47:23',NULL,NULL,NULL),(505,464,'annexes/compressed_69849e2ea00f7.pdf','2026-02-05 12:47:24','2026-02-05 12:47:24',NULL,NULL,NULL),(506,465,'accuse_465.pdf','2026-02-05 12:51:18','2026-02-05 12:51:18',NULL,NULL,NULL),(507,465,'annexes/8TpS4w7Ly63KVWXAwsQuZWu5J0c7tDRqj2z0bfRZ.pdf','2026-02-05 12:54:02','2026-02-05 12:54:02',NULL,NULL,NULL),(508,465,'annexes/compressed_6984a054ba0b4.pdf','2026-02-05 12:54:03','2026-02-05 12:54:03',NULL,NULL,NULL),(509,466,'accuse_466.pdf','2026-02-05 13:01:15','2026-02-05 13:01:15',NULL,NULL,NULL),(510,466,'annexes/compressed_6984a2a194216.pdf','2026-02-05 13:01:15','2026-02-05 13:01:15',NULL,NULL,NULL),(511,466,'annexes/compressed_6984a2a194216.pdf','2026-02-05 13:01:15','2026-02-05 13:01:15',NULL,NULL,NULL),(512,467,'accuse_467.pdf','2026-02-05 13:06:35','2026-02-05 13:06:35',NULL,NULL,NULL),(513,467,'annexes/compressed_6984a3e72b802.pdf','2026-02-05 13:06:35','2026-02-05 13:06:35',NULL,NULL,NULL),(514,467,'annexes/compressed_6984a3e72b802.pdf','2026-02-05 13:06:35','2026-02-05 13:06:35',NULL,NULL,NULL),(515,466,'annexes/compressed_6984a2a194216.pdf','2026-02-05 13:07:06','2026-02-05 13:07:06',NULL,NULL,NULL),(516,467,'annexes/Bus4V1Yr5Rp1M2E2uplFH4OOk5E2hqc9DxA2wiSF.pdf','2026-02-05 13:09:01','2026-02-05 13:09:01',NULL,NULL,NULL),(517,467,'annexes/compressed_6984a3e72b802.pdf','2026-02-05 13:09:01','2026-02-05 13:09:01',NULL,NULL,NULL),(518,468,'accuse_468.pdf','2026-02-05 13:13:06','2026-02-05 13:13:06',NULL,NULL,NULL),(519,469,'accuse_469.pdf','2026-02-05 13:14:10','2026-02-05 13:14:10',NULL,NULL,NULL),(520,469,'annexes/compressed_6984a5ac6f02f.pdf','2026-02-05 13:14:10','2026-02-05 13:14:10',NULL,NULL,NULL),(521,469,'annexes/compressed_6984a5ac6f02f.pdf','2026-02-05 13:14:10','2026-02-05 13:14:10',NULL,NULL,NULL),(522,469,'annexes/YjvKJNza4iCedXJySEC3h0uEzd4HkYKA14ucXDyr.pdf','2026-02-05 13:16:49','2026-02-05 13:16:49',NULL,NULL,NULL),(523,469,'annexes/compressed_6984a5ac6f02f.pdf','2026-02-05 13:16:49','2026-02-05 13:16:49',NULL,NULL,NULL),(524,468,'annexes/compressed_6984a571eb63c.pdf','2026-02-05 13:16:58','2026-02-05 13:16:58',NULL,NULL,NULL),(525,470,'accuse_470.pdf','2026-02-05 13:20:49','2026-02-05 13:20:49',NULL,NULL,NULL),(526,470,'annexes/compressed_6984a732363cf.pdf','2026-02-05 13:20:49','2026-02-05 13:20:49',NULL,NULL,NULL),(527,470,'annexes/compressed_6984a732363cf.pdf','2026-02-05 13:20:49','2026-02-05 13:20:49',NULL,NULL,NULL),(528,470,'annexes/t1VZZY69WJmbz2wJiJ6OlWI3bhqWhlGIJPqUYzRi.pdf','2026-02-05 13:23:21','2026-02-05 13:23:21',NULL,NULL,NULL),(529,470,'annexes/compressed_6984a732363cf.pdf','2026-02-05 13:23:21','2026-02-05 13:23:21',NULL,NULL,NULL),(530,389,'annexes/9zxO9y0ubf7jpLOLPrp1l3voNlyl6VjahJGC8EnF.pdf','2026-02-05 13:26:33','2026-02-05 13:26:33',NULL,NULL,NULL),(531,471,'accuse_471.pdf','2026-02-05 13:27:57','2026-02-05 13:27:57',NULL,NULL,NULL),(532,471,'annexes/compressed_6984a8e5789b7.pdf','2026-02-05 13:27:57','2026-02-05 13:27:57',NULL,NULL,NULL),(533,471,'annexes/compressed_6984a8e5789b7.pdf','2026-02-05 13:27:57','2026-02-05 13:27:57',NULL,NULL,NULL),(534,472,'accuse_472.pdf','2026-02-05 13:29:40','2026-02-05 13:29:40',NULL,NULL,NULL),(535,472,'annexes/compressed_6984a949918fb.pdf','2026-02-05 13:29:40','2026-02-05 13:29:40',NULL,NULL,NULL),(536,472,'annexes/compressed_6984a949918fb.pdf','2026-02-05 13:29:40','2026-02-05 13:29:40',NULL,NULL,NULL),(537,471,'annexes/compressed_6984a8e5789b7.pdf','2026-02-05 13:30:01','2026-02-05 13:30:01',NULL,NULL,NULL),(538,473,'accuse_473.pdf','2026-02-06 06:57:12','2026-02-06 06:57:12',NULL,NULL,NULL),(539,473,'annexes/compressed_69859bd193106.pdf','2026-02-06 06:57:12','2026-02-06 06:57:12',NULL,NULL,NULL),(540,473,'annexes/8QXZ60vbuFs1Y8aJLvwuKFEmPDxxDIJTxXCrtmux.pdf','2026-02-06 07:00:17','2026-02-06 07:00:17',NULL,NULL,NULL),(541,473,'annexes/compressed_69859ed67fe5b.pdf','2026-02-06 07:00:17','2026-02-06 07:00:17',NULL,NULL,NULL),(542,474,'accuse_474.pdf','2026-02-06 07:03:06','2026-02-06 07:03:06',NULL,NULL,NULL),(543,474,'annexes/AUSQd6H5hBF29SupnDIRHMg9AidoqlbwBWdfDzA7.pdf','2026-02-06 07:06:22','2026-02-06 07:06:22',NULL,NULL,NULL),(544,474,'annexes/compressed_6985a039c0d72.pdf','2026-02-06 07:06:22','2026-02-06 07:06:22',NULL,NULL,NULL),(545,475,'accuse_475.pdf','2026-02-06 07:14:59','2026-02-06 07:14:59',NULL,NULL,NULL),(546,475,'annexes/compressed_6985a2ff2007c.pdf','2026-02-06 07:14:59','2026-02-06 07:14:59',NULL,NULL,NULL),(547,475,'annexes/compressed_6985a2ff2007c.pdf','2026-02-06 07:14:59','2026-02-06 07:14:59',NULL,NULL,NULL),(548,475,'annexes/3jRD5w4bVaGdIMEqAWpkmTk4cioubt64Uj01W0Mr.pdf','2026-02-06 07:19:50','2026-02-06 07:19:50',NULL,NULL,NULL),(549,475,'annexes/compressed_6985a2ff2007c.pdf','2026-02-06 07:19:50','2026-02-06 07:19:50',NULL,NULL,NULL),(555,477,'accuse_477.pdf','2026-02-06 08:04:58','2026-02-06 08:04:58',NULL,NULL,NULL),(556,477,'annexes/compressed_6985aea4ed71b.pdf','2026-02-06 08:04:58','2026-02-06 08:04:58',NULL,NULL,NULL),(557,477,'annexes/compressed_6985aea4ed71b.pdf','2026-02-06 08:04:58','2026-02-06 08:04:58',NULL,NULL,NULL),(558,477,'annexes/kVUY32Lc0QBPdLN62bPYxHnEkNXZylpb0YGe4HQZ.pdf','2026-02-06 08:09:06','2026-02-06 08:09:06',NULL,NULL,NULL),(559,477,'annexes/compressed_6985aea4ed71b.pdf','2026-02-06 08:09:06','2026-02-06 08:09:06',NULL,NULL,NULL),(560,478,'accuse_478.pdf','2026-02-06 08:19:12','2026-02-06 08:19:12',NULL,NULL,NULL),(561,478,'annexes/compressed_6985b20b6874f.pdf','2026-02-06 08:19:12','2026-02-06 08:19:12',NULL,NULL,NULL),(562,478,'annexes/compressed_6985b20b6874f.pdf','2026-02-06 08:19:12','2026-02-06 08:19:12',NULL,NULL,NULL),(563,478,'annexes/RTcsRy69q6NNOxwCH41v1l3drnu35IqEYG3QDdP2.pdf','2026-02-06 08:24:16','2026-02-06 08:24:16',NULL,NULL,NULL),(564,478,'annexes/compressed_6985b20b6874f.pdf','2026-02-06 08:24:16','2026-02-06 08:24:16',NULL,NULL,NULL),(565,479,'accuse_479.pdf','2026-02-06 08:34:53','2026-02-06 08:34:53',NULL,NULL,NULL),(566,479,'annexes/compressed_6985b5b6d482a.pdf','2026-02-06 08:34:53','2026-02-06 08:34:53',NULL,NULL,NULL),(567,479,'annexes/compressed_6985b5b6d482a.pdf','2026-02-06 08:34:53','2026-02-06 08:34:53',NULL,NULL,NULL),(568,479,'annexes/Nz41QF8a2rSN9ikMToBd9z6Xsduxednjk0Os2bbC.pdf','2026-02-06 09:18:10','2026-02-06 09:18:10',NULL,NULL,NULL),(569,479,'annexes/compressed_6985b5b6d482a.pdf','2026-02-06 09:18:10','2026-02-06 09:18:10',NULL,NULL,NULL),(570,480,'accuse_480.pdf','2026-02-06 09:27:32','2026-02-06 09:27:32',NULL,NULL,NULL),(571,482,'accuse_482.pdf','2026-02-06 09:48:41','2026-02-06 09:48:41',NULL,NULL,NULL),(572,482,'annexes/compressed_6985c21203114.pdf','2026-02-06 09:48:41','2026-02-06 09:48:41',NULL,NULL,NULL),(573,482,'annexes/qkwvMzXTPfQvIJRNcrQdnnWc1ngSaJbQYlPJYfIW.pdf','2026-02-06 09:55:11','2026-02-06 09:55:11',NULL,NULL,NULL),(574,482,'annexes/compressed_6985c70854a45.pdf','2026-02-06 09:55:11','2026-02-06 09:55:11',NULL,NULL,NULL),(575,483,'accuse_483.pdf','2026-02-06 10:13:04','2026-02-06 10:13:04',NULL,NULL,NULL),(576,483,'annexes/compressed_6985ccbe87037.pdf','2026-02-06 10:13:04','2026-02-06 10:13:04',NULL,NULL,NULL),(577,483,'annexes/HZtuBdQMdbCs78BPN62VFWQFVpSk5XQWEGW923vp.pdf','2026-02-06 10:15:35','2026-02-06 10:15:35',NULL,NULL,NULL),(578,483,'annexes/compressed_6985ccbe87037.pdf','2026-02-06 10:15:35','2026-02-06 10:15:35',NULL,NULL,NULL),(579,484,'accuse_484.pdf','2026-02-06 10:41:54','2026-02-06 10:41:54',NULL,NULL,NULL),(580,484,'annexes/compressed_6985d3666d18e.pdf','2026-02-06 10:41:55','2026-02-06 10:41:55',NULL,NULL,NULL),(581,484,'annexes/compressed_6985d3666d18e.pdf','2026-02-06 10:41:55','2026-02-06 10:41:55',NULL,NULL,NULL),(582,484,'annexes/6QoL510O71ZtpK6KjqPjtGy24SNGTMAfCgKyyPUZ.pdf','2026-02-06 10:46:52','2026-02-06 10:46:52',NULL,NULL,NULL),(583,484,'annexes/compressed_6985d3666d18e.pdf','2026-02-06 10:46:52','2026-02-06 10:46:52',NULL,NULL,NULL),(584,485,'accuse_485.pdf','2026-02-06 10:56:29','2026-02-06 10:56:29',NULL,NULL,NULL),(585,485,'annexes/compressed_6985d6a958746.pdf','2026-02-06 10:56:29','2026-02-06 10:56:29',NULL,NULL,NULL),(586,485,'annexes/compressed_6985d6a958746.pdf','2026-02-06 10:56:29','2026-02-06 10:56:29',NULL,NULL,NULL),(587,485,'annexes/bTHZwnYN8z1qPka39hepPWno1BteEcg5UOl0hDB9.pdf','2026-02-06 11:01:24','2026-02-06 11:01:24',NULL,NULL,NULL),(588,485,'annexes/compressed_6985d6a958746.pdf','2026-02-06 11:01:24','2026-02-06 11:01:24',NULL,NULL,NULL),(589,486,'accuse_486.pdf','2026-02-06 11:08:13','2026-02-06 11:08:13',NULL,NULL,NULL),(590,486,'annexes/snWaKIM90NthjOzifyHp9kQz198lc8SwAxc67FiI.pdf','2026-02-06 11:11:17','2026-02-06 11:11:17',NULL,NULL,NULL),(591,486,'annexes/compressed_6985d9ace772e.pdf','2026-02-06 11:11:17','2026-02-06 11:11:17',NULL,NULL,NULL),(592,487,'accuse_487.pdf','2026-02-06 11:17:49','2026-02-06 11:17:49',NULL,NULL,NULL),(593,487,'annexes/compressed_6985dbe750f2e.pdf','2026-02-06 11:17:49','2026-02-06 11:17:49',NULL,NULL,NULL),(594,487,'annexes/compressed_6985dbe750f2e.pdf','2026-02-06 11:17:49','2026-02-06 11:17:49',NULL,NULL,NULL),(595,487,'annexes/QUNqXqJJtzzr3nVQdzrKf6Z2ZavyLuOlANlhUyFX.pdf','2026-02-06 11:21:28','2026-02-06 11:21:28',NULL,NULL,NULL),(596,487,'annexes/compressed_6985dbe750f2e.pdf','2026-02-06 11:21:28','2026-02-06 11:21:28',NULL,NULL,NULL),(597,488,'accuse_488.pdf','2026-02-06 12:53:23','2026-02-06 12:53:23',NULL,NULL,NULL),(598,488,'annexes/compressed_6985f24b00820.pdf','2026-02-06 12:53:23','2026-02-06 12:53:23',NULL,NULL,NULL),(599,488,'annexes/compressed_6985f24b00820.pdf','2026-02-06 12:53:23','2026-02-06 12:53:23',NULL,NULL,NULL),(600,488,'annexes/bVCA46Wr9pKV2iQYtcMOtCQ847GW5CDhwPNUR2tY.pdf','2026-02-06 12:55:56','2026-02-06 12:55:56',NULL,NULL,NULL),(601,488,'annexes/compressed_6985f24b00820.pdf','2026-02-06 12:55:56','2026-02-06 12:55:56',NULL,NULL,NULL),(602,489,'accuse_489.pdf','2026-02-06 13:24:22','2026-02-06 13:24:22',NULL,NULL,NULL),(603,489,'annexes/compressed_6985f9926924a.pdf','2026-02-06 13:24:22','2026-02-06 13:24:22',NULL,NULL,NULL),(604,489,'annexes/compressed_6985f9926924a.pdf','2026-02-06 13:24:22','2026-02-06 13:24:22',NULL,NULL,NULL),(605,489,'annexes/8Ab7IxInbIe0hWG2tsTDZpEfopFNLF0u6csTvZcl.pdf','2026-02-06 13:26:25','2026-02-06 13:26:25',NULL,NULL,NULL),(606,489,'annexes/compressed_6985f9926924a.pdf','2026-02-06 13:26:25','2026-02-06 13:26:25',NULL,NULL,NULL),(607,490,'accuse_490.pdf','2026-02-06 13:28:42','2026-02-06 13:28:42',NULL,NULL,NULL),(608,490,'annexes/compressed_6985fa95080bf.pdf','2026-02-06 13:28:42','2026-02-06 13:28:42',NULL,NULL,NULL),(609,490,'annexes/compressed_6985fa95080bf.pdf','2026-02-06 13:28:42','2026-02-06 13:28:42',NULL,NULL,NULL),(610,490,'annexes/dxPG8Kjk02apPb89JdCgaXUkXYvsmQMW6c07S9zR.pdf','2026-02-06 13:31:53','2026-02-06 13:31:53',NULL,NULL,NULL),(611,490,'annexes/compressed_6985fa95080bf.pdf','2026-02-06 13:31:53','2026-02-06 13:31:53',NULL,NULL,NULL),(612,491,'accuse_491.pdf','2026-02-06 13:33:32','2026-02-06 13:33:32',NULL,NULL,NULL),(613,491,'annexes/compressed_6985fbb93470b.pdf','2026-02-06 13:33:32','2026-02-06 13:33:32',NULL,NULL,NULL),(614,491,'annexes/compressed_6985fbb93470b.pdf','2026-02-06 13:33:32','2026-02-06 13:33:32',NULL,NULL,NULL),(615,491,'annexes/5GOKfnX22Z00wK9ENoEMPK2UigZlkSBkLLdDhsab.pdf','2026-02-06 13:37:24','2026-02-06 13:37:24',NULL,NULL,NULL),(616,491,'annexes/compressed_6985fbb93470b.pdf','2026-02-06 13:37:24','2026-02-06 13:37:24',NULL,NULL,NULL),(617,492,'accuse_492.pdf','2026-02-06 13:52:15','2026-02-06 13:52:15',NULL,NULL,NULL),(618,492,'annexes/compressed_6986001c20bb4.pdf','2026-02-06 13:52:15','2026-02-06 13:52:15',NULL,NULL,NULL),(619,492,'annexes/compressed_6986001c20bb4.pdf','2026-02-06 13:52:15','2026-02-06 13:52:15',NULL,NULL,NULL),(620,492,'annexes/8mM2CvjfdtECmsy9MywX6YNbaLbaHyBlRcpHAdTo.pdf','2026-02-06 13:57:26','2026-02-06 13:57:26',NULL,NULL,NULL),(621,492,'annexes/compressed_6986001c20bb4.pdf','2026-02-06 13:57:26','2026-02-06 13:57:26',NULL,NULL,NULL);
+/*!40000 ALTER TABLE `annexes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `annexes_dossier_personnel`
+--
+
+DROP TABLE IF EXISTS `annexes_dossier_personnel`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `annexes_dossier_personnel` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `dossier_personnel_id` bigint unsigned NOT NULL,
+  `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `annexes_dossier_personnel_dossier_personnel_id_foreign` (`dossier_personnel_id`),
+  CONSTRAINT `annexes_dossier_personnel_dossier_personnel_id_foreign` FOREIGN KEY (`dossier_personnel_id`) REFERENCES `dossiers_personnels` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `annexes_dossier_personnel`
+--
+
+LOCK TABLES `annexes_dossier_personnel` WRITE;
+/*!40000 ALTER TABLE `annexes_dossier_personnel` DISABLE KEYS */;
+/*!40000 ALTER TABLE `annexes_dossier_personnel` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `archives`
+--
+
+DROP TABLE IF EXISTS `archives`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `archives` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `numero_enregistrement` varchar(255) NOT NULL,
+  `numero_reference` varchar(255) DEFAULT NULL,
+  `resume` text,
+  `service_concerne` varchar(255) DEFAULT NULL,
+  `commentaires` text,
+  `statut` enum('clos','en cours','autre') DEFAULT 'en cours',
+  `categorie` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `numero_enregistrement` (`numero_enregistrement`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `archives`
+--
+
+LOCK TABLES `archives` WRITE;
+/*!40000 ALTER TABLE `archives` DISABLE KEYS */;
+/*!40000 ALTER TABLE `archives` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cache`
+--
+
+DROP TABLE IF EXISTS `cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cache` (
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cache`
+--
+
+LOCK TABLES `cache` WRITE;
+/*!40000 ALTER TABLE `cache` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cache` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cache_locks`
+--
+
+DROP TABLE IF EXISTS `cache_locks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cache_locks`
+--
+
+LOCK TABLES `cache_locks` WRITE;
+/*!40000 ALTER TABLE `cache_locks` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cache_locks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `courriers`
+--
+
+DROP TABLE IF EXISTS `courriers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `courriers` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `date_reception` date DEFAULT NULL,
+  `numero_enregistrement` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expediteur` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `objet` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contenu` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fichier` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('reçu','en attente','validé','traité') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `annotations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `validated_by` bigint unsigned DEFAULT NULL,
+  `validation_comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `validation_date` timestamp NULL DEFAULT NULL,
+  `transmis_a_directeur` tinyint(1) NOT NULL DEFAULT '0',
+  `reponse_directeur` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `courriers_numero_enregistrement_unique` (`numero_enregistrement`),
+  KEY `courriers_user_id_foreign` (`user_id`),
+  KEY `courriers_validated_by_foreign` (`validated_by`),
+  CONSTRAINT `courriers_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `courriers_validated_by_foreign` FOREIGN KEY (`validated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `courriers`
+--
+
+LOCK TABLES `courriers` WRITE;
+/*!40000 ALTER TABLE `courriers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `courriers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `courriers_internes`
+--
+
+DROP TABLE IF EXISTS `courriers_internes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `courriers_internes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `numero_enregistrement` varchar(255) NOT NULL,
+  `date_envoi` date NOT NULL,
+  `service_expediteur_id` bigint unsigned NOT NULL,
+  `service_destinataire_id` bigint unsigned NOT NULL,
+  `date_limite_reponse` date NOT NULL,
+  `statut` enum('en attente','répondu','en retard') DEFAULT 'en attente',
+  `commentaire` text,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `service_expediteur_id` (`service_expediteur_id`),
+  KEY `service_destinataire_id` (`service_destinataire_id`),
+  CONSTRAINT `courriers_internes_ibfk_1` FOREIGN KEY (`service_expediteur_id`) REFERENCES `services` (`id`),
+  CONSTRAINT `courriers_internes_ibfk_2` FOREIGN KEY (`service_destinataire_id`) REFERENCES `services` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `courriers_internes`
+--
+
+LOCK TABLES `courriers_internes` WRITE;
+/*!40000 ALTER TABLE `courriers_internes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `courriers_internes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `demandes_conges`
+--
+
+DROP TABLE IF EXISTS `demandes_conges`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `demandes_conges` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `agent_id` bigint unsigned NOT NULL,
+  `type_conge` enum('vacances','maladie','autre') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_debut` date NOT NULL,
+  `date_fin` date NOT NULL,
+  `motif` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `statut` enum('en_attente','acceptee','refusee') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en_attente',
+  `user_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `demandes_conges_agent_id_foreign` (`agent_id`),
+  KEY `demandes_conges_user_id_foreign` (`user_id`),
+  CONSTRAINT `demandes_conges_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `demandes_conges_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `demandes_conges`
+--
+
+LOCK TABLES `demandes_conges` WRITE;
+/*!40000 ALTER TABLE `demandes_conges` DISABLE KEYS */;
+INSERT INTO `demandes_conges` VALUES (3,10,'maladie','2025-02-14','2025-03-30','Ras','acceptee',11,'2025-04-14 05:57:25','2025-04-29 11:32:49');
+/*!40000 ALTER TABLE `demandes_conges` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `depense_caisses`
+--
+
+DROP TABLE IF EXISTS `depense_caisses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `depense_caisses` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `rubrique` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `montant` decimal(15,2) NOT NULL,
+  `date_depense` date NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `justificatifs` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `depense_caisses_user_id_foreign` (`user_id`),
+  CONSTRAINT `depense_caisses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `depense_caisses`
+--
+
+LOCK TABLES `depense_caisses` WRITE;
+/*!40000 ALTER TABLE `depense_caisses` DISABLE KEYS */;
+INSERT INTO `depense_caisses` VALUES (1,8,'achat pc',80.00,'2025-04-13','hp','2025-04-12 23:33:15','2025-04-12 23:33:15',NULL),(2,10,'achat pc',90.00,'2025-04-13','HP','2025-04-13 00:26:21','2025-04-13 00:26:21',NULL),(3,10,'achat terrain',120.00,'2025-04-13','LG','2025-04-13 00:30:30','2025-04-13 00:30:30',NULL),(6,10,'achat smartphone',200.00,'2025-04-13','journée de droit de la femme','2025-04-13 20:08:41','2025-04-13 20:15:17',NULL),(8,10,'achat Iphone',40.00,'2025-04-13','test','2025-04-13 20:28:54','2025-04-14 06:27:48',NULL),(10,10,'Communication',50.00,'2025-04-14','telephone bureau','2025-04-14 06:15:52','2025-04-14 06:15:52',NULL),(11,10,'Realisation activité point de presse',500.00,'2025-04-14','RAS','2025-04-14 06:18:21','2025-04-14 06:30:50',NULL);
+/*!40000 ALTER TABLE `depense_caisses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dossiers_personnels`
+--
+
+DROP TABLE IF EXISTS `dossiers_personnels`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dossiers_personnels` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `agent_id` bigint unsigned NOT NULL,
+  `poste` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date_embauche` date DEFAULT NULL,
+  `matricule` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contrat_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `dossiers_personnels_user_id_foreign` (`user_id`),
+  KEY `dossiers_personnels_agent_id_foreign` (`agent_id`),
+  CONSTRAINT `dossiers_personnels_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `dossiers_personnels_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dossiers_personnels`
+--
+
+LOCK TABLES `dossiers_personnels` WRITE;
+/*!40000 ALTER TABLE `dossiers_personnels` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dossiers_personnels` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `failed_jobs`
+--
+
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `failed_jobs`
+--
+
+LOCK TABLES `failed_jobs` WRITE;
+/*!40000 ALTER TABLE `failed_jobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `failed_jobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `fonds_demandes`
+--
+
+DROP TABLE IF EXISTS `fonds_demandes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `fonds_demandes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `montant` decimal(15,2) NOT NULL,
+  `motif` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `statut` enum('en_attente','approuve','rejete') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en_attente',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fonds_demandes_user_id_foreign` (`user_id`),
+  CONSTRAINT `fonds_demandes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `fonds_demandes`
+--
+
+LOCK TABLES `fonds_demandes` WRITE;
+/*!40000 ALTER TABLE `fonds_demandes` DISABLE KEYS */;
+INSERT INTO `fonds_demandes` VALUES (1,8,100.00,'Achat PC','en_attente','2025-04-12 23:19:37','2025-04-12 23:19:37'),(3,10,100.00,'Investissement','rejete','2025-04-13 21:05:05','2025-04-14 10:33:58'),(4,10,500.00,'Reserve','approuve','2025-04-14 05:51:30','2025-04-14 06:13:57'),(6,10,500.00,'Investissement','approuve','2025-04-15 05:41:08','2025-04-15 05:41:14');
+/*!40000 ALTER TABLE `fonds_demandes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `job_batches`
+--
+
+DROP TABLE IF EXISTS `job_batches`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `job_batches` (
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total_jobs` int NOT NULL,
+  `pending_jobs` int NOT NULL,
+  `failed_jobs` int NOT NULL,
+  `failed_job_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cancelled_at` int DEFAULT NULL,
+  `created_at` int NOT NULL,
+  `finished_at` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `job_batches`
+--
+
+LOCK TABLES `job_batches` WRITE;
+/*!40000 ALTER TABLE `job_batches` DISABLE KEYS */;
+/*!40000 ALTER TABLE `job_batches` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `jobs`
+--
+
+DROP TABLE IF EXISTS `jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` tinyint unsigned NOT NULL,
+  `reserved_at` int unsigned DEFAULT NULL,
+  `available_at` int unsigned NOT NULL,
+  `created_at` int unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `jobs_queue_index` (`queue`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `jobs`
+--
+
+LOCK TABLES `jobs` WRITE;
+/*!40000 ALTER TABLE `jobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `jobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `justificatifs`
+--
+
+DROP TABLE IF EXISTS `justificatifs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `justificatifs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `depense_caisse_id` bigint unsigned DEFAULT NULL,
+  `fichier` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `depense_caisse_id` (`depense_caisse_id`),
+  CONSTRAINT `justificatifs_ibfk_1` FOREIGN KEY (`depense_caisse_id`) REFERENCES `depense_caisses` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `justificatifs`
+--
+
+LOCK TABLES `justificatifs` WRITE;
+/*!40000 ALTER TABLE `justificatifs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `justificatifs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `messages` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `sender_id` bigint unsigned NOT NULL,
+  `receiver_id` bigint unsigned NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `messages_sender_id_foreign` (`sender_id`),
+  KEY `messages_receiver_id_foreign` (`receiver_id`),
+  CONSTRAINT `messages_receiver_id_foreign` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `messages_sender_id_foreign` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `messages`
+--
+
+LOCK TABLES `messages` WRITE;
+/*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+INSERT INTO `messages` VALUES (59,8,10,'Hello, je démarre cette conversation.','2025-04-12 18:27:06','2025-04-16 02:04:51',1),(60,8,10,'reponse imediat','2025-04-12 18:27:54','2025-04-16 02:04:51',1),(63,10,8,'BJR','2025-04-12 18:35:20','2025-04-14 22:05:12',1),(65,10,11,'Hello, je démarre cette conversation.','2025-04-13 00:27:17','2025-05-12 05:30:37',1),(66,11,10,'merci','2025-04-13 00:27:32','2025-04-15 05:28:55',1),(68,10,8,'Mbote','2025-04-14 05:54:39','2025-04-14 22:05:12',1),(69,8,10,'Mbote ça va','2025-04-14 05:55:08','2025-04-16 02:04:51',1),(74,10,8,'ok','2025-04-16 02:04:51','2025-04-16 02:04:51',0),(122,145,142,'Hello, je démarre cette conversation.','2025-10-16 08:17:07','2025-10-24 06:02:52',1),(123,3,144,'Hello, je démarre cette conversation.','2025-10-16 09:08:50','2025-10-16 09:58:37',1),(124,3,144,'test message','2025-10-16 09:09:24','2025-10-16 09:58:37',1),(125,3,145,'Hello, je démarre cette conversation.','2025-10-16 09:09:33','2025-10-16 09:56:06',1),(126,3,145,'test message','2025-10-16 09:09:55','2025-10-16 09:56:06',1),(127,148,145,'Hello, je démarre cette conversation.','2025-10-16 09:35:04','2026-02-06 06:01:59',1),(128,148,145,'Bonjour Mme Bolanga,','2025-10-16 09:39:09','2026-02-06 06:01:59',1),(129,145,148,'BIEN RECU','2025-10-16 09:45:52','2025-10-16 09:50:21',1),(130,148,144,'Hello, je démarre cette conversation.','2025-10-16 09:51:22','2025-10-16 09:51:22',0),(131,148,144,'Bonjour Secab,\r\nje te salue','2025-10-16 09:52:56','2025-10-16 09:52:56',0),(132,3,144,'hello','2025-10-16 10:02:17','2025-10-16 10:02:17',0),(133,142,131,'Hello, je démarre cette conversation.','2025-10-24 06:02:43','2025-10-24 06:02:43',0),(134,146,145,'Hello, je démarre cette conversation.','2026-01-09 02:36:06','2026-02-06 06:02:12',1),(135,146,145,'BONJOUR','2026-01-09 02:38:06','2026-02-06 06:02:12',1),(136,146,142,'Hello, je démarre cette conversation.','2026-01-09 02:50:44','2026-01-09 02:50:44',0),(137,146,142,'BONJOUR','2026-01-09 02:53:34','2026-01-09 02:53:34',0),(138,126,142,'Hello, je démarre cette conversation.','2026-02-04 10:37:37','2026-02-04 10:37:37',0),(139,126,142,'Bonjour','2026-02-04 10:38:32','2026-02-04 10:38:32',0),(140,123,3,'Hello, je démarre cette conversation.','2026-02-05 09:53:18','2026-02-06 10:17:50',1),(141,123,3,'Bjr Mme \r\nComment allez-vous?\r\nPuis je avoir l\'info sur l\'évolution de traitement du doss. des retraités?','2026-02-05 09:54:37','2026-02-06 10:17:50',1),(142,3,123,'Bonjour DRH, s\'agissant du signataire ramené par le Chef du Bureau Paie, ce dernier est en attente de la signature du DG.','2026-02-05 10:09:56','2026-02-05 10:09:56',0),(143,122,130,'Hello, je démarre cette conversation.','2026-02-05 10:35:01','2026-02-05 10:35:01',0),(144,135,3,'Hello, je démarre cette conversation.','2026-02-06 07:52:15','2026-02-06 07:52:15',0),(145,135,3,'SVP Madame Bolanga, voulez-vous vérifier la réception de ce document. numéro: 010/01 du 06/01/2026 en provenance du cabinet du ministre.','2026-02-06 08:19:12','2026-02-06 08:19:12',0),(146,122,123,'Hello, je démarre cette conversation.','2026-02-06 12:29:51','2026-02-06 12:29:51',0),(147,122,123,'BONJOUR MR LE DRHSG, Je viens vous présenter mes civilités au cours de cet après midi. j\'espère que vous allez bien.','2026-02-06 12:32:43','2026-02-06 12:32:43',0);
+/*!40000 ALTER TABLE `messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `migrations`
+--
+
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `migrations`
+--
+
+LOCK TABLES `migrations` WRITE;
+/*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
+INSERT INTO `migrations` VALUES (5,'0001_01_01_000000_create_users_table',1),(6,'0001_01_01_000001_create_cache_table',1),(7,'0001_01_01_000002_create_jobs_table',1),(8,'2025_03_07_000847_create_courriers_table',1),(9,'2025_03_20_150424_create_messages_table',2),(10,'2025_03_20_150529_create_annexe_messages_table',2),(11,'2025_04_11_123156_create_tenants_table',3),(12,'2025_04_12_214614_create_dossiers_personnels_table',4),(13,'2025_04_12_215036_create_demande_conges_table',5),(14,'2025_04_12_222439_create_fonds_demandes_table',6),(15,'2025_04_12_222547_create_depense_caisses_table',6),(16,'2025_04_13_222155_create_annexes_dossier_personnel_table',7),(17,'2026_02_05_000000_add_service_code_to_users',8),(18,'2026_02_05_000001_add_service_codes_to_telegrammes',8);
+/*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+DROP TABLE IF EXISTS `password_reset_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `password_reset_tokens`
+--
+
+LOCK TABLES `password_reset_tokens` WRITE;
+/*!40000 ALTER TABLE `password_reset_tokens` DISABLE KEYS */;
+INSERT INTO `password_reset_tokens` VALUES ('agent02@gmail.com','$2y$12$etoti8f8kdGMocuFn7Kh6OkTrrPuOCB0fnJ3sxIMZG.wCHxbz0xCG','2025-03-09 19:47:42');
+/*!40000 ALTER TABLE `password_reset_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reponses`
+--
+
+DROP TABLE IF EXISTS `reponses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reponses` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `numero_enregistrement` varchar(255) NOT NULL,
+  `numero_reference` varchar(255) DEFAULT NULL,
+  `service_concerne` varchar(255) NOT NULL,
+  `observation` text,
+  `commentaires` text,
+  `annexe_id` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `telegramme_id` bigint unsigned DEFAULT NULL,
+  `reponse_id` int DEFAULT NULL,
+  `archive` varchar(255) DEFAULT NULL,
+  `status_archive` varchar(255) DEFAULT NULL,
+  `user_id` bigint unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `annexe_id` (`annexe_id`),
+  KEY `fk_telegramme` (`telegramme_id`),
+  KEY `reponses_user_id_foreign` (`user_id`),
+  KEY `fk_reponse_parent` (`reponse_id`),
+  CONSTRAINT `fk_reponse_parent` FOREIGN KEY (`reponse_id`) REFERENCES `reponses` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_telegramme` FOREIGN KEY (`telegramme_id`) REFERENCES `telegrammes` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reponses_ibfk_1` FOREIGN KEY (`annexe_id`) REFERENCES `annexes` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reponses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reponses`
+--
+
+LOCK TABLES `reponses` WRITE;
+/*!40000 ALTER TABLE `reponses` DISABLE KEYS */;
+INSERT INTO `reponses` VALUES (44,'123/34','DP03','[\"RH\"]','test','test',NULL,'2025-04-14 22:17:47','2025-10-22 10:57:22',39,NULL,NULL,NULL,11),(60,'148/01',NULL,'[\"Secr\\u00e9tariat DG\"]','Service études et suivi des projets','document reçu.',NULL,'2026-02-06 08:31:00','2026-02-06 08:31:00',92,NULL,NULL,NULL,135),(61,'161/01','013/01/MPW/PR/26','[\"Secr\\u00e9tariat DG\"]','Service études et suivi des projets','Document reçu',NULL,'2026-02-06 08:37:15','2026-02-06 08:37:15',90,NULL,NULL,NULL,135),(62,'164/01','FPC/SAI/MSN/005/26','[\"Secr\\u00e9tariat DG\"]','Informatique','Document bien reçu',NULL,'2026-02-06 10:32:50','2026-02-06 10:32:50',91,NULL,NULL,NULL,142),(63,'167/01','002/FPC/DG/DCI/DSH/2026','[\"Secr\\u00e9tariat DG\"]','Assistant Principal DG','Document en traitement',NULL,'2026-02-06 10:50:13','2026-02-06 10:50:13',87,NULL,NULL,NULL,148),(64,'1791/10','071/FPC/CPKOC/2025','[\"Secr\\u00e9tariat DG\"]','CSRH','DOCUMENT REÇU',NULL,'2026-02-06 13:51:12','2026-02-06 13:51:12',75,NULL,NULL,NULL,132),(65,'174/02',NULL,'[\"Secr\\u00e9tariat DG\"]','CSRH','DOCUMENT REÇU',NULL,'2026-02-06 13:57:56','2026-02-06 13:57:56',103,NULL,NULL,NULL,132);
+/*!40000 ALTER TABLE `reponses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reponses_finales`
+--
+
+DROP TABLE IF EXISTS `reponses_finales`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reponses_finales` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `numero_enregistrement` varchar(255) NOT NULL,
+  `numero_reference` varchar(255) DEFAULT NULL,
+  `service_concerne` varchar(255) NOT NULL,
+  `observation` text,
+  `telegramme_id` bigint unsigned NOT NULL,
+  `reponse_id` int NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_reponse_finale_reponse` (`reponse_id`),
+  KEY `fk_reponse_finale_telegramme` (`telegramme_id`),
+  KEY `fk_reponse_finale_user` (`user_id`),
+  CONSTRAINT `fk_reponse_finale_reponse` FOREIGN KEY (`reponse_id`) REFERENCES `reponses` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_reponse_finale_telegramme` FOREIGN KEY (`telegramme_id`) REFERENCES `telegrammes` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_reponse_finale_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reponses_finales`
+--
+
+LOCK TABLES `reponses_finales` WRITE;
+/*!40000 ALTER TABLE `reponses_finales` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reponses_finales` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `services`
+--
+
+DROP TABLE IF EXISTS `services`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `services` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `services`
+--
+
+LOCK TABLES `services` WRITE;
+/*!40000 ALTER TABLE `services` DISABLE KEYS */;
+/*!40000 ALTER TABLE `services` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sessions` (
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sessions_user_id_index` (`user_id`),
+  KEY `sessions_last_activity_index` (`last_activity`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sessions`
+--
+
+LOCK TABLES `sessions` WRITE;
+/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+INSERT INTO `sessions` VALUES ('hp83DiPsWPtcmF2FPcYXT8GEARc62e1W0YXL64go',3,'192.168.1.220','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo3OntzOjY6Il90b2tlbiI7czo0MDoiTXZkcXZ3YnA2M2psRDlvY21MUTdvZFJ5QVhaU1ZSM3k5bmFZVFp1VCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xOTIuMTY4LjEuMjIwL25vdGlmaWNhdGlvbnMvY291bnQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YTowOnt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MztzOjE3OiJjb2RlX2FjY2VzX3ZhbGlkZSI7YjoxO3M6MTU6ImNvZGVfYWNjZXNfdGltZSI7TzoyNToiSWxsdW1pbmF0ZVxTdXBwb3J0XENhcmJvbiI6Mzp7czo0OiJkYXRlIjtzOjI2OiIyMDI2LTAyLTA5IDA2OjMwOjI4Ljg0OTkyOCI7czoxMzoidGltZXpvbmVfdHlwZSI7aTozO3M6ODoidGltZXpvbmUiO3M6MzoiVVRDIjt9fQ==',1770619549),('sbTlyjhbxu4Ly4Rzdf8d02bu0gy2aDVnjk3y3Wbp',NULL,'127.0.0.1','curl/7.81.0','YTozOntzOjY6Il90b2tlbiI7czo0MDoiWGFMcURHM3V3eTBpSzh0Z010M2JnazVJdWNXV3FDU3IxUGFLRUpoMyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTY6Imh0dHA6Ly9sb2NhbGhvc3QiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1770618547);
+/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `telegrammes`
+--
+
+DROP TABLE IF EXISTS `telegrammes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `telegrammes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `numero_enregistrement` varchar(255) DEFAULT NULL,
+  `numero_reference` varchar(255) DEFAULT NULL,
+  `service_concerne` varchar(255) NOT NULL,
+  `service_codes` json DEFAULT NULL,
+  `observation` text,
+  `commentaires` text,
+  `archive` varchar(255) DEFAULT NULL,
+  `status_archive` varchar(255) DEFAULT NULL,
+  `annexes` text,
+  `document_path` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `statut` varchar(30) NOT NULL DEFAULT 'brouillon',
+  PRIMARY KEY (`id`),
+  KEY `telegrammes_user_id_foreign` (`user_id`),
+  CONSTRAINT `telegrammes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `telegrammes`
+--
+
+LOCK TABLES `telegrammes` WRITE;
+/*!40000 ALTER TABLE `telegrammes` DISABLE KEYS */;
+INSERT INTO `telegrammes` VALUES (39,'123/34','DP03','[\"RH\"]',NULL,'Test','Test',NULL,NULL,NULL,NULL,'2025-04-14 09:29:03','2025-10-22 10:59:57',8,'brouillon'),(40,'123/34','DP03','[\"caisse\"]',NULL,'test','test',NULL,NULL,NULL,NULL,'2025-04-14 10:51:52','2025-10-22 10:59:57',8,'brouillon'),(41,'123/34','DP03','[\"caisse\"]',NULL,'test','test',NULL,NULL,NULL,NULL,'2025-04-15 05:23:26','2025-10-22 10:59:57',8,'brouillon'),(42,'123/34','DP03','[\"caisse\"]',NULL,'TEST','TEST',NULL,NULL,NULL,NULL,'2025-04-15 05:38:11','2025-10-22 10:59:57',8,'brouillon'),(69,'1791/10','071/FPC/CPKOC/2025','[\"Ressources Humaines\",\"Coordination\"]',NULL,'Secrétariat/DG','DRH Pour traitement',NULL,NULL,NULL,NULL,'2026-02-03 13:50:14','2026-02-03 13:50:14',3,'brouillon'),(71,'1789/10',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat/DG','DRH pour dispositions',NULL,NULL,NULL,NULL,'2026-02-04 07:07:06','2026-02-04 07:07:06',3,'brouillon'),(72,'1805/10',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat/DG','DRH pour dispositions',NULL,NULL,NULL,NULL,'2026-02-04 07:09:20','2026-02-04 07:09:20',3,'brouillon'),(73,'1804/10',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat/DG','DRH pour dispositions',NULL,NULL,NULL,NULL,'2026-02-04 07:52:12','2026-02-04 07:52:12',3,'brouillon'),(74,'1799/10',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat/DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-04 07:59:40','2026-02-04 07:59:40',3,'brouillon'),(75,'1791/10','071/FPC/CPKOC/2025','[\"Ressources Humaines\"]',NULL,'Secrétariat/DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-04 08:06:37','2026-02-04 08:06:37',3,'brouillon'),(78,'116/01','001/FPC/DRHSG/2026','[\"[]\"]',NULL,'Secrétariat/DG','DRH pour traitement 28/01/2026;\r\nDRH pour disposition après avoir lu la note explicative 04/02/2026',NULL,NULL,NULL,NULL,'2026-02-05 07:28:29','2026-02-05 07:29:34',3,'brouillon'),(86,'166/01','29/2S/KC-MAT/01/026','[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat/DG','DCP pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 07:06:31','2026-02-06 07:06:31',145,'en attente'),(87,'167/01','002/FPC/DG/DCI/DSH/2026','[\"Assistant DG\"]',NULL,'Secrétariat du DG','Assistant Principal pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 07:14:29','2026-02-06 07:14:29',3,'en attente'),(88,'165/01',NULL,'[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 07:27:01','2026-02-06 07:27:01',3,'en attente'),(89,'163/01','01/FPC/CP-MMA/ELD/2026','[\"Ressources Humaines\"]',NULL,'Secrétariat du DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 07:41:08','2026-02-06 07:41:08',3,'en attente'),(90,'161/01','013/01/MPW/PR/26','[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 07:47:50','2026-02-06 07:47:50',3,'en attente'),(91,'164/01','FPC/SAI/MSN/005/26','[\"Informatique\"]',NULL,'Secrétariat du DG','Service Informatique pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 07:52:46','2026-02-06 07:52:46',3,'en attente'),(92,'148/01',NULL,'[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 08:17:11','2026-02-06 08:17:11',3,'en attente'),(93,'159/01',NULL,'[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 08:21:45','2026-02-06 08:21:45',3,'en attente'),(94,'168/01',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat du DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 08:27:30','2026-02-06 08:27:30',3,'en attente'),(95,'170/02','CDP/RDC/KIN/01/2026/0001','[\"Études\"]',NULL,'Secrétariat du DG','DEPF DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 08:53:27','2026-02-06 08:53:27',3,'en attente'),(96,'169/02','FPC/SAI/MSN/006/2026','[\"Ressources Humaines\"]',NULL,'Secrétariat du DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 09:01:05','2026-02-06 09:01:05',3,'en attente'),(97,'171/02',NULL,'[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 09:18:14','2026-02-06 09:18:14',3,'en attente'),(98,'172/02','185/AK/DG/ADM/M.M/2026','[\"Ressources Humaines\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 09:28:15','2026-02-06 09:28:15',3,'en attente'),(99,'173/02','ASSUR/DG/006/KIN/2026','[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 09:30:30','2026-02-06 09:30:30',3,'en attente'),(100,'180/02',NULL,'[\"Coordination\"]',NULL,'Secrétariat du DG','DCP pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 09:45:30','2026-02-06 09:45:30',3,'en attente'),(101,'179/02',NULL,'[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 09:55:17','2026-02-06 09:55:17',3,'en attente'),(102,'169/02','FPC/SAI/MSN/006/26','[\"Ressources Humaines\",\"Services Généraux\"]',NULL,'Secrétariat du DG','DRH pour dispositions',NULL,NULL,NULL,NULL,'2026-02-06 11:53:06','2026-02-06 11:53:06',3,'en attente'),(103,'174/02',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat du DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 12:24:47','2026-02-06 12:24:47',3,'en attente'),(104,'177/02','Dem/Collab WD/01-2026','[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 12:33:47','2026-02-06 12:33:47',3,'en attente'),(105,'175/02',NULL,'[\"Services de la Promotion Culturelle\"]',NULL,'Secrétariat du DG','DPC pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 12:42:53','2026-02-06 12:42:53',3,'en attente'),(106,'178/02','048/CAB/MIN.PF/LKM/SG.PF/CMC/JS/2026','[\"Comptabilité\",\"Trésorerie\",\"Taxation\"]',NULL,'Secrétariat du DG','DF/DTR pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 12:58:41','2026-02-06 12:58:41',3,'en attente'),(107,'176/02',NULL,'[\"Ressources Humaines\"]',NULL,'Secrétariat du DG','DRH pour traitement',NULL,NULL,NULL,NULL,'2026-02-06 13:07:50','2026-02-06 13:07:50',3,'en attente');
+/*!40000 ALTER TABLE `telegrammes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tenants`
+--
+
+DROP TABLE IF EXISTS `tenants`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tenants` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `database` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tenants_database_unique` (`database`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tenants`
+--
+
+LOCK TABLES `tenants` WRITE;
+/*!40000 ALTER TABLE `tenants` DISABLE KEYS */;
+INSERT INTO `tenants` VALUES (1,'fpc','gestion_courrier','2025-04-11 11:54:46','2025-04-11 11:54:46');
+/*!40000 ALTER TABLE `tenants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `service_code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` enum('agent','chef_service','chef_direction','directeur_general','admin') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `tenant_id` bigint unsigned DEFAULT NULL,
+  `entreprise` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `abonnement_expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`),
+  KEY `users_tenant_id_foreign` (`tenant_id`),
+  CONSTRAINT `users_tenant_id_foreign` FOREIGN KEY (`tenant_id`) REFERENCES `tenants` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=151 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (3,'Secrétariat DG','secretariat@gmail.com','[\"Secrétariat DG\"]',NULL,NULL,'$2y$12$ByH2cAIDggkJbeWChARdces1NCYFBLlp2OrmnhTxrfEGo.cSZ/H5S','admin',NULL,'2025-03-10 21:57:47','2025-10-15 09:38:06',NULL,'FPC',NULL),(8,'Secrétariat','sec@gmail.com','[\"Secrétariat\"]',NULL,NULL,'$2y$12$SOg0Ae5NDQtdBQ81eofaA.2r.EplgDdV3z3K/VTFJpqfDjFq7.lcK','admin',NULL,'2025-04-11 14:23:23','2025-04-12 18:02:25',1,'JCPCAE',NULL),(10,'caisse','caisse@gmail.com','[\"Caisse\"]',NULL,NULL,'$2y$12$SOg0Ae5NDQtdBQ81eofaA.2r.EplgDdV3z3K/VTFJpqfDjFq7.lcK','chef_service',NULL,'2025-04-12 18:42:23','2025-04-12 18:45:23',NULL,'JCPCAE','2025-05-31 02:05:04'),(11,'RH','rh@gmail.com','[\"Ressources Humaines\"]',NULL,NULL,'$2y$12$SOg0Ae5NDQtdBQ81eofaA.2r.EplgDdV3z3K/VTFJpqfDjFq7.lcK','chef_service',NULL,'2025-04-13 01:21:06','2025-04-13 01:21:06',NULL,'JCPCAE',NULL),(122,'DF','direction_financiere@fpc.local','[\"Comptabilité\",\"Trésorerie\",\"Caisse\"]','DF',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(123,'DRHSG','direction_rh@fpc.local','[\"Ressources Humaines\",\"Services Généraux\"]','DRHSG',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(124,'DCP','direction_coordination@fpc.local','[\"Coordination\"]','DCP',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(125,'DPC','direction_promotion_culturelle@fpc.local','[\"Promotion Culturelle\"]','DPC',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(126,'CI','direction_controle@fpc.local','[\"Contrôle et Inspection\"]','CI',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(127,'DMR','direction_redevance@fpc.local','[\"Taxation\",\"Mobilisation de la Redevance\"]','DMR',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(128,'DEFP','direction_etudes@fpc.local','[\"Études\",\"Planification\",\"Formation\"]','DEFP',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(129,'Autres','direction_autres@fpc.local','[\"Autres\"]','AUT',NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_direction',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(130,'Comptabilité','comptabilite@fpc.local','[\"Comptabilité\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(131,'Trésorerie','tresorerie@fpc.local','[\"Trésorerie\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(132,'Ressources Humaines','ressources_humaines@fpc.local','[\"Ressources Humaines\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(133,'Services Généraux','services_generaux@fpc.local','[\"Services Généraux\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(134,'Coordination','coordination@fpc.local','[\"Coordination\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:09','2025-10-15 13:18:09',NULL,'FPC',NULL),(135,'Services de la Promotion Culturelle','promotion_culturelle@fpc.local','[\"Services de la Promotion Culturelle\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(136,'Production et Animation Culturelle','production_culturelle@fpc.local','[\"Production et Animation Culturelle\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(137,'Audit interne','audit_interne@fpc.local','[\"Audit interne\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(138,'Taxation','taxation@fpc.local','[\"Taxation\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(139,'Études','etudes@fpc.local','[\"Études\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(140,'Planification','planification@fpc.local','[\"Planification\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(141,'Formation','formation@fpc.local','[\"Formation\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(142,'Informatique','informatique@fpc.local','[\"Informatique\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(143,'Juridique et Contentieux','juridique_contentieux@fpc.local','[\"Juridique et Contentieux\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(144,'OPS1','ops1@fpc.local','[\"Secrétariat DG\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','agent',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(145,'OPS2','ops2@fpc.local','[\"Secrétariat DG\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','agent',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(146,'OPS3','ops3@fpc.local','[\"Secrétariat DG\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','agent',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(147,'OPS4','ops4@fpc.local','[\"Secrétariat DG\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','agent',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(148,'Assistant DG','assistant.dg@fpc.local','[\"Assistant DG\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(149,'Assistant DGA','assistant.dga@fpc.local','[\"Assistant DGA\"]',NULL,NULL,'$2y$10$OuYFM1IER8nZ2vC5oR9B7uZ7HQLmoJ0W.mUhj7glAKocpGSiUu.0K','chef_service',NULL,'2025-10-15 13:18:10','2025-10-15 13:18:10',NULL,'FPC',NULL),(150,'DR','dr@fpc.cd','[\"Recouvrement\"]',NULL,NULL,'$2y$12$wbiu1AVJVki0HgAiNXT7LuEbHRKvoD5SlpdqHa/uk1ns52Fiflhrq','chef_service',NULL,'2026-02-06 05:21:05','2026-02-06 05:23:47',NULL,'FPC',NULL);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `utilisateurs`
+--
+
+DROP TABLE IF EXISTS `utilisateurs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `utilisateurs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
+  `country` varchar(255) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `province` varchar(255) NOT NULL,
+  `postal_code` varchar(10) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(15) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `utilisateurs`
+--
+
+LOCK TABLES `utilisateurs` WRITE;
+/*!40000 ALTER TABLE `utilisateurs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `utilisateurs` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-02-09  7:45:56
