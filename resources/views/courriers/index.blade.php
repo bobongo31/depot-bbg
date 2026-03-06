@@ -179,6 +179,46 @@
         display: none;
         pointer-events: none;
     }
+
+    /* Compact the table: remove internal scrollbars and use ellipsis */
+    #courriersTable {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .9rem;
+    }
+
+    #courriersTable th,
+    #courriersTable td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: .35rem .5rem; /* tighter cell padding */
+        vertical-align: middle;
+    }
+
+    /* Column width hints (adjustable) */
+    #courriersTable th:nth-child(1), #courriersTable td:nth-child(1) { width: 8%; }
+    #courriersTable th:nth-child(2), #courriersTable td:nth-child(2) { width: 8%; }
+    #courriersTable th:nth-child(3), #courriersTable td:nth-child(3) { width: 8%; }
+    #courriersTable th:nth-child(4), #courriersTable td:nth-child(4) { width: 15%; }
+    #courriersTable th:nth-child(5), #courriersTable td:nth-child(5) { width: 30%; max-width: 320px; }
+    #courriersTable th:nth-child(6), #courriersTable td:nth-child(6) { width: 15%; max-width: 220px; }
+    #courriersTable th:nth-child(7), #courriersTable td:nth-child(7) { width: 10%; }
+    #courriersTable th:nth-child(8), #courriersTable td:nth-child(8) { width: 6%; text-align: center; }
+    #courriersTable th:nth-child(9), #courriersTable td:nth-child(9) { width: 10%; text-align: center; }
+
+    /* Ensure inner truncation works inside cells */
+    #courriersTable .text-truncate { display:inline-block; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* Hide the horizontal scrollbar from the responsive wrapper by default */
+    .table-responsive { overflow-x: hidden; }
+
+    /* On very small screens allow wrapping and scrolling if necessary */
+    @media (max-width: 720px) {
+        #courriersTable, #courriersTable th, #courriersTable td { table-layout: auto; white-space: normal; }
+        .table-responsive { overflow-x: auto; }
+    }
 </style>
 @endpush
 

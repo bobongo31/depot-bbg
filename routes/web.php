@@ -25,6 +25,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RechercheController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\CourrierExpedieController;
+
 
 
 
@@ -237,5 +239,15 @@ Route::post('/archives/declarer-clos/{numero_enregistrement}', [ArchiveControlle
     Route::post('/upload/chunk', [AccuseDeReceptionController::class, 'uploadChunk'])->name('upload.chunk');
 
 
+Route::resource('courrier-expedie', CourrierExpedieController::class)
+        ->names('courrier_expedie');
+
+    // chunk upload spécifique expédié
+    Route::post(
+        'courrier-expedie/upload-chunk',
+        [CourrierExpedieController::class, 'uploadChunk']
+    )->name('courrier_expedie.upload_chunk');
 });
+
+
 

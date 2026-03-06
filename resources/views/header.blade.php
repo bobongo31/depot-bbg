@@ -104,7 +104,7 @@
             </li>
         @endif
 
-        @if(Auth::user() && in_array(Auth::user()->role, ['chef_service', 'chef_direction','agent', 'admin']))
+        @if(Auth::user() && in_array(Auth::user()->role, ['chef_service', 'chef_direction','agent','DG', 'admin']))
             <li>
                 <a href="{{ route('reponses.index') }}" class="btn btn-outline-dark px-4 py-2">
                     <i class="fas fa-inbox menu-icon {{ request()->routeIs('reponses.index') ? 'active' : '' }}" title="Boîte de réception"></i>
@@ -115,6 +115,17 @@
                     <i class="fas fa-paper-plane menu-icon {{ request()->routeIs('telegramme.create') ? 'active' : '' }}" title="Envoyer un Télégramme"></i>
                 </a>
             </li>
+
+            <li>
+                <a href="{{ route('courrier_expedie.index') }}"
+                class="btn btn-outline-primary px-4 py-2">
+                    <i class="fa-solid fa-arrow-up-from-bracket" 
+                    {{ request()->routeIs('courrier_expedie.*') ? 'active' : '' }}"
+                    title="Courriers expédiés">
+                    </i>
+                </a>
+            </li>
+
         @endif
 
         @if(Auth::user() && (Auth::user()->role === 'agent' || Auth::user()->role === 'admin'))

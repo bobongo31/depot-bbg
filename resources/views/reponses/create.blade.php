@@ -89,10 +89,10 @@
                     'Ressources Humaines et Services Généraux' => ['Ressources Humaines', 'Services Généraux'],
                     'Coordination des Provinces' => ['Coordination'],
                     'Promotion Culturelle' => ['Services de la Promotion Culturelle'],
-                    'Contrôle et Inspection' => ['Audit interne'],
+                    'Contrôle et Inspection' => ['Contrôle et Inspection'],
                     'Mobilisation de la Redevance' => ['Taxation'],
                     'Études, Planification et de la Formation' => ['Études', 'Planification', 'Formation'],
-                    'Autres' => ['Informatique', 'Juridique et Contentieux', 'Secrétariat DG'],
+                    'Autres' => ['Informatique', 'Juridique et Contentieux', 'Secrétariat DG', 'Audit interne'],
                 ];
             @endphp
 

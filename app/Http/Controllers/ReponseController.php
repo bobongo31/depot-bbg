@@ -15,7 +15,40 @@ use Carbon\Carbon;
 
 
 class ReponseController extends Controller
-{
+{   
+
+
+    /**
+     * Mapping Directions => Services
+     */
+    private array $directionServices = [
+        'DRHSG' => [
+            'Ressources Humaines',
+            'Services Généraux',
+            'Ressources Humaines et Services Généraux'
+        ],
+        'DF' => [
+            'Comptabilité',
+            'Trésorerie',
+            'Caisse'
+        ],
+        'DCP' => ['Coordination'],
+        'DPC' => [
+            'Services de la Promotion Culturelle',
+            'Production et Animation Culturelle'
+        ],
+        'CI' => ['Audit interne'],
+        'DMR' => ['Taxation', 'Mobilisation de la Redevance'],
+        'DR' => ['Recouvrement'],
+        'DEFP' => ['Études', 'Planification', 'Formation'],
+        'Autres' => [
+            'Informatique',
+            'Juridique et Contentieux',
+            'Secrétariat DG',
+            'Assistant DG',
+            'Assistant DGA'
+        ],
+    ];
     /**
      * Affiche les détails d'un télégramme et de la réponse associée.
      */
@@ -75,6 +108,20 @@ class ReponseController extends Controller
         $annexe->save();
     }
 
+    /* =========================
+     * 3. PASSER L’ACCUSÉ À TRAITÉ (uniquement pour réponse finale)
+     * ========================= */
+    $accuseQuery = AccuseReception::where('numero_enregistrement', $reponseFinale->numero_enregistrement);
+    if (!empty($reponseFinale->numero_reference)) {
+        $accuseQuery->where('numero_reference', $reponseFinale->numero_reference);
+    }
+
+    $accuse = $accuseQuery->first();
+    if ($accuse) {
+        $accuse->statut = 'traité';
+        $accuse->save();
+    }
+
     // Retourner une réponse pour confirmer la création
         return redirect()->route('reponses.showFinale', ['id' => $reponseFinale->id])
     ->with('success', 'Réponse finale ajoutée avec succès et annexe téléchargée.');
@@ -100,18 +147,12 @@ public function show($id)
 
     $telegramme = $reponse->telegramme;
 
-    // 🔐 Autorisation (services)
-    $userServices = json_decode($user->service, true) ?? [];
-    $userServices = array_map(fn ($s) => mb_strtolower(trim($s)), $userServices);
-
-    $telegrammeServices = [];
-    if ($telegramme) {
-        $telegrammeServices = json_decode($telegramme->service_concerne, true) ?? [];
-        $telegrammeServices = array_map(fn ($s) => mb_strtolower(trim($s)), $telegrammeServices);
-    }
+    // 🔐 Autorisation (services) - utiliser normalisation centralisée
+    $userServices = $this->normalizeServiceArray($user->service);
+    $telegrammeServices = $this->normalizeServiceArray($telegramme ? $telegramme->service_concerne : null);
 
     if (
-        $user->role !== 'admin' &&
+        !$this->isAdmin($user) &&
         count(array_intersect($userServices, $telegrammeServices)) === 0
     ) {
         return redirect()->route('home')
@@ -138,18 +179,11 @@ public function showFinale($id)
     }
 
     // Préparer services utilisateur (champ JSON)
-    $userServices = json_decode($user->service, true) ?? [];
-    $userServices = array_map('mb_strtolower', array_map('trim', $userServices));
-
-    // Préparer services du télégramme
-    $telegrammeServices = [];
-    if ($telegramme) {
-        $telegrammeServices = json_decode($telegramme->service_concerne, true) ?? [];
-        $telegrammeServices = array_map('mb_strtolower', array_map('trim', $telegrammeServices));
-    }
+    $userServices = $this->normalizeServiceArray($user->service);
+    $telegrammeServices = $this->normalizeServiceArray($telegramme ? $telegramme->service_concerne : null);
 
     // Autorisation: admin ou intersection non vide
-    if (!$user || ($user->role !== 'admin' && count(array_intersect($userServices, $telegrammeServices)) === 0)) {
+        if (!$user || (!$this->isAdmin($user) && count(array_intersect($userServices, $telegrammeServices)) === 0)) {
         return redirect()->route('home')->with('error', 'Accès refusé : service non autorisé.');
     }
 
@@ -166,16 +200,12 @@ public function showWithTelegramme($id)
     }
 
     // Préparer services utilisateur (champ JSON)
-    $userServices = json_decode($user->service, true) ?? [];
-    $userServices = array_map('mb_strtolower', array_map('trim', $userServices));
-
-    // Préparer services du télégramme
-    $telegrammeServices = json_decode($telegramme->service_concerne, true) ?? [];
-    $telegrammeServices = array_map('mb_strtolower', array_map('trim', $telegrammeServices));
+    $userServices = $this->normalizeServiceArray($user->service);
+    $telegrammeServices = $this->normalizeServiceArray($telegramme->service_concerne);
 
     // Autorisation: admin ou intersection non vide
     $authorized = false;
-    if ($user->role === 'admin') {
+    if ($this->isAdmin($user)) {
         $authorized = true;
     } else {
         $authorized = count(array_intersect($userServices, $telegrammeServices)) > 0;
@@ -199,242 +229,273 @@ public function showWithTelegramme($id)
 /**
  * Affiche la liste des réponses et des télégrammes.
  */
+
 public function index(Request $request)
-
-{
-    $user = auth()->user();
-
-    if (!$user) {
-        return redirect()->route('home')->with('error', 'Utilisateur non authentifié.');
-    }
-
-    // Filtres
-    $q             = $request->query('q');
-    $serviceFilter = $request->query('service');
-    $from          = $request->query('from');
-    $to            = $request->query('to');
-
-    // Nombre d'éléments par page
-    $perPage = 10;
-
-    /*
-    --------------------------------------------------------------------------
-    | ADMIN
-    --------------------------------------------------------------------------
-    */
-    if ($user->hasRole('admin')) {
-
-        // Réponses (pagination dédiée: reponses_page)
-        $query = Reponse::with(['telegramme', 'accuseReception'])
-                         ->orderBy('created_at', 'desc');
-
-
-        if ($q) {
-            $query->where(function ($sub) use ($q) {
-                $sub->where('numero_enregistrement', 'like', "%{$q}%")
-                    ->orWhere('numero_reference', 'like', "%{$q}%")
-                    ->orWhere('observation', 'like', "%{$q}%")
-                    ->orWhere('commentaires', 'like', "%{$q}%");
-            });
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('home')->with('error', 'Utilisateur non authentifié');
         }
 
-        if ($serviceFilter) {
-            $query->where('service_concerne', 'like', '%"' . addslashes($serviceFilter) . '"%');
-        }
-
-        if ($from) {
-            $query->where('created_at', '>=', Carbon::parse($from)->startOfDay());
-        }
-
-        if ($to) {
-            $query->where('created_at', '<=', Carbon::parse($to)->endOfDay());
-        }
-
-        // Paginate responses with custom page name to avoid conflict with telegrammes
-        $reponses = $query->paginate($perPage, ['*'], 'reponses_page')->appends($request->query());
-
-        // Télégrammes en attente (pagination dédiée: telegrammes_page)
-        $tquery = Telegramme::with('annexes')->whereDoesntHave('reponses');
-
-        if ($q) {
-            $tquery->where(function ($sub) use ($q) {
-                $sub->where('numero_enregistrement', 'like', "%{$q}%")
-                    ->orWhere('numero_reference', 'like', "%{$q}%")
-                    ->orWhere('observation', 'like', "%{$q}%")
-                    ->orWhere('commentaires', 'like', "%{$q}%");
-            });
-        }
-
-        if ($serviceFilter) {
-            $tquery->where('service_concerne', 'like', '%"' . addslashes($serviceFilter) . '"%');
-        }
-
-        if ($from) {
-            $tquery->where('created_at', '>=', Carbon::parse($from)->startOfDay());
-        }
-
-        if ($to) {
-            $tquery->where('created_at', '<=', Carbon::parse($to)->endOfDay());
-        }
-
-        $telegrammesEnAttente = $tquery->paginate($perPage, ['*'], 'telegrammes_page')->appends($request->query());
-    }
-
-    /*
-    --------------------------------------------------------------------------
-    | NON ADMIN
-    --------------------------------------------------------------------------
-    */
-    else {
-
-        // Services utilisateur (JSON safe)
-        $userServices = json_decode($user->service, true);
-        $userServices = is_array($userServices)
-            ? array_map(fn($s) => mb_strtolower(trim($s)), $userServices)
-            : [];
+        $q       = $request->query('q');
+        $service = $request->query('service');
+        $from    = $request->query('from');
+        $to      = $request->query('to');
+        $perPage = 10;
 
         /*
-        | Réponses
+        |--------------------------------------------------------------------------
+        | SERVICES UTILISATEUR (étendus via mapping)
+        |--------------------------------------------------------------------------
         */
-        $allReponses = Reponse::with('telegramme')->orderBy('created_at', 'desc')->get();
-
-        $reponsesFiltered = $allReponses->filter(function ($r) use ($userServices, $q, $from, $to) {
-
-            $services = json_decode($r->service_concerne, true);
-            $services = is_array($services)
-                ? array_map(fn($s) => mb_strtolower(trim($s)), $services)
-                : [];
-
-            // Autorisation service
-            if (count(array_intersect($userServices, $services)) === 0) {
-                return false;
-            }
-
-            // Recherche texte
-            if ($q) {
-                foreach (['numero_enregistrement', 'numero_reference', 'observation', 'commentaires'] as $field) {
-                    $value = $this->safeString($r->{$field});
-
-                    if ($value !== '' && stripos($value, $q) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            // Dates
-            if ($from && $r->created_at < Carbon::parse($from)->startOfDay()) return false;
-            if ($to && $r->created_at > Carbon::parse($to)->endOfDay()) return false;
-
-            return true;
-        });
-
-        // Pagination manuelle pour les réponses (page param: reponses_page)
-        $reponsesPage = (int) request()->get('reponses_page', 1);
-        $items       = $reponsesFiltered->slice(($reponsesPage - 1) * $perPage, $perPage)->values();
-
-        $reponses = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items,
-            $reponsesFiltered->count(),
-            $perPage,
-            $reponsesPage,
-            ['path' => request()->url(), 'query' => request()->query(), 'pageName' => 'reponses_page']
-        );
+        $userServices = $this->expandUserServices($user->service);
 
         /*
-        | Télégrammes en attente
+        |--------------------------------------------------------------------------
+        | RÉPONSES
+        |--------------------------------------------------------------------------
         */
-        $allTelegrammes = Telegramme::with('annexes')
-            ->whereDoesntHave('reponses')
+        // Charger toutes les réponses (avec relations) puis filtrer en mémoire
+        $reponsesAll = Reponse::with('telegramme')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $telegrammesFiltered = $allTelegrammes->filter(function ($t) use ($userServices, $q, $from, $to) {
-
-            $services = json_decode($t->service_concerne, true);
-            $services = is_array($services)
-                ? array_map(fn($s) => mb_strtolower(trim($s)), $services)
-                : [];
-
-            if (count(array_intersect($userServices, $services)) === 0) {
-                return false;
-            }
-
-            if ($q) {
-                foreach (['numero_enregistrement', 'numero_reference', 'observation', 'commentaires'] as $field) {
-                    $value = $this->safeString($t->{$field});
-
-                    if ($value !== '' && stripos($value, $q) !== false) {
-                        return true;
-                    }
+        if (!$this->isAdmin($user)) {
+            $reponsesAll = $reponsesAll->filter(function ($r) use ($userServices, $user) {
+                // Always allow the owner to see their own response
+                if (isset($r->user_id) && $r->user_id == $user->id) {
+                    return true;
                 }
-                return false;
+
+                $servicesConcerne = $this->normalizeServiceArray($r->service_concerne);
+                return count(array_intersect($userServices, $servicesConcerne)) > 0;
+            });
+        }
+
+        // Pagination manuelle
+        $page = $request->get('reponses_page', 1);
+
+        $reponses = new \Illuminate\Pagination\LengthAwarePaginator(
+            $reponsesAll->forPage($page, $perPage)->values(),
+            $reponsesAll->count(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | ENRICHIR RÉPONSES (statuts, services affichés)
+        |--------------------------------------------------------------------------
+        */
+        $reponses->getCollection()->transform(function ($r) {
+            // Services affichés
+            $r->services_affiches = $this->normalizeServiceArray($r->service_concerne);
+
+            // Sécurité : réponse sans télégramme
+            if (!$r->telegramme) {
+                $r->isLate = false;
+                $r->statutLabel = '—';
+                $r->deadlineFormatted = null;
+                return $r;
             }
 
-            if ($from && $t->created_at < Carbon::parse($from)->startOfDay()) return false;
-            if ($to && $t->created_at > Carbon::parse($to)->endOfDay()) return false;
+            // ⏱ Date limite = télégramme + 3 jours (HEURE INCLUSE)
+            $deadline = $r->telegramme->created_at->copy()->addDays(3);
 
-            return true;
-        })->values();
+            // 🔥 Comparaison AVEC HEURE
+            $r->isLate = $r->created_at->greaterThan($deadline);
 
-        // Pagination manuelle pour telegrammes (page param: telegrammes_page)
-        $telegrammesPage = (int) request()->get('telegrammes_page', 1);
-        $tgItems = $telegrammesFiltered->slice(($telegrammesPage - 1) * $perPage, $perPage)->values();
+            $r->statutLabel = $r->isLate
+                ? 'EN RETARD'
+                : 'DANS LE DÉLAI';
+
+            $r->deadlineFormatted = $deadline->translatedFormat('d/m/Y H:i');
+
+            return $r;
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | TÉLÉGRAMMES EN ATTENTE
+        |--------------------------------------------------------------------------
+        */
+        // Charger tous les télégrammes en attente puis filtrer en mémoire
+        $telegrammesAll = Telegramme::whereDoesntHave('reponses')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if (!$this->isAdmin($user)) {
+            $telegrammesAll = $telegrammesAll->filter(function ($t) use ($userServices, $user) {
+                // Always allow the creator to see their own telegramme
+                if (isset($t->user_id) && $t->user_id == $user->id) {
+                    return true;
+                }
+
+                $services = $this->normalizeServiceArray($t->service_concerne);
+                return count(array_intersect($userServices, $services)) > 0;
+            });
+        }
+
+        // Pagination manuelle pour les télégrammes
+        $pageT = $request->get('telegrammes_page', 1);
 
         $telegrammesEnAttente = new \Illuminate\Pagination\LengthAwarePaginator(
-            $tgItems,
-            $telegrammesFiltered->count(),
+            $telegrammesAll->forPage($pageT, $perPage)->values(),
+            $telegrammesAll->count(),
             $perPage,
-            $telegrammesPage,
-            ['path' => request()->url(), 'query' => request()->query(), 'pageName' => 'telegrammes_page']
+            $pageT,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
         );
-    }
 
-    /*
-    --------------------------------------------------------------------------
-    | Délais / alertes
-    --------------------------------------------------------------------------
-    */
-    foreach ($telegrammesEnAttente as $telegramme) {
-        $dueDate = $telegramme->created_at->copy()->addHours(168);
-        $telegramme->remainingHours = max(0, round($dueDate->diffInHours(now())));
-        $telegramme->isLate    = $dueDate < now();
-        $telegramme->isWarning = !$telegramme->isLate && $telegramme->remainingHours <= 48;
+        /*
+        |--------------------------------------------------------------------------
+        | ENRICHIR TÉLÉGRAMMES
+        |--------------------------------------------------------------------------
+        */
+        $telegrammesEnAttente->getCollection()->transform(function ($t) {
+            $services = $this->normalizeServiceArray($t->service_concerne);
+            $t->services_affiches = $services;
+
+            // Date limite = création + 3 jours
+            $deadline = $t->created_at->copy()->addDays(3);
+            $now = now();
+
+            // Dernière réponse (défensive - dans ce listing we expect none, but keep logic reusable)
+            $lastReponse = null;
+            if (isset($t->reponses) && is_iterable($t->reponses)) {
+                $lastReponse = collect($t->reponses)->sortByDesc('created_at')->first();
+            }
+
+            if ($lastReponse) {
+                if ($lastReponse->created_at->lessThanOrEqualTo($deadline)) {
+                    $t->statutLabel = 'DANS LE DÉLAI';
+                    $t->isLate = false;
+                } else {
+                    $t->statutLabel = 'EN RETARD';
+                    $t->isLate = true;
+                }
+            } else {
+                // Aucune réponse
+                if ($now->greaterThan($deadline)) {
+                    $t->statutLabel = 'EN ATTENTE';
+                    $t->isLate = true;
+                } else {
+                    $t->statutLabel = 'EN COURS';
+                    $t->isLate = false;
+                }
+            }
+
+            // Pour affichage optionnel
+            $t->remainingHours = max(0, $now->diffInHours($deadline));
+            $t->dateLimite = mb_strtoupper(
+                $deadline->translatedFormat('d M Y H:i'),
+                'UTF-8'
+            );
+
+            return $t;
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | GROUPEMENT PAR DATE
+        |--------------------------------------------------------------------------
+        */
+        $reponsesGrouped = $reponses->getCollection()
+            ->groupBy(fn ($r) => $r->created_at->format('Y-m-d'));
+
+        /*
+        |--------------------------------------------------------------------------
+        | LISTE SERVICES (FILTRE)
+        |--------------------------------------------------------------------------
+        */
+        $services = collect($this->directionServices)
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        return view('reponses.index', compact(
+            'reponses',
+            'reponsesGrouped',
+            'telegrammesEnAttente',
+            'services'
+        ));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Groupement & filtres services
+    | HELPERS
     |--------------------------------------------------------------------------
     */
-    $reponsesGrouped = $reponses->getCollection()
-        ->groupBy(fn($r) => $r->created_at->format('Y-m-d'));
 
-    $serviceSet = [];
-    $serviceStrings = array_merge(
-        Reponse::pluck('service_concerne')->toArray(),
-        Telegramme::pluck('service_concerne')->toArray()
-    );
+    private function isAdmin($user): bool
+    {
+        $role = $user->role ?? null;
 
-    foreach ($serviceStrings as $s) {
-        if (!$s) continue;
-        $decoded = json_decode($s, true);
-        if (is_array($decoded)) {
-            foreach ($decoded as $item) {
-                $serviceSet[] = trim((string)$item);
+        if ($role === 'admin' || $role === 'DG') {
+            return true;
+        }
+
+        if (method_exists($user, 'hasRole') && ($user->hasRole('admin') || $user->hasRole('DG'))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function expandUserServices($raw): array
+    {
+        $base = $this->normalizeServiceArray($raw);
+        $expanded = $base;
+
+        foreach ($base as $svc) {
+            if (isset($this->directionServices[$svc])) {
+                foreach ($this->directionServices[$svc] as $mapped) {
+                    $expanded[] = $this->normalizeServiceLabel($mapped);
+                }
             }
         }
+
+        return array_values(array_unique($expanded));
     }
 
-    $services = collect($serviceSet)->filter()->unique()->sort()->values()->all();
+    private function normalizeServiceLabel(string $value): string
+    {
+        $v = mb_strtolower(trim($value), 'UTF-8');
+        $v = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $v) ?: $v;
+        $v = preg_replace('/[^a-z0-9 ]+/u', '', $v);
+        $v = preg_replace('/\s+/', ' ', $v);
+        return trim($v);
+    }
 
-    return view('reponses.index', compact(
-        'telegrammesEnAttente',
-        'reponses',
-        'reponsesGrouped',
-        'services'
-    ));
-}
+    private function normalizeServiceArray($value): array
+    {
+        if (!$value) return [];
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $value = $decoded;
+            } else {
+                $value = [$value];
+            }
+        }
+
+        if (!is_array($value)) return [];
+
+        return array_values(array_unique(array_map(
+            fn($s) => $this->normalizeServiceLabel((string)$s),
+            $value
+        )));
+    }
 
 
    
@@ -455,11 +516,11 @@ public function index(Request $request)
     if ($telegramme_id) {
         $prefillTelegramme = Telegramme::with('annexes')->find($telegramme_id);
 
-        // Allow admins to access any telegramme for replying
+        // Allow admins (and DG) to access any telegramme for replying
         if (
             !$prefillTelegramme &&
             auth()->check() &&
-            auth()->user()->hasRole('admin')
+            $this->isAdmin(auth()->user())
         ) {
             $prefillTelegramme = Telegramme::with('annexes')->find($telegramme_id);
         }
@@ -520,15 +581,8 @@ public function index(Request $request)
     /* =========================
      * 3. PASSER L’ACCUSÉ À TRAITÉ
      * ========================= */
-    $accuse = AccuseReception::where(
-        'numero_enregistrement',
-        $validated['numero_enregistrement']
-    )->first();
-
-    if ($accuse) {
-        $accuse->statut = 'traité';
-        $accuse->save();
-    }
+    // NOTE: l'accusé n'est plus passé à 'traité' ici —
+    // seul l'enregistrement d'une réponse finale doit le faire.
 
     return redirect()->route('reponses.index')->with('success', 'Réponse enregistrée avec succès !');
 }
@@ -544,7 +598,7 @@ public function index(Request $request)
         if ($telegrammeId) {
             $draft = Telegramme::with('annexes')->where('id', $telegrammeId)->where('user_id', auth()->id())->first();
             // allow admins to view any draft
-            if (!$draft && auth()->user() && auth()->user()->hasRole('admin')) {
+            if (!$draft && auth()->user() && $this->isAdmin(auth()->user())) {
                 $draft = Telegramme::with('annexes')->find($telegrammeId);
             }
         }
@@ -806,6 +860,38 @@ public function index(Request $request)
     }
 
     /**
+     * Supprime une réponse finale (et ses annexes).
+     */
+    public function destroyReponseFinale($id)
+    {
+        $user = auth()->user();
+
+        $reponseFinale = ReponseFinale::with('annexes')->findOrFail($id);
+
+        // Autorisation : admin/DG ou propriétaire de la réponse finale
+        if (!$user || (!$this->isAdmin($user) && $reponseFinale->user_id !== $user->id)) {
+            return redirect()->route('reponses.index')->with('error', 'Vous n\'avez pas l\'autorisation de supprimer cette réponse finale.');
+        }
+
+        // Supprimer fichiers annexes
+        if (!empty($reponseFinale->annexes) && is_iterable($reponseFinale->annexes)) {
+            foreach ($reponseFinale->annexes as $annexe) {
+                if (!empty($annexe->file_path) && Storage::disk('public')->exists($annexe->file_path)) {
+                    Storage::disk('public')->delete($annexe->file_path);
+                }
+            }
+        }
+
+        // Supprimer les annexes en base
+        Annexe::where('reponse_finale_id', $reponseFinale->id)->delete();
+
+        // Supprimer la réponse finale
+        $reponseFinale->delete();
+
+        return redirect()->route('reponses.index')->with('success', 'Réponse finale supprimée avec succès.');
+    }
+
+    /**
      * Normalize different input types to a JSON string suitable for DB storage.
      * Accepts: null, JSON string, plain string, array (including nested arrays), other scalar.
      * Returns: JSON string or null.
@@ -841,4 +927,35 @@ public function index(Request $request)
         return json_encode([(string)$value]);
     }
 
+    private function formatDelaiTelegramme(\Carbon\Carbon $createdAt): array
+{
+    $deadline = $createdAt->copy()->addWeek(); // délai 7 jours
+    $now = now();
+
+    $hoursRemaining = $now->greaterThan($deadline)
+        ? 0
+        : $now->diffInHours($deadline);
+
+    $dateLimite = mb_strtoupper(
+        $deadline->translatedFormat('d M Y'),
+        'UTF-8'
+    );
+
+    return [
+        'isLate' => $now->greaterThan($deadline),
+        'delaiFormatted' => sprintf('%02dH LIMITE %s', $hoursRemaining, $dateLimite),
+    ];
+}
+
+
+    /**
+     * Normalise un label de service pour comparaison: trim, lowercase, translit accents -> ASCII,
+     * collapse espaces et retirer caractères non-alphanumériques.
+     */
+    
+
+    /**
+     * Retourne un tableau normalisé de labels de services à partir d'une chaîne JSON/CSV/array.
+     */
+    
 }

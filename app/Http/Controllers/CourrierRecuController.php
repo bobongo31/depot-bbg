@@ -100,15 +100,11 @@ class CourrierRecuController extends Controller
 
     public function store(Request $request)
 {
-    $sessionKey   = 'accuse_draft_' . auth()->id();
-    $sessionDraft = $request->session()->get($sessionKey);
-
     // =========================
     // VALIDATION
     // =========================
     $rules = [
         'date_reception'        => 'required|date',
-        // numero must already exist in accuse_receptions so we update the existing record
         'numero_enregistrement' => 'required|string|exists:accuse_receptions,numero_enregistrement',
         'nom_expediteur'        => 'required|string|max:255',
         'numero_reference'      => 'nullable|string|max:255',
@@ -120,29 +116,30 @@ class CourrierRecuController extends Controller
     $validated = $request->validate($rules);
 
     try {
-
         // =========================
-        // FINALISE: lookup existing AccuseReception by numero_enregistrement and update it
+        // Récupération / mise à jour de l'accusé
         // =========================
         $accuse = AccuseReception::where('numero_enregistrement', $validated['numero_enregistrement'])->first();
 
-        if ($accuse) {
-            $accuse->date_reception   = $validated['date_reception'];
-            $accuse->nom_expediteur   = $validated['nom_expediteur'];
-            $accuse->numero_reference = $validated['numero_reference'] ?? null;
-            $accuse->resume           = $validated['resume'];
-            $accuse->statut           = 'reçu';
-            $accuse->save();
-        } else {
-            // Safety fallback: create if not found (shouldn't happen because of validation)
+        if (!$accuse) {
+            // sécurité: création si inexistant
             $accuse = AccuseReception::create([
-                'user_id'             => auth()->id(),
-                'date_reception'      => $validated['date_reception'],
+                'user_id'              => auth()->id(),
+                'date_reception'       => $validated['date_reception'],
                 'numero_enregistrement'=> $validated['numero_enregistrement'],
-                'nom_expediteur'      => $validated['nom_expediteur'],
-                'numero_reference'    => $validated['numero_reference'] ?? null,
-                'resume'              => $validated['resume'],
-                'statut'              => 'reçu',
+                'nom_expediteur'       => $validated['nom_expediteur'],
+                'numero_reference'     => $validated['numero_reference'] ?? null,
+                'resume'               => $validated['resume'],
+                'statut'               => 'reçu',
+            ]);
+        } else {
+            // mise à jour
+            $accuse->update([
+                'date_reception'   => $validated['date_reception'],
+                'nom_expediteur'   => $validated['nom_expediteur'],
+                'numero_reference' => $validated['numero_reference'] ?? null,
+                'resume'           => $validated['resume'],
+                'statut'           => 'reçu',
             ]);
         }
 
@@ -150,6 +147,9 @@ class CourrierRecuController extends Controller
         // ANNEXES UPLOADÉES (FORM)
         // =========================
         if ($request->hasFile('annexes')) {
+            // Pour éviter doublon: supprimer les annexes existantes si tu veux remplacer
+            Annexe::where('accuse_de_reception_id', $accuse->id)->delete();
+
             foreach ($request->file('annexes') as $file) {
                 $filePath = $file->store('annexes', 'public');
 
@@ -160,29 +160,11 @@ class CourrierRecuController extends Controller
             }
         }
 
-        // =========================
-        // ANNEXES DE LA SESSION (AUTOSAVE)
-        // =========================
-        if ($sessionDraft && !empty($sessionDraft['uploaded_paths'])) {
-            foreach ($sessionDraft['uploaded_paths'] as $p) {
-                Annexe::create([
-                    'accuse_de_reception_id' => $accuse->id,
-                    'file_path' => $p,
-                ]);
-            }
-        }
-
-        // =========================
-        // NETTOYAGE SESSION
-        // =========================
-        $request->session()->forget($sessionKey);
-
         return redirect()
             ->route('courriers.index')
             ->with('success', 'Courrier enregistré avec succès !');
 
     } catch (QueryException $e) {
-
         return redirect()
             ->back()
             ->withInput()

@@ -24,3 +24,4 @@ Ce script configure automatiquement le suivi Google Analytics :
 Ton layout doit contenir `</head>` pour que l’injection fonctionne.
 
 # fpccourrier
+# fpccourrier

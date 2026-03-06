@@ -70,7 +70,7 @@
                         'Ressources Humaines et Services Généraux' => ['Ressources Humaines', 'Services Généraux'],
                         'Coordination des Provinces' => ['Coordination'],
                         'Promotion Culturelle' => ['Services de la Promotion Culturelle'],
-                        'Contrôle et Inspection' => ['Audit interne'],
+                        'Contrôle et Inspection' => ['Contrôle et Inspection'],
                         'Mobilisation de la Redevance' => ['Taxation'],
                         'Études, Planification et de la Formation' => ['Études', 'Planification', 'Formation'],
                         'Direction du Recouvrement' => ['Recouvrement'],
@@ -79,7 +79,8 @@
                             'Juridique et Contentieux',
                             'Secrétariat DG',
                             'Assistant DG',
-                            'Assistant DGA'
+                            'Assistant DGA',
+                            'Audit interne'
                         ],
                     ];
                 @endphp

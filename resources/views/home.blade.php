@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('agent'))
+        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('DG') || Auth::user()->hasRole('agent'))
         <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
             {{-- Graphique 1 --}}
             <div class="col scroll-animated">

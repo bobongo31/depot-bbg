@@ -15,15 +15,15 @@
   </div>
 </div>
 
-<div class="scroll-animated container">
+<div class="container">
     @auth
         @if(session('code_acces_valide'))
-        <h2 class="scroll-animated text-center mb-5"><i class="fas fa-archive me-2"></i>Dossiers Archivés</h2>
+        <h2 class="text-center mb-5"><i class="fas fa-archive me-2"></i>Dossiers Archivés</h2>
 
         <!-- Filtrage -->
         <form action="{{ route('archives.index') }}" method="GET" class="mb-4 bg-light p-4 rounded shadow-sm">
-            <div class="scroll-animated row g-3">
-                <div class="scroll-animated col-md-6">
+            <div class="row g-3">
+                <div class="col-md-6">
                     <label for="categorie" class="form-label"><i class="fas fa-tags me-2"></i>Catégorie</label>
                     <select name="categorie" id="categorie" class="form-select">
                         <option value="" disabled {{ request('categorie') ? '' : 'selected' }}>-- Choisir une catégorie --</option>
@@ -34,34 +34,13 @@
                     </select>
                 </div>
 
-                <div class="scroll-animated col-md-6">
+                <div class="col-md-6">
                     <label for="search" class="form-label"><i class="fas fa-search me-2"></i>Recherche</label>
                     <input type="text" name="search" id="search" class="form-control" value="{{ request('search') }}" placeholder="Référence ou numéro...">
                 </div>
             </div>
 
-
-            <div class="scroll-animated row g-3 mt-3">
-            <div class="col-md-6">
-                <label for="date" class="form-label"><i class="fas fa-calendar-day me-2"></i>Filtrer par date</label>
-                <input type="date" name="date" id="date" class="form-control" value="{{ request('date') }}">
-            </div>
-
-            <div class="col-md-6">
-                <label for="mois" class="form-label"><i class="fas fa-calendar-alt me-2"></i>Filtrer par mois</label>
-                <select name="mois" id="mois" class="form-select">
-                    <option value="">-- Choisir un mois --</option>
-                    @foreach(range(1, 12) as $month)
-                        <option value="{{ $month }}" {{ request('mois') == $month ? 'selected' : '' }}>
-                            {{ \Carbon\Carbon::create()->month($month)->locale('fr')->isoFormat('MMMM') }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-
-            <div class="scroll-animated mt-3 text-end">
+            <div class="mt-3 text-end">
                 <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-2"></i>Filtrer</button>
             </div>
         </form>
@@ -75,15 +54,15 @@
         @endphp
 
         @foreach($sections as $titre => $documents)
-            <div class="scroll-animated mb-5">
+            <div class="mb-5">
                 <h4 class="mb-3"><i class="fas fa-folder-open me-2"></i>{{ $titre }}</h4>
 
                 @if($documents->isEmpty())
                     <p class="text-muted fst-italic">Aucun enregistrement disponible.</p>
                 @else
-                    <div class="scroll-animated table-responsive">
-                        <table class="scroll-animated table table-striped align-middle">
-                            <thead class="scroll-animated table-dark">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead class="table-dark">
                                 @if ($titre == 'Accusés de réception')
                                     <tr>
                                         <th><i class="fas fa-hashtag"></i></th>
@@ -139,9 +118,9 @@
 
                                 <td>
                                     @if($titre == 'Télégrammes' && $item->accuseReception && $item->accuseReception->annexes && $item->accuseReception->annexes->isNotEmpty())
-                                        <div class="scroll-animated d-flex flex-wrap gap-2">
+                                        <div class="d-flex flex-wrap gap-2">
                                             @foreach($item->accuseReception->annexes as $annexe)
-                                                <div class="scroll-animated d-flex align-items-center gap-2 border rounded px-2 py-1 bg-light">
+                                                <div class="d-flex align-items-center gap-2 border rounded px-2 py-1 bg-light">
                                                     <i class="fas fa-file-pdf text-danger"></i>
                                                     <span class="text-truncate" style="max-width: 100px;">{{ basename($annexe->file_path) }}</span>
                                                     <a href="{{ asset('storage/' . $annexe->file_path) }}" class="text-success" target="_blank" title="Voir"><i class="fas fa-eye"></i></a>
@@ -150,18 +129,18 @@
                                             @endforeach
                                         </div>
                                     @elseif($item->annexes && $item->annexes->isNotEmpty())
-                                        <div class="scroll-animated d-flex flex-wrap gap-2">
+                                        <div class="d-flex flex-wrap gap-2">
                                             @foreach($item->annexes as $annexe)
-                                                <div class="scroll-animated d-flex align-items-center gap-2 border rounded px-2 py-1 bg-light">
+                                                <div class="d-flex align-items-center gap-2 border rounded px-2 py-1 bg-light">
                                                     <i class="fas fa-file-alt text-primary"></i>
-                                                    <span class=" scroll-animatedtext-truncate" style="max-width: 100px;">{{ $annexe->nom_fichier }}</span>
+                                                    <span class="text-truncate" style="max-width: 100px;">{{ $annexe->nom_fichier }}</span>
                                                     <a href="{{ asset('storage/' . $annexe->file_path) }}" class="text-success" target="_blank" title="Voir"><i class="fas fa-eye"></i></a>
                                                     <a href="{{ asset('storage/' . $annexe->file_path) }}" download class="text-secondary" title="Télécharger"><i class="fas fa-download"></i></a>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @else
-                                        <span class="scroll-animated text-muted fst-italic">Aucune</span>
+                                        <span class="text-muted fst-italic">Aucune</span>
                                     @endif
                                 </td>
                             </tr>
@@ -174,15 +153,15 @@
             </div>
         @endforeach
 
-        <div class="scroll-animated text-end">
+        <div class="text-end">
             <a href="{{ route('annexes.print') }}" class="btn btn-success">
                 <i class="fas fa-print me-2"></i>Imprimer les annexes
             </a>
         </div>
         @else
             {{-- FORMULAIRE DE CODE D'ACCÈS --}}
-            <div class="scroll-animated container mt-5">
-                <h2 class="scroll-animated text-center text-dark mb-4">
+            <div class="container mt-5">
+                <h2 class="text-center text-dark mb-4">
                     <i class="fas fa-lock"></i> Bienvenue - Code d'accès requis
                 </h2>
 

@@ -192,48 +192,60 @@ class AccuseDeReceptionController extends Controller
 
         $pdf = new FPDI();
 
-        if ($request->hasFile('annexes')) {
-            foreach ($request->file('annexes') as $file) {
+        // Read uploaded paths from chunk uploader (JSON array expected)
+        $uploadedPaths = json_decode($request->input('uploaded_paths'), true);
 
-        // On ne compresse que si c'est un PDF
-        if ($file->getClientOriginalExtension() === 'pdf') {
-            $tempOriginalPath = storage_path('app/temp_original_' . uniqid() . '.pdf');
-            copy($file->getPathname(), $tempOriginalPath);
+        logger()->info('uploaded_paths reçus', ['paths' => $uploadedPaths]);
 
-            $compressedPath = storage_path('app/temp_compressed_' . uniqid() . '.pdf');
-
-            $command = "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook "
-                . "-dDownsampleColorImages=true -dColorImageResolution=100 "
-                . "-dDownsampleGrayImages=true -dGrayImageResolution=100 "
-                . "-dDownsampleMonoImages=true -dMonoImageResolution=100 "
-                . "-dNOPAUSE -dQUIET -dBATCH -sOutputFile="
-                . escapeshellarg($compressedPath) . ' ' . escapeshellarg($tempOriginalPath);
-
-            exec($command, $output, $resultCode);
-            logger()->info('Ghostscript command:', [
-                'command' => $command,
-                'output' => $output,
-                'result' => $resultCode
-            ]);
-
-            if ($resultCode !== 0 || !file_exists($compressedPath)) {
-                logger()->error('Compression échouée ou fichier introuvable.', ['compressedPath' => $compressedPath]);
-                $filePath = $file->store('annexes', 'public');
-            } else {
-                $filePath = 'annexes/compressed_' . uniqid() . '.pdf';
-                Storage::disk('public')->put($filePath, file_get_contents($compressedPath));
-                unlink($compressedPath);
-            }
-
-            unlink($tempOriginalPath); // Nettoyage
-            $annexePath = storage_path("app/public/{$filePath}");
-        } else {
-            // Gestion des autres types de fichiers (images, doc, etc)
-            $filePath = $file->store('annexes', 'public');
-            $annexePath = storage_path("app/public/{$filePath}");
+        if (!is_array($uploadedPaths) || empty($uploadedPaths)) {
+            throw new \Exception('Aucune annexe reçue');
         }
 
+        // Deduplicate by file content hash (sha256) to avoid duplicate uploads with different filenames
+        $uniqueFiles = [];
+        $seenHashes = [];
 
+        foreach ($uploadedPaths as $path) {
+            $full = storage_path("app/public/{$path}");
+
+            if (!file_exists($full)) {
+                logger()->warning('Annexe manquante ignorée', ['path' => $path]);
+                continue;
+            }
+
+            try {
+                $hash = hash_file('sha256', $full);
+            } catch (\Throwable $e) {
+                logger()->warning('Impossible de hasher le fichier', ['path' => $path, 'error' => $e->getMessage()]);
+                continue;
+            }
+
+            if (!isset($seenHashes[$hash])) {
+                $seenHashes[$hash] = true;
+                $uniqueFiles[] = $path;
+            } else {
+                logger()->warning('Annexe dupliquée ignorée (même contenu)', ['path' => $path, 'hash' => $hash]);
+            }
+        }
+
+        // Remove any generated combined PDF (safety) and keep canonical unique list
+        $uniqueFiles = array_values(array_filter($uniqueFiles, function($p) use ($accuse) {
+            return !str_starts_with(basename($p), 'accuse_');
+        }));
+
+        // KEEP ONLY THE FIRST UNIQUE FILE — do not process or store multiple uploaded files
+        $uploadedPaths = !empty($uniqueFiles) ? [ $uniqueFiles[0] ] : [];
+
+        // FPDI import loop (no compression or storage here)
+        foreach ($uploadedPaths as $filePath) {
+            $annexePath = storage_path("app/public/{$filePath}");
+
+            if (!file_exists($annexePath)) {
+                // skip missing files
+                continue;
+            }
+
+            // IMPORT FPDI
             $pageCount = $pdf->setSourceFile($annexePath);
 
             for ($i = 1; $i <= $pageCount; $i++) {
@@ -246,61 +258,45 @@ class AccuseDeReceptionController extends Controller
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->SetTextColor(255, 0, 0);
                 $pdf->SetXY(20, 10);
-                $pdf->Cell(0, 10, " " . $user->entreprise, 0, 1, 'L');
+                $pdf->Cell(0, 10, $user->entreprise, 0, 1);
+
                 $pdf->SetXY(20, 20);
-                $pdf->Cell(0, 10, "Date : " . $accuse->date_reception, 0, 1);
+                $pdf->Cell(0, 10, "Date : {$accuse->date_reception}", 0, 1);
+
                 $pdf->SetXY(20, 30);
-                $pdf->Cell(0, 10, "Numero : " . $accuse->numero_enregistrement, 0, 1);
+                $pdf->Cell(0, 10, "Numero : {$accuse->numero_enregistrement}", 0, 1);
+
                 $pdf->SetXY(20, 40);
-                $pdf->Cell(0, 10, "Receptionne par : " . $accuse->receptionne_par, 0, 1);
+                $pdf->Cell(0, 10, "Receptionne par : {$accuse->receptionne_par}", 0, 1);
+
                 $pdf->SetXY(20, 50);
-                $pdf->MultiCell(0, 10, "Objet : " . $accuse->objet, 0, 1);
+                $pdf->MultiCell(0, 10, "Objet : {$accuse->objet}", 0, 1);
 
                 if (!empty($accuse->avis)) {
                     $pdf->SetXY(20, 70);
-                    $pdf->MultiCell(0, 10, "Avis : " . $accuse->avis, 0, 1);
+                    $pdf->MultiCell(0, 10, "Avis : {$accuse->avis}", 0, 1);
                 }
             }
         }
-    }
 
-    
+        // Génération UNIQUE du PDF (évite doublons)
+        if (!$accuse->pdf_generated_at) {
+            $outputFileName = "accuse_{$accuse->id}.pdf";
+            $outputPath = storage_path("app/public/{$outputFileName}");
 
-        $outputFileName = 'accuse_' . $accuse->id . '.pdf';
-        $outputPath = storage_path("app/public/{$outputFileName}");
-        $pdf->Output($outputPath, 'F');
+            $pdf->Output($outputPath, 'F');
 
-        Annexe::create([
-            'accuse_de_reception_id' => $accuse->id,
-            'file_path' => $outputFileName,
-        ]);
+            // Create a single Annexe record pointing to the generated combined PDF
+            Annexe::firstOrCreate([
+                'accuse_de_reception_id' => $accuse->id,
+                'file_path' => $outputFileName,
+            ]);
 
-        // If there was a session draft with uploaded_paths, attach them now to the created record
-        if (!empty($sessionDraft['uploaded_paths']) && is_array($sessionDraft['uploaded_paths'])) {
-            foreach ($sessionDraft['uploaded_paths'] as $p) {
-                Annexe::create([
-                    'accuse_de_reception_id' => $accuse->id,
-                    'file_path' => $p,
-                ]);
-            }
-            // clear session draft
-            $request->session()->forget($sessionKey ?? '');
+            $accuse->update(['pdf_generated_at' => now()]);
         }
 
-        // Handle any files uploaded via chunked uploader: uploaded_paths is JSON array of stored paths
-        $uploadedPaths = $request->input('uploaded_paths');
-        if ($uploadedPaths) {
-            $paths = json_decode($uploadedPaths, true);
-            if (is_array($paths)) {
-                foreach ($paths as $p) {
-                    // create Annexe record linking to this accuse
-                    Annexe::create([
-                        'accuse_de_reception_id' => $accuse->id,
-                        'file_path' => $p,
-                    ]);
-                }
-            }
-        }
+        // NOTE: Do NOT create Annexe entries for original uploaded files here.
+        // The single canonical annex is the generated combined PDF above.
 
         DB::commit();
 
@@ -322,93 +318,108 @@ class AccuseDeReceptionController extends Controller
 }
 
 // Chunk upload endpoint: accepts chunks, merges, processes file and returns stored path
-    public function uploadChunk(Request $request)
-    {
-        $request->validate([
-            'chunk' => 'required|file',
-            'file_id' => 'required|string',
-            'chunk_index' => 'required|integer',
-            'total_chunks' => 'required|integer',
-            'filename' => 'required|string',
-        ]);
+   public function uploadChunk(Request $request)
+{
+    $request->validate([
+        'chunk'        => 'required|file',
+        'file_id'      => 'required|string',
+        'chunk_index'  => 'required|integer|min:0',
+        'total_chunks' => 'required|integer|min:1',
+        'filename'     => 'required|string',
+    ]);
 
-        $dir = storage_path("app/chunks/{$request->file_id}");
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true); // crée avec droits complets
-            chmod($dir, 0777);       // assure que PHP peut écrire dedans
-        }
-
-        $request->file('chunk')->move($dir, $request->chunk_index);
-
-        // If last chunk, merge and process
-        if ($request->chunk_index + 1 == $request->total_chunks) {
-            $chunkDir = $dir;
-            $uploadDir = storage_path("app/uploads");
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-                chmod($uploadDir, 0777);
-            }
-
-            $finalTemp = storage_path("app/uploads/" . basename($request->filename));
-
-            $out = fopen($finalTemp, 'ab');
-            for ($i = 0; $i < $request->total_chunks; $i++) {
-                $chunkPath = "$chunkDir/$i";
-                if (file_exists($chunkPath)) {
-                    fwrite($out, file_get_contents($chunkPath));
-                }
-            }
-            fclose($out);
-
-            // Process file: if PDF, try compression via ghostscript and save to public annexes, else save directly
-            $extension = pathinfo($finalTemp, PATHINFO_EXTENSION);
-            $storedRelative = null;
-
-            if (strtolower($extension) === 'pdf') {
-                $tempOriginalPath = $finalTemp;
-                $compressedPath = storage_path('app/temp_compressed_' . uniqid() . '.pdf');
-
-                $command = "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook "
-                    . "-dDownsampleColorImages=true -dColorImageResolution=100 "
-                    . "-dDownsampleGrayImages=true -dGrayImageResolution=100 "
-                    . "-dDownsampleMonoImages=true -dMonoImageResolution=100 "
-                    . "-dNOPAUSE -dQUIET -dBATCH -sOutputFile="
-                    . escapeshellarg($compressedPath) . ' ' . escapeshellarg($tempOriginalPath);
-
-                exec($command, $output, $resultCode);
-
-                if ($resultCode !== 0 || !file_exists($compressedPath)) {
-                    // fallback: move original into public annexes
-                    $destName = 'annexes/' . uniqid() . '_' . basename($finalTemp);
-                    Storage::disk('public')->put($destName, file_get_contents($finalTemp));
-                    $storedRelative = $destName;
-                } else {
-                    $destName = 'annexes/compressed_' . uniqid() . '.pdf';
-                    Storage::disk('public')->put($destName, file_get_contents($compressedPath));
-                    unlink($compressedPath);
-                    $storedRelative = $destName;
-                }
-
-                // cleanup temp upload
-                @unlink($finalTemp);
-            } else {
-                // non-pdf: move into public annexes
-                $destName = 'annexes/' . uniqid() . '_' . basename($finalTemp);
-                Storage::disk('public')->put($destName, file_get_contents($finalTemp));
-                @unlink($finalTemp);
-                $storedRelative = $destName;
-            }
-
-            // cleanup chunks
-            array_map('unlink', glob("$chunkDir/*"));
-            @rmdir($chunkDir);
-
-            return response()->json(['status' => 'merged', 'path' => $storedRelative]);
-        }
-
-        return response()->json(['status' => 'chunk received']);
+    // 1️⃣ Dossier des chunks (unique par fichier)
+    $chunkDir = storage_path("app/chunks/{$request->file_id}");
+    if (!is_dir($chunkDir)) {
+        mkdir($chunkDir, 0777, true);
+        chmod($chunkDir, 0777);
     }
 
+    // 2️⃣ Sauvegarde du chunk (index = nom)
+    $request->file('chunk')->move($chunkDir, (string) $request->chunk_index);
+
+    // 3️⃣ Pas encore le dernier chunk → stop ici
+    if ($request->chunk_index + 1 < $request->total_chunks) {
+        return response()->json(['status' => 'chunk_received']);
+    }
+
+    /**
+     * ==========================
+     * DERNIER CHUNK → FUSION
+     * ==========================
+     */
+
+    // 4️⃣ Fichier temporaire UNIQUE (jamais append)
+    $tmpDir = storage_path('app/uploads');
+    if (!is_dir($tmpDir)) {
+        mkdir($tmpDir, 0777, true);
+        chmod($tmpDir, 0777);
+    }
+
+    $finalTemp = "{$tmpDir}/{$request->file_id}.tmp";
+
+    // 5️⃣ Fusion sécurisée (ordre garanti)
+    $out = fopen($finalTemp, 'wb');
+
+    for ($i = 0; $i < $request->total_chunks; $i++) {
+        $chunkPath = "{$chunkDir}/{$i}";
+
+        if (!file_exists($chunkPath)) {
+            fclose($out);
+            throw new \Exception("Chunk manquant : {$i}");
+        }
+
+        fwrite($out, file_get_contents($chunkPath));
+    }
+
+    fclose($out);
+
+    // 6️⃣ Traitement final (PDF → compression)
+    $extension = strtolower(pathinfo($request->filename, PATHINFO_EXTENSION));
+    $storedRelative = null;
+
+    if ($extension === 'pdf') {
+        $compressedPath = storage_path("app/temp_{$request->file_id}.pdf");
+
+        $command = "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook "
+            . "-dDownsampleColorImages=true -dColorImageResolution=100 "
+            . "-dDownsampleGrayImages=true -dGrayImageResolution=100 "
+            . "-dDownsampleMonoImages=true -dMonoImageResolution=100 "
+            . "-dNOPAUSE -dQUIET -dBATCH "
+            . "-sOutputFile=" . escapeshellarg($compressedPath) . " "
+            . escapeshellarg($finalTemp);
+
+        exec($command, $output, $resultCode);
+
+        $destName = "annexes/{$request->file_id}.pdf";
+
+        if ($resultCode === 0 && file_exists($compressedPath)) {
+            Storage::disk('public')->put($destName, file_get_contents($compressedPath));
+            @unlink($compressedPath);
+        } else {
+            // fallback sans compression
+            Storage::disk('public')->put($destName, file_get_contents($finalTemp));
+        }
+
+        $storedRelative = $destName;
+    } else {
+        // Autres fichiers (jpg, doc, etc)
+        $destName = "annexes/{$request->file_id}." . $extension;
+        Storage::disk('public')->put($destName, file_get_contents($finalTemp));
+        $storedRelative = $destName;
+    }
+
+    // 7️⃣ Nettoyage TOTAL
+    @unlink($finalTemp);
+    array_map('unlink', glob("{$chunkDir}/*"));
+    @rmdir($chunkDir);
+
+    // 8️⃣ Réponse UNIQUE (1 seul path)
+    return response()->json([
+        'status' => 'merged',
+        'path'   => $storedRelative
+    ]);
+}
 
     /**
      * Save a draft via AJAX (autosave or explicit Save as Draft button)

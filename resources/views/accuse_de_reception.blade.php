@@ -147,7 +147,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if(!fileInput) return;
 
-    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+    // 100 MiB
+    const CHUNK_SIZE = 100 * 1024 * 1024; // 104857600 bytes
 
     function setProgress(p){ 
         bar.style.width = p + '%'; 
@@ -171,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function(){
             });
             const json = await res.json();
             if(json.status === 'ok'){
-                // persist draft id for subsequent saves
                 if(json.id){
                     currentDraftId = json.id;
                     if(draftIdInput) draftIdInput.value = json.id;
@@ -193,7 +193,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     async function uploadFile(file){
         const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-        const fileId = Date.now().toString() + '-' + Math.random().toString(36).slice(2,8);
+        const fileId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString() + '-' + Math.random().toString(36).slice(2,8));
+
         for(let i=0;i<totalChunks;i++){
             const start = i*CHUNK_SIZE; 
             const end = Math.min(file.size, start+CHUNK_SIZE);
@@ -219,11 +220,15 @@ document.addEventListener('DOMContentLoaded', function(){
                 const percent = Math.round(((i+1)/totalChunks)*100);
                 progressWrap.classList.remove('d-none'); 
                 setProgress(percent);
+
                 if(json.status === 'merged'){
-                    // append final path
+                    // append final path if not already present
                     const cur = uploadedPathsInput.value ? JSON.parse(uploadedPathsInput.value) : [];
-                    cur.push(json.path);
-                    uploadedPathsInput.value = JSON.stringify(cur);
+                    if(!cur.includes(json.path)){
+                        cur.push(json.path);
+                        uploadedPathsInput.value = JSON.stringify(cur);
+                    }
+
                     // attach uploaded annex immediately to draft (if any) so server creates Annexe records
                     // this will also create a draft if none exists
                     await postDraft();
