@@ -16,6 +16,8 @@ $directions = [
         'Secrétariat DG',
         'Audit interne',
         'DG',
+        'Communication',
+        'Assistant DG',
         'DGA'
     ],
 ];

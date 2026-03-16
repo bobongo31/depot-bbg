@@ -13,7 +13,7 @@
             'Contrôle et Inspection' => ['Audit interne', 'Contrôle et Inspection'],
             'Mobilisation de la Redevance' => ['Taxation', 'Mobilisation de la Redevance'],
             'Études, Planification et de la Formation' => ['Études', 'Planification', 'Formation'],
-            'Autres' => ['Informatique', 'Juridique et Contentieux', 'Secrétariat DG', 'Assistant DG', 'Assistant DGA'],
+            'Autres' => ['Informatique', 'Juridique et Contentieux', 'Secrétariat DG', 'Communication', 'Audit interne'],
         ];
     @endphp
 

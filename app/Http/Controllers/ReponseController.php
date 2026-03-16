@@ -46,6 +46,7 @@ class ReponseController extends Controller
             'Juridique et Contentieux',
             'Secrétariat DG',
             'Assistant DG',
+            "Communication",
             'Assistant DGA'
         ],
     ];
@@ -592,7 +593,7 @@ public function index(Request $request)
      */
     public function createTelegramme(Request $request)
     {
-        $accuse_receptions = AccuseReception::all(); // Récupère tous les enregistrements
+        $accuse_receptions = AccuseReception::orderByDesc('date_reception')->get(); // Récupère tous les enregistrements
         $draft = null;
         $telegrammeId = $request->query('telegramme_id');
         if ($telegrammeId) {

@@ -16,6 +16,6 @@ class CourrierExpedieCopy extends Model
 
     public function courrier()
     {
-        return $this->belongsTo(CourrierExpedie::class);
+        return $this->belongsTo(CourrierExpedie::class, 'courrier_expedie_id');
     }
 }

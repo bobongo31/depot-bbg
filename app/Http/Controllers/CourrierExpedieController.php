@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\CourrierExpedie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,24 +10,178 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CourrierExpedieController extends Controller
 {
     /* ==========================
      * LISTE
      * ========================== */
-    public function index()
-{
-    $user = Auth::user();
 
-    $courriers = CourrierExpedie::with('copies')
-        ->latest()
-        ->paginate(15);
+     private array $directionServices = [
+        'DRHSG' => [
+            'Ressources Humaines',
+            'Services Généraux',
+            'Ressources Humaines et Services Généraux',
+        ],
+        'DF' => [
+            'Comptabilité',
+            'Trésorerie',
+            'Caisse',
+        ],
+        'DCP' => ['Coordination'],
+        'DPC' => [
+            'Services de la Promotion Culturelle',
+            'Production et Animation Culturelle',
+        ],
+        'CI' => ['Audit interne'],
+        'DMR' => ['Taxation', 'Mobilisation de la Redevance'],
+        'DR' => ['Recouvrement'],
+        'DEFP' => ['Études', 'Planification', 'Formation'],
+        'Autres' => [
+            'Informatique',
+            'Juridique et Contentieux',
+            'Secrétariat DG',
+            'Assistant DG',
+            'Communication',
+            'Assistant DGA',
+        ],
+    ];
 
-    return view('courrier_expedie.index', compact('courriers'));
-}
+    public function index(Request $request)
+    {
+        $user = Auth::user();
 
+        $courriersAll = CourrierExpedie::with('copies')
+            ->orderByDesc('id')
+            ->get();
 
+        $userServices = $this->normalizeArrayValues($user->service ?? null);
+
+        if (!$this->isPrivileged($user)) {
+            $courriersAll = $courriersAll->filter(function ($courrier) use ($user, $userServices) {
+                // Le créateur voit toujours son courrier
+                if ((int) $courrier->user_id === (int) $user->id) {
+                    return true;
+                }
+
+                // Un agent/service normal ne voit que les copies faites exactement à son service
+                $copyServices = collect($courrier->copies ?? [])
+                    ->flatMap(function ($copy) {
+                        return $this->normalizeArrayValues($copy->service ?? null);
+                    })
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                return count(array_intersect($userServices, $copyServices)) > 0;
+            })->values();
+        }
+
+        $page = (int) $request->get('page', 1);
+        $perPage = 15;
+
+        $courriers = new LengthAwarePaginator(
+            $courriersAll->forPage($page, $perPage)->values(),
+            $courriersAll->count(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        if ($courriers->count() === 0 && $courriers->total() > 0 && $courriers->currentPage() > 1) {
+            return redirect()->route('courrier_expedie.index', ['page' => 1]);
+        }
+
+        return view('courrier_expedie.index', compact('courriers'));
+    }
+
+    protected function isPrivileged($user): bool
+    {
+        return $user && in_array($user->role, ['admin', 'DG', 'DGA'], true);
+    }
+
+    protected function normalizeValue(?string $value): ?string
+    {
+        if (!filled($value)) {
+            return null;
+        }
+
+        $value = Str::ascii($value);
+        $value = mb_strtolower(trim($value), 'UTF-8');
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return $value ?: null;
+    }
+
+    protected function normalizeArrayValues($value): array
+    {
+        if (blank($value)) {
+            return [];
+        }
+
+        if (is_array($value)) {
+            $items = $value;
+        } elseif (is_string($value)) {
+            $trimmed = trim($value);
+            $decoded = json_decode($trimmed, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $items = $decoded;
+            } else {
+                $items = preg_split('/[,;|\/]+/u', $trimmed) ?: [];
+            }
+        } else {
+            $items = [(string) $value];
+        }
+
+        return collect($items)
+            ->flatten()
+            ->map(fn ($item) => $this->normalizeValue(is_scalar($item) ? (string) $item : null))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    protected function expandUserScopes($user): array
+    {
+        $scopes = collect([
+            ...$this->normalizeArrayValues($user->service ?? null),
+            ...$this->normalizeArrayValues($user->direction ?? null),
+        ]);
+
+        foreach ($scopes->values() as $scope) {
+            foreach ($this->directionServices as $directionCode => $services) {
+                $normalizedDirectionCode = $this->normalizeValue($directionCode);
+
+                $normalizedServices = collect($services)
+                    ->map(fn ($service) => $this->normalizeValue($service))
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                if (
+                    $scope === $normalizedDirectionCode ||
+                    $normalizedServices->contains($scope)
+                ) {
+                    $scopes = $scopes
+                        ->push($normalizedDirectionCode)
+                        ->merge($normalizedServices);
+                }
+            }
+        }
+
+        return $scopes
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
 
     /* ==========================
      * FORM CREATE
@@ -40,91 +195,68 @@ class CourrierExpedieController extends Controller
      * STORE
      * ========================== */
     public function store(Request $request)
-{
-    Log::info('=== STORE COURRIER EXPEDIE : START ===');
+    {
+        Log::info('=== STORE COURRIER EXPEDIE : START ===');
+        Log::info('Request all()', $request->all());
 
-    Log::info('Request all()', $request->all());
-
-    $data = $request->validate([
-        'numero_ordre'    => 'required|string|max:50',
-        'date_expedition' => 'required|date',
-        'numero_lettre'   => 'required|string|unique:courrier_expedies,numero_lettre',
-        'destinataire'    => 'required|string|max:255',
-        'resume'          => 'required|string',
-        'observation'     => 'nullable|string',
-    ]);
-
-    $data['user_id'] = Auth::id();
-
-    Log::info('Data validée', $data);
-
-    // Annexes
-    $data['annexes'] = $request->filled('annexes_paths')
-        ? json_decode($request->annexes_paths, true)
-        : [];
-
-    Log::info('Annexes décodées', $data['annexes'] ?? []);
-
-    // Copies
-    $copies = $request->filled('copies')
-        ? json_decode($request->copies, true)
-        : [];
-
-    Log::info('Copies brutes (JSON décodé)', $copies);
-
-    DB::transaction(function () use ($data, $copies) {
-
-        Log::info('--- Transaction START ---');
-
-        // création courrier
-        $courrier = CourrierExpedie::create($data);
-
-        Log::info('Courrier créé', [
-            'id' => $courrier->id
+        $data = $request->validate([
+            'numero_ordre'    => 'required|string|max:50',
+            'date_expedition' => 'required|date',
+            'numero_lettre'   => 'required|string|unique:courrier_expedies,numero_lettre',
+            'destinataire'    => 'required|string|max:255',
+            'resume'          => 'required|string',
+            'observation'     => 'nullable|string',
         ]);
 
-        // sauvegarde copies
-        foreach ($copies as $index => $copy) {
+        $data['user_id'] = Auth::id();
 
-            Log::info("Traitement copy #{$index}", $copy);
+        $data['annexes'] = $request->filled('annexes_paths')
+            ? json_decode($request->annexes_paths, true)
+            : [];
 
-            if (!empty($copy['direction']) && !empty($copy['service'])) {
+        $copies = $request->filled('copies')
+            ? json_decode($request->copies, true)
+            : [];
 
-                $created = $courrier->copies()->create([
-                    'direction' => $copy['direction'],
-                    'service'   => $copy['service'],
-                ]);
+        DB::transaction(function () use ($data, $copies) {
+            $courrier = CourrierExpedie::create($data);
 
-                Log::info('Copy créée', [
-                    'copy_id' => $created->id ?? null
-                ]);
-            } else {
-                Log::warning('Copy ignorée (direction/service manquant)', $copy);
+            foreach ($copies as $copy) {
+                if (!empty($copy['direction']) && !empty($copy['service'])) {
+                    $courrier->copies()->create([
+                        'direction' => trim($copy['direction']),
+                        'service'   => trim($copy['service']),
+                    ]);
+                }
             }
-        }
+        });
 
-        Log::info('--- Transaction END ---');
-    });
+        Log::info('=== STORE COURRIER EXPEDIE : END ===');
 
-    Log::info('=== STORE COURRIER EXPEDIE : END ===');
-
-    return redirect()
-        ->route('courrier_expedie.index')
-        ->with('success', 'Courrier expédié enregistré avec succès');
-}
-
-
-    public function view(User $user, CourrierExpedie $courrier)
-{
-    if ($user->role === 'admin') {
-        return true;
+        return redirect()
+            ->route('courrier_expedie.index')
+            ->with('success', 'Courrier expédié enregistré avec succès');
     }
 
-    return $courrier->copies()
-        ->where('service', $user->service)
-        ->where('direction', $user->direction)
-        ->exists();
-}
+    public function view(User $user, CourrierExpedie $courrier)
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ((int) $courrier->user_id === (int) $user->id) {
+            return true;
+        }
+
+        if (blank($user->service) || blank($user->direction)) {
+            return false;
+        }
+
+        return $courrier->copies()
+            ->whereRaw('LOWER(TRIM(service)) = ?', [trim(mb_strtolower($user->service))])
+            ->whereRaw('LOWER(TRIM(direction)) = ?', [trim(mb_strtolower($user->direction))])
+            ->exists();
+    }
 
     /* ==========================
      * SHOW
@@ -195,6 +327,7 @@ class CourrierExpedieController extends Controller
         ]);
 
         $tempDir = storage_path('app/chunks/courrier_expedie/' . $request->file_id);
+
         if (!is_dir($tempDir)) {
             mkdir($tempDir, 0777, true);
         }
@@ -206,9 +339,7 @@ class CourrierExpedieController extends Controller
             file_get_contents($request->file('chunk')->getRealPath())
         );
 
-        // dernier chunk → fusion
         if ($request->chunk_index + 1 == $request->total_chunks) {
-
             $finalName = 'courrier_expedie/' . Str::uuid() . '_' . $request->filename;
             $finalPath = storage_path('app/public/' . $finalName);
 

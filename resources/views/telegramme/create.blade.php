@@ -80,6 +80,7 @@
                             'Secrétariat DG',
                             'Assistant DG',
                             'Assistant DGA',
+                            "Communication",
                             'Audit interne'
                         ],
                     ];

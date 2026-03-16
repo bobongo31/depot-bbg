@@ -111,54 +111,57 @@ class AccuseDeReceptionController extends Controller
 
 
 
-    public function store(Request $request) 
-    {
-        logger()->info('Upload debug', [
-            'files' => $request->allFiles(),
-            'content_length' => $_SERVER['CONTENT_LENGTH'] ?? null,
-        ]);
+    public function store(Request $request)
+{
+    logger()->info('Upload debug', [
+        'files' => $request->allFiles(),
+        'content_length' => $_SERVER['CONTENT_LENGTH'] ?? null,
+    ]);
 
-        // check if a draft id was provided and ensure it belongs to the current user
-        $draftId = $request->input('draft_id');
-        $draft = null;
-        $sessionDraft = null;
-        if ($draftId) {
-            if (strpos($draftId, 'session-') === 0) {
-                // draft persisted in session for this user
-                $sessionKey = 'accuse_draft_' . auth()->id();
-                $sessionDraft = $request->session()->get($sessionKey, null);
-            } else {
-                // legacy / db-stored draft id
-                $draft = AccuseReception::where('id', $draftId)->where('user_id', auth()->id())->first();
-            }
-        } else {
-            // if no draft_id provided, prefer session draft for this user (one draft in memory)
+    // check if a draft id was provided and ensure it belongs to the current user
+    $draftId = $request->input('draft_id');
+    $draft = null;
+    $sessionDraft = null;
+
+    if ($draftId) {
+        if (strpos($draftId, 'session-') === 0) {
+            // draft persisted in session for this user
             $sessionKey = 'accuse_draft_' . auth()->id();
             $sessionDraft = $request->session()->get($sessionKey, null);
-        }
-
-        // build validation rules and allow the draft to keep/replace its numero without tripping the unique index
-        $rules = [
-            'date_reception' => 'required|date',
-            'numero_enregistrement' => ['required','string'],
-            'receptionne_par' => 'required|string|max:255',
-            'objet' => 'required|string|max:2550',
-            'annexes' => 'nullable|array',
-            'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:99200',
-            'avis' => 'nullable|string',
-            'save_as_draft' => 'sometimes|boolean',
-            'draft_id' => 'nullable|integer',
-        ];
-
-        // If we are finalizing a DB draft, ignore its id for unique check.
-        // For session-only drafts we must still enforce uniqueness against DB.
-        if ($draft) {
-            $rules['numero_enregistrement'][] = Rule::unique('accuse_receptions', 'numero_enregistrement')->ignore($draft->id);
         } else {
-            $rules['numero_enregistrement'][] = 'unique:accuse_receptions,numero_enregistrement';
+            // legacy / db-stored draft id
+            $draft = AccuseReception::where('id', $draftId)
+                ->where('user_id', auth()->id())
+                ->first();
         }
+    } else {
+        // if no draft_id provided, prefer session draft for this user (one draft in memory)
+        $sessionKey = 'accuse_draft_' . auth()->id();
+        $sessionDraft = $request->session()->get($sessionKey, null);
+    }
 
-        $validated = $request->validate($rules);
+    // build validation rules and allow the draft to keep/replace its numero without tripping the unique index
+    $rules = [
+        'date_reception' => 'required|date',
+        'numero_enregistrement' => ['required', 'string'],
+        'receptionne_par' => 'required|string|max:255',
+        'objet' => 'required|string|max:2550',
+        'annexes' => 'nullable|array',
+        'annexes.*' => 'mimes:jpg,jpeg,png,pdf,doc,docx|max:99200',
+        'avis' => 'nullable|string',
+        'save_as_draft' => 'sometimes|boolean',
+        'draft_id' => 'nullable|integer',
+    ];
+
+    // If we are finalizing a DB draft, ignore its id for unique check.
+    // For session-only drafts we must still enforce uniqueness against DB.
+    if ($draft) {
+        $rules['numero_enregistrement'][] = Rule::unique('accuse_receptions', 'numero_enregistrement')->ignore($draft->id);
+    } else {
+        $rules['numero_enregistrement'][] = 'unique:accuse_receptions,numero_enregistrement';
+    }
+
+    $validated = $request->validate($rules);
 
     try {
         DB::beginTransaction();
@@ -169,13 +172,13 @@ class AccuseDeReceptionController extends Controller
             // update existing draft (owner already checked)
             $draft->update([
                 'date_reception' => $validated['date_reception'] ?? now(),
-                // assign the final numero when finalizing; validation allowed same as draft due to ignore
                 'numero_enregistrement' => $validated['numero_enregistrement'] ?? $draft->numero_enregistrement,
                 'receptionne_par' => $validated['receptionne_par'] ?? $draft->receptionne_par,
                 'objet' => $validated['objet'] ?? $draft->objet,
                 'avis' => $validated['avis'] ?? $draft->avis,
                 'statut' => $statutVal,
             ]);
+
             $accuse = $draft;
         } else {
             // If this is a session draft (in-memory) we will create the record now.
@@ -216,7 +219,10 @@ class AccuseDeReceptionController extends Controller
             try {
                 $hash = hash_file('sha256', $full);
             } catch (\Throwable $e) {
-                logger()->warning('Impossible de hasher le fichier', ['path' => $path, 'error' => $e->getMessage()]);
+                logger()->warning('Impossible de hasher le fichier', [
+                    'path' => $path,
+                    'error' => $e->getMessage()
+                ]);
                 continue;
             }
 
@@ -224,65 +230,50 @@ class AccuseDeReceptionController extends Controller
                 $seenHashes[$hash] = true;
                 $uniqueFiles[] = $path;
             } else {
-                logger()->warning('Annexe dupliquée ignorée (même contenu)', ['path' => $path, 'hash' => $hash]);
+                logger()->warning('Annexe dupliquée ignorée (même contenu)', [
+                    'path' => $path,
+                    'hash' => $hash
+                ]);
             }
         }
 
         // Remove any generated combined PDF (safety) and keep canonical unique list
-        $uniqueFiles = array_values(array_filter($uniqueFiles, function($p) use ($accuse) {
+        $uniqueFiles = array_values(array_filter($uniqueFiles, function ($p) {
             return !str_starts_with(basename($p), 'accuse_');
         }));
 
         // KEEP ONLY THE FIRST UNIQUE FILE — do not process or store multiple uploaded files
-        $uploadedPaths = !empty($uniqueFiles) ? [ $uniqueFiles[0] ] : [];
+        $uploadedPaths = !empty($uniqueFiles) ? [$uniqueFiles[0]] : [];
 
-        // FPDI import loop (no compression or storage here)
-        foreach ($uploadedPaths as $filePath) {
-            $annexePath = storage_path("app/public/{$filePath}");
-
-            if (!file_exists($annexePath)) {
-                // skip missing files
-                continue;
-            }
-
-            // IMPORT FPDI
-            $pageCount = $pdf->setSourceFile($annexePath);
-
-            for ($i = 1; $i <= $pageCount; $i++) {
-                $tplIdx = $pdf->importPage($i);
-                $pdf->AddPage();
-                $pdf->useTemplate($tplIdx, 0, 0, 210);
-
-                $user = auth()->user();
-
-                $pdf->SetFont('Arial', 'B', 12);
-                $pdf->SetTextColor(255, 0, 0);
-                $pdf->SetXY(20, 10);
-                $pdf->Cell(0, 10, $user->entreprise, 0, 1);
-
-                $pdf->SetXY(20, 20);
-                $pdf->Cell(0, 10, "Date : {$accuse->date_reception}", 0, 1);
-
-                $pdf->SetXY(20, 30);
-                $pdf->Cell(0, 10, "Numero : {$accuse->numero_enregistrement}", 0, 1);
-
-                $pdf->SetXY(20, 40);
-                $pdf->Cell(0, 10, "Receptionne par : {$accuse->receptionne_par}", 0, 1);
-
-                $pdf->SetXY(20, 50);
-                $pdf->MultiCell(0, 10, "Objet : {$accuse->objet}", 0, 1);
-
-                if (!empty($accuse->avis)) {
-                    $pdf->SetXY(20, 70);
-                    $pdf->MultiCell(0, 10, "Avis : {$accuse->avis}", 0, 1);
-                }
-            }
+        if (empty($uploadedPaths)) {
+            throw new \Exception('Aucun fichier valide à traiter.');
         }
 
-        // Génération UNIQUE du PDF (évite doublons)
-        if (!$accuse->pdf_generated_at) {
-            $outputFileName = "accuse_{$accuse->id}.pdf";
-            $outputPath = storage_path("app/public/{$outputFileName}");
+        // Nom et chemin du PDF généré
+        $outputFileName = "accuse_{$accuse->id}.pdf";
+        $outputPath = storage_path("app/public/{$outputFileName}");
+
+        // Génération du PDF seulement s'il n'existe pas encore
+        if (!$accuse->pdf_generated_at || !file_exists($outputPath)) {
+            foreach ($uploadedPaths as $filePath) {
+                $annexePath = storage_path("app/public/{$filePath}");
+
+                if (!file_exists($annexePath)) {
+                    continue;
+                }
+
+                // Import du PDF source SANS ajouter de texte dessus
+                $pageCount = $pdf->setSourceFile($annexePath);
+
+                for ($i = 1; $i <= $pageCount; $i++) {
+                    $tplIdx = $pdf->importPage($i);
+                    $size = $pdf->getTemplateSize($tplIdx);
+
+                    $orientation = ($size['width'] > $size['height']) ? 'L' : 'P';
+                    $pdf->AddPage($orientation, [$size['width'], $size['height']]);
+                    $pdf->useTemplate($tplIdx, 0, 0, $size['width'], $size['height']);
+                }
+            }
 
             $pdf->Output($outputPath, 'F');
 
@@ -292,7 +283,9 @@ class AccuseDeReceptionController extends Controller
                 'file_path' => $outputFileName,
             ]);
 
-            $accuse->update(['pdf_generated_at' => now()]);
+            $accuse->update([
+                'pdf_generated_at' => now()
+            ]);
         }
 
         // NOTE: Do NOT create Annexe entries for original uploaded files here.
@@ -306,14 +299,25 @@ class AccuseDeReceptionController extends Controller
             'download_url' => $downloadUrl,
             'success' => 'Accusé enregistré avec succès.'
         ]);
+
     } catch (QueryException $e) {
         DB::rollBack();
-        logger()->error('DB error while storing accuse', ['exception' => $e->getMessage()]);
-        return back()->withInput()->withErrors(['database' => 'Erreur base de données : ' . $e->getMessage()]);
+        logger()->error('DB error while storing accuse', [
+            'exception' => $e->getMessage()
+        ]);
+
+        return back()->withInput()->withErrors([
+            'database' => 'Erreur base de données : ' . $e->getMessage()
+        ]);
     } catch (\Exception $e) {
         DB::rollBack();
-        logger()->error('Unexpected error while storing accuse', ['exception' => $e->getMessage()]);
-        return back()->withInput()->withErrors(['database' => 'Erreur serveur : ' . $e->getMessage()]);
+        logger()->error('Unexpected error while storing accuse', [
+            'exception' => $e->getMessage()
+        ]);
+
+        return back()->withInput()->withErrors([
+            'database' => 'Erreur serveur : ' . $e->getMessage()
+        ]);
     }
 }
 
