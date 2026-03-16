@@ -1,2 +1,7 @@
 *
 !.gitignore
+
+!courrier_expedie/
+!courrier_expedie/**/*.pdf
+!annexes/
+!annexes/**/*.pdf
