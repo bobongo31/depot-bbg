@@ -26,6 +26,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RechercheController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\CourrierExpedieController;
+use App\Http\Controllers\Admin\SystemAdminController;
 
 
 
@@ -248,6 +249,52 @@ Route::resource('courrier-expedie', CourrierExpedieController::class)
         [CourrierExpedieController::class, 'uploadChunk']
     )->name('courrier_expedie.upload_chunk');
 });
+
+Route::middleware(['auth', 'admin.role'])
+    ->prefix('admin/system')
+    ->name('admin.system.')
+    ->group(function () {
+        Route::get('/', [SystemAdminController::class, 'dashboard'])->name('dashboard');
+
+        Route::get('/backups', [SystemAdminController::class, 'backupsIndex'])->name('backups.index');
+        Route::post('/backups', [SystemAdminController::class, 'backupStore'])->name('backups.store');
+        Route::get('/backups/{backup}/download', [SystemAdminController::class, 'backupDownload'])->name('backups.download');
+        Route::delete('/backups/{backup}', [SystemAdminController::class, 'backupDestroy'])->name('backups.destroy');
+
+        Route::get('/restores', [SystemAdminController::class, 'restoresIndex'])->name('restores.index');
+        Route::post('/restores', [SystemAdminController::class, 'restoreStore'])->name('restores.store');
+
+        Route::get('/maintenance', [SystemAdminController::class, 'maintenanceIndex'])->name('maintenance.index');
+        Route::post('/maintenance/enable', [SystemAdminController::class, 'maintenanceEnable'])->name('maintenance.enable');
+        Route::post('/maintenance/disable', [SystemAdminController::class, 'maintenanceDisable'])->name('maintenance.disable');
+
+        Route::get('/health', [SystemAdminController::class, 'healthIndex'])->name('health.index');
+        Route::post('/health/sync-alerts', [SystemAdminController::class, 'healthSyncAlerts'])->name('health.sync-alerts');
+
+        Route::get('/logs', [SystemAdminController::class, 'logsIndex'])->name('logs.index');
+
+        Route::get('/schedules', [SystemAdminController::class, 'schedulesIndex'])->name('schedules.index');
+        Route::post('/schedules/{taskKey}/run', [SystemAdminController::class, 'schedulesRun'])
+            ->where('taskKey', '[A-Za-z0-9\-_]+')
+            ->name('schedules.run');
+
+        Route::get('/queues', [SystemAdminController::class, 'queuesIndex'])->name('queues.index');
+        Route::post('/queues/retry-all', [SystemAdminController::class, 'queueRetryAll'])->name('queues.retry-all');
+        Route::post('/queues/flush-failed', [SystemAdminController::class, 'queueFlushFailed'])->name('queues.flush-failed');
+        Route::post('/queues/{jobId}/retry', [SystemAdminController::class, 'queueRetry'])
+            ->where('jobId', '[A-Za-z0-9\-]+')
+            ->name('queues.retry');
+
+        Route::get('/alerts', [SystemAdminController::class, 'alertsIndex'])->name('alerts.index');
+        Route::post('/alerts/{alert}/resolve', [SystemAdminController::class, 'alertResolve'])->name('alerts.resolve');
+
+        Route::post('/incidents', [SystemAdminController::class, 'incidentStore'])->name('incidents.store');
+        Route::put('/incidents/{incident}', [SystemAdminController::class, 'incidentUpdate'])->name('incidents.update');
+        Route::post('/incidents/{incident}/close', [SystemAdminController::class, 'incidentClose'])->name('incidents.close');
+
+        Route::get('/tools', [SystemAdminController::class, 'toolsIndex'])->name('tools.index');
+        Route::post('/tools/run', [SystemAdminController::class, 'toolsRun'])->name('tools.run');
+    });
 
 
 

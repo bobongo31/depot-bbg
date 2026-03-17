@@ -79,6 +79,8 @@
 
         @if(Auth::user() && (Auth::user()->role === 'agent' || Auth::user()->role === 'admin'))
 
+
+       
             <li>
                 <a href="{{ route('accuse.form') }}" class="btn btn-outline-info px-4 py-2">
                     <i class="fas fa-file-alt menu-icon {{ request()->routeIs('accuse.form') ? 'active' : '' }}" title="Accuser Réception"></i>

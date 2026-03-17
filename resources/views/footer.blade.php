@@ -21,11 +21,35 @@
 
       <!-- Colonne 3 : Autres liens -->
       <div class="col-md-3 mb-4">
-        <h5>Autres</h5>
-        <ul class="list-unstyled">
-          <li><a href="/foire-questions" class="text-white text-decoration-none footer-link"><i class="fas fa-question-circle"></i> FAQ</a></li>
-        </ul>
-      </div>
+    <h5>Autres</h5>
+    <ul class="list-unstyled">
+        <li>
+            <a href="/foire-questions" class="text-white text-decoration-none footer-link">
+                <i class="fas fa-question-circle"></i> FAQ
+            </a>
+        </li>
+
+        @auth
+            @php
+                $services = auth()->user()->service;
+
+                if (is_string($services)) {
+                    $services = json_decode($services, true);
+                }
+
+                $services = is_array($services) ? $services : [];
+            @endphp
+
+            @if(in_array('Informatique', $services))
+                <li>
+                    <a href="{{ route('admin.system.dashboard') }}" class="text-white text-decoration-none footer-link">
+                        <i class="fa-solid fa-server"></i> Exploitation système
+                    </a>
+                </li>
+            @endif
+        @endauth
+    </ul>
+</div>
     </div>
   </div>
   
