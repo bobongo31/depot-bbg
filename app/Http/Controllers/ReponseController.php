@@ -284,6 +284,7 @@ public function index(Request $request)
             [
                 'path' => $request->url(),
                 'query' => $request->query(),
+                'pageName' => 'reponses_page',
             ]
         );
 
@@ -352,6 +353,7 @@ public function index(Request $request)
             [
                 'path' => $request->url(),
                 'query' => $request->query(),
+                'pageName' => 'telegrammes_page',
             ]
         );
 
@@ -422,6 +424,16 @@ public function index(Request $request)
             ->sort()
             ->values()
             ->all();
+
+        // If the request is AJAX, return only the lists partial (for AJAX replace)
+        if ($request->ajax()) {
+            return view('reponses._lists', compact(
+                'reponses',
+                'reponsesGrouped',
+                'telegrammesEnAttente',
+                'services'
+            ));
+        }
 
         return view('reponses.index', compact(
             'reponses',

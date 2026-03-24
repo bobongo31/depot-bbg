@@ -179,6 +179,11 @@ thead th:nth-child(8), tbody td:nth-child(8){ width:120px; text-align:center; }
 </div>
 @endforeach
 
+<!-- Pagination for réponses -->
+<div class="d-flex justify-content-center mt-3">
+    {{ $reponses->appends(request()->except('reponses_page'))->links() }}
+</div>
+
 {{-- ===================== TÉLÉGRAMMES ===================== --}}
 <div class="telegrames">
     <h3 class="mt-4 mb-3">
@@ -268,7 +273,11 @@ thead th:nth-child(8), tbody td:nth-child(8){ width:120px; text-align:center; }
 </tbody>
 </table>
 </div>
-
+<!-- Pagination for télégrammes -->
+<div class="d-flex justify-content-center mt-3">
+    {{ $telegrammesEnAttente->appends(request()->except('telegrammes_page'))->links() }}
+</div>
+</div> <!-- .telegrames -->
 @else
 {{-- CODE ACCÈS --}}
 <div class="mx-auto" style="max-width:500px">
