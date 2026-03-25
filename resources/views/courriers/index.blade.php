@@ -37,9 +37,7 @@
                             <th class="text-start">N° enreg.</th>
                             <th class="text-start">N° réf.</th>
                             <th class="text-start">Expéditeur</th>
-                            <th class="text-start">Résumé</th>
-                            <th class="text-start">Observation</th>
-                            <th class="text-start">Commentaires</th>
+                            <th class="text-start">Object</th>
                             <th class="text-center">Statut</th>
                             <th class="text-center">Actions</th>
                 </tr>
@@ -54,27 +52,7 @@
                                 <td class="text-start" style="max-width:320px;">
                                     <div class="text-truncate" style="max-width:320px;">{!! nl2br(e(\Illuminate\Support\Str::limit($courrier->resume, 160))) !!}</div>
                                 </td>
-                                <td class="text-start" style="max-width:220px;">
-                                    <div class="text-truncate" style="max-width:220px;">{{ \Illuminate\Support\Str::limit($courrier->observation ?? 'Aucune observation', 120) }}</div>
-                                </td>
-                        <td>
-                                    <div class="commentaires-section mb-2 small text-start">
-                                        @if($courrier->commentaires)
-                                            @foreach(array_slice(explode("\n", $courrier->commentaires), 0, 3) as $commentaire)
-                                                <div class="text-truncate">📝 {{ \Illuminate\Support\Str::limit($commentaire, 80) }}</div>
-                                            @endforeach
-                                        @else
-                                            <div class="text-muted">—</div>
-                                        @endif
-                                    </div>
-
-                                    @if(Auth::user()->role === 'admin')
-                                        <form class="comment-form d-flex" data-id="{{ $courrier->id }}" style="gap:6px;">
-                                            <input type="text" name="commentaire" placeholder="Ajouter un commentaire" class="form-control form-control-sm" />
-                                            <button type="submit" class="btn btn-outline-info btn-sm">OK</button>
-                                        </form>
-                                    @endif
-                    </td>
+                                
 
                         <td>
                                     @php
@@ -202,11 +180,9 @@
     #courriersTable th:nth-child(2), #courriersTable td:nth-child(2) { width: 8%; }
     #courriersTable th:nth-child(3), #courriersTable td:nth-child(3) { width: 8%; }
     #courriersTable th:nth-child(4), #courriersTable td:nth-child(4) { width: 15%; }
-    #courriersTable th:nth-child(5), #courriersTable td:nth-child(5) { width: 30%; max-width: 320px; }
-    #courriersTable th:nth-child(6), #courriersTable td:nth-child(6) { width: 15%; max-width: 220px; }
-    #courriersTable th:nth-child(7), #courriersTable td:nth-child(7) { width: 10%; }
-    #courriersTable th:nth-child(8), #courriersTable td:nth-child(8) { width: 6%; text-align: center; }
-    #courriersTable th:nth-child(9), #courriersTable td:nth-child(9) { width: 10%; text-align: center; }
+    #courriersTable th:nth-child(5), #courriersTable td:nth-child(5) { width: 40%; max-width: 320px; }
+    #courriersTable th:nth-child(6), #courriersTable td:nth-child(6) { width: 6%; text-align: center; }
+    #courriersTable th:nth-child(7), #courriersTable td:nth-child(7) { width: 10%; text-align: center; }
 
     /* Ensure inner truncation works inside cells */
     #courriersTable .text-truncate { display:inline-block; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

@@ -19,6 +19,28 @@
     </a>
 @endif
 
+<form method="GET" action="{{ route('courrier_expedie.index') }}" class="row g-2 mb-3">
+    <div class="col-auto" style="min-width:220px;">
+        <input type="text" name="q" class="form-control" placeholder="Rechercher (destinataire, résumé, n° lettre)"
+               value="{{ request('q') }}">
+    </div>
+
+    <div class="col-auto">
+        <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
+    </div>
+
+    <div class="col-auto">
+        <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary">
+            <i class="fa-solid fa-search"></i> Filtrer
+        </button>
+        <a href="{{ route('courrier_expedie.index') }}" class="btn btn-outline-secondary ms-1">Réinitialiser</a>
+    </div>
+</form>
+
 <div class="alert alert-info">
     Total courriers visibles : {{ $courriers->total() }}
 </div>
@@ -45,7 +67,9 @@
                 @php $user = auth()->user(); @endphp
 
                 @forelse($courriers as $courrier)
-                    <tr>
+                    <tr style="cursor:pointer;" role="link" tabindex="0"
+                        onclick="window.location='{{ route('courrier_expedie.show', $courrier->id) }}'"
+                        onkeydown="if(event.key === 'Enter') window.location='{{ route('courrier_expedie.show', $courrier->id) }}'">
                         <td>{{ $courrier->numero_ordre }}</td>
 
                         <td>{{ optional($courrier->date_expedition)->format('d/m/Y') }}</td>
@@ -83,13 +107,13 @@
 
                         <td class="text-center">
                             <a href="{{ route('courrier_expedie.show', $courrier->id) }}"
-                               class="btn btn-sm btn-info">
+                               class="btn btn-sm btn-info" onclick="event.stopPropagation();">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
 
                             @if(in_array($user->role, ['admin','agent']))
                                 <a href="{{ route('courrier_expedie.edit', $courrier->id) }}"
-                                   class="btn btn-sm btn-warning">
+                                   class="btn btn-sm btn-warning" onclick="event.stopPropagation();">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
 
@@ -99,7 +123,7 @@
                                       onsubmit="return confirm('Supprimer ce courrier ?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="event.stopPropagation();">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>

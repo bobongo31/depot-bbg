@@ -97,8 +97,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/list', [MessageController::class, 'notificationsList'])->name('notifications.list');
     // Route pour marquer une notification comme lue
     Route::post('/notifications/read', [MessageController::class, 'markNotificationRead'])->name('notifications.read');
-    Route::get('/recherche', [RechercheController::class, 'globale'])->name('recherche.globale');
-
+Route::get('/recherche', [RechercheController::class, 'search'])->name('recherche.globale');
     
 
     // ✅ Profil utilisateur

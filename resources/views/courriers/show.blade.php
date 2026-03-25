@@ -3,7 +3,7 @@
 @section('content')
 <div class="scroll-animated container mt-5">
 
-    {{-- TITRE --}}
+    {{-- TITRE BLEU --}}
     <div class="scroll-animated text-center bg-primary text-white p-4 rounded shadow-sm mb-4">
         <h1 class="h3 mb-0">
             <i class="fas fa-envelope-open-text me-2"></i>
@@ -11,155 +11,187 @@
         </h1>
     </div>
 
-    {{-- INFORMATIONS DU COURRIER --}}
-    <div class="scroll-animated card shadow-sm mb-4">
-        <div class="scroll-animated card-body">
+    <div class="card shadow-sm rounded-4">
+        <div class="card-body">
 
-            <p>
-                <i class="fas fa-hashtag me-2 text-muted"></i>
-                <strong>Numéro d'enregistrement :</strong>
-                {{ $courrier->numero_enregistrement }}
-            </p>
+            {{-- INFORMATIONS GÉNÉRALES --}}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Numéro d'enregistrement :</strong>
+                        {{ $courrier->numero_enregistrement }}
+                    </p>
 
-            <p>
-                <i class="fas fa-calendar-check me-2 text-muted"></i>
-                <strong>Date d'accusé réception :</strong>
-                {{ \Carbon\Carbon::parse($courrier->date_reception)->format('d/m/Y') }}
-            </p>
+                    <p>
+                        <strong>Date de réception :</strong>
+                        {{ $courrier->date_reception ? \Carbon\Carbon::parse($courrier->date_reception)->format('d/m/Y') : 'N/A' }}
+                    </p>
+                </div>
 
-            <p>
-                <i class="fas fa-link me-2 text-muted"></i>
-                <strong>Numéro de référence :</strong>
-                {{ $courrier->numero_reference ?? 'N/A' }}
-            </p>
+                <div class="col-md-6">
+                    <p>
+                        <strong>Numéro de référence :</strong>
+                        {{ $courrier->numero_reference ?? 'N/A' }}
+                    </p>
 
-            <p>
-                <i class="fas fa-user me-2 text-muted"></i>
-                <strong>Expéditeur :</strong>
-                {{ $courrier->nom_expediteur }}
-            </p>
+                    <p>
+                        <strong>Réceptionné par :</strong>
+                        {{ $courrier->receptionne_par ?? 'N/A' }}
+                    </p>
+                </div>
+            </div>
 
-            <p>
-                <i class="fas fa-align-left me-2 text-muted"></i>
-                <strong>Résumé :</strong><br>
-                {{ $courrier->resume }}
-            </p>
+            <hr>
 
-            <p>
-                <i class="fas fa-eye me-2 text-muted"></i>
-                <strong>Observation :</strong><br>
-                {{ $courrier->observation ?? 'N/A' }}
-            </p>
+            {{-- EXPÉDITEUR / SERVICE --}}
+            <div class="mb-3">
+                <p class="mb-1"><strong>Expéditeur :</strong></p>
 
-            <p>
-                <i class="fas fa-comment-dots me-2 text-muted"></i>
-                <strong>Commentaires :</strong><br>
-                {{ $courrier->commentaires ?? 'N/A' }}
-            </p>
+                <span class="badge bg-primary mb-1 d-inline-block">
+                    <i class="fa-solid fa-user"></i>
+                    {{ $courrier->nom_expediteur ?? 'N/A' }}
+                </span>
 
-            <p class="mt-3">
-                <i class="fas fa-info-circle me-2 text-muted"></i>
-                <strong>Statut :</strong>
+                @if(!empty($courrier->service_concerne))
+                    <div class="mt-2">
+                        <span class="badge bg-warning text-dark me-1 mb-1">
+                            <i class="fa-solid fa-building"></i>
+                            {{ $courrier->service_concerne }}
+                        </span>
+                    </div>
+                @endif
+            </div>
+
+            <hr>
+
+            {{-- CONTENU --}}
+            @if(!empty($courrier->objet))
+                <p>
+                    <strong>Objet :</strong><br>
+                    {{ $courrier->objet }}
+                </p>
+            @endif
+
+            
+
+            @if($courrier->observation)
+                <p class="mt-3">
+                    <strong>Observation :</strong><br>
+                    {{ $courrier->observation }}
+                </p>
+            @endif
+
+            @if($courrier->commentaires)
+                <p class="mt-3">
+                    <strong>Commentaires :</strong><br>
+                    {{ $courrier->commentaires }}
+                </p>
+            @endif
+
+            @if(!empty($courrier->avis))
+                <p class="mt-3">
+                    <strong>Avis :</strong><br>
+                    {{ $courrier->avis }}
+                </p>
+            @endif
+
+            <hr>
+
+            {{-- STATUT --}}
+            <div class="mb-3">
+                <p class="mb-1"><strong>Statut :</strong></p>
+
                 <span class="badge px-3 py-2 rounded-pill
                     {{
                         $courrier->statut === 'en attente' ? 'bg-danger' :
                         ($courrier->statut === 'reçu' ? 'bg-success' :
                         ($courrier->statut === 'traité' ? 'bg-info' : 'bg-secondary'))
                     }}">
-                    {{ ucfirst($courrier->statut) }}
+                    {{ ucfirst($courrier->statut ?? 'non défini') }}
                 </span>
-            </p>
+            </div>
 
-        </div>
-    </div>
+            <hr>
 
-    {{-- ANNEXES AVEC APERÇU --}}
-    <div class="scroll-animated card shadow-sm mb-4">
-        <div class="scroll-animated card-header bg-light">
-            <h5 class="mb-0">
-                <i class="fas fa-paperclip me-2"></i>
+            {{-- ANNEXES --}}
+            <h5 class="mb-3">
+                <i class="fa-solid fa-paperclip"></i>
                 Annexes
-                <span class="badge bg-secondary ms-2">
+                <span class="badge bg-secondary ms-1">
                     {{ $courrier->annexes->count() }}
                 </span>
             </h5>
-        </div>
 
-        <div class="scroll-animated card-body">
-            @if($courrier->annexes->isEmpty())
-                <p class="text-muted">Aucune annexe disponible.</p>
-            @else
+            @if($courrier->annexes->isNotEmpty())
                 <div class="row g-3">
-
                     @foreach ($courrier->annexes as $annexe)
                         @php
-                            $path = asset('storage/' . $annexe->file_path);
+                            $url = asset('storage/' . $annexe->file_path);
                             $ext = strtolower(pathinfo($annexe->file_path, PATHINFO_EXTENSION));
                         @endphp
 
                         <div class="col-md-6 col-lg-4">
-                            <div class="card h-100 shadow-sm rounded-4">
+                            <div class="card shadow-sm h-100 rounded-4">
 
-                                {{-- PDF --}}
                                 @if($ext === 'pdf')
                                     <iframe
-                                        src="{{ $path }}"
+                                        src="{{ $url }}"
                                         class="w-100 rounded-top"
-                                        style="height:220px;border:none;">
+                                        style="height:220px; border:none;">
                                     </iframe>
 
-                                {{-- IMAGES --}}
                                 @elseif(in_array($ext, ['jpg','jpeg','png','webp']))
-                                    <a href="{{ $path }}" target="_blank">
+                                    <a href="{{ $url }}" target="_blank">
                                         <img
-                                            src="{{ $path }}"
+                                            src="{{ $url }}"
                                             class="img-fluid rounded-top"
-                                            style="height:220px;object-fit:cover;"
-                                            alt="Annexe"
-                                        >
+                                            style="height:220px; object-fit:cover;"
+                                            alt="Annexe">
                                     </a>
 
-                                {{-- AUTRES FICHIERS --}}
                                 @else
-                                    <div class="d-flex justify-content-center align-items-center"
+                                    <div class="d-flex align-items-center justify-content-center"
                                          style="height:220px;">
-                                        <i class="fas fa-file-alt fa-4x text-secondary"></i>
+                                        <i class="fa-solid fa-file-lines fa-4x text-secondary"></i>
                                     </div>
                                 @endif
 
-                                <div class="card-body text-center p-2">
-                                    <small class="d-block text-truncate">
+                                <div class="card-body p-2 text-center">
+                                    <small class="text-truncate d-block">
                                         {{ basename($annexe->file_path) }}
                                     </small>
 
-                                    <a href="{{ $path }}"
+                                    <a href="{{ $url }}"
                                        target="_blank"
                                        class="btn btn-sm btn-outline-primary mt-2">
-                                        <i class="fas fa-eye me-1"></i> Ouvrir
+                                        <i class="fa-solid fa-eye"></i> Ouvrir
                                     </a>
                                 </div>
 
                             </div>
                         </div>
                     @endforeach
-
                 </div>
+            @else
+                <span class="text-muted">Aucune annexe</span>
             @endif
+
+            <hr>
+
+            {{-- ACTIONS --}}
+            <div class="mt-4 d-flex gap-2">
+                <a href="{{ route('courriers.edit', $courrier->id) }}"
+                   class="btn btn-warning">
+                    <i class="fa-solid fa-pen"></i> Modifier
+                </a>
+
+                <a href="{{ route('courriers.index') }}"
+                   class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
         </div>
     </div>
-
-    {{-- ACTIONS --}}
-    <div class="scroll-animated text-end">
-        <a href="{{ route('courriers.edit', $courrier->id) }}"
-           class="btn btn-outline-warning me-2">
-            <i class="fas fa-edit me-1"></i> Éditer
-        </a>
-
-        <a href="{{ route('courriers.index') }}"
-           class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Retour à la liste
-        </a>
-    </div>
-
 </div>
 @endsection

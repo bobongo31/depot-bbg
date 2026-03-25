@@ -121,7 +121,7 @@ thead th:nth-child(8), tbody td:nth-child(8){ width:120px; text-align:center; }
         </thead>
         <tbody>
         @foreach($reponsesDuJour as $reponse)
-        <tr class="{{ $reponse->isLate ? 'late-row' : '' }}">
+        <tr class="{{ $reponse->isLate ? 'late-row' : '' }}" data-href="{{ route('reponse.show',$reponse->id) }}">
             <td>{{ $reponse->numero_enregistrement }}</td>
             <td>{{ $reponse->numero_reference }}</td>
 
@@ -206,7 +206,7 @@ thead th:nth-child(8), tbody td:nth-child(8){ width:120px; text-align:center; }
 </thead>
 <tbody>
 @forelse($telegrammesEnAttente as $telegramme)
-<tr class="{{ $telegramme->isLate ? 'table-danger' : 'table-success' }}">
+<tr class="{{ $telegramme->isLate ? 'table-danger' : 'table-success' }}" data-href="{{ route('telegramme.show',$telegramme->id) }}">
     <td>{{ $telegramme->numero_enregistrement }}</td>
     <td>{{ $telegramme->numero_reference }}</td>
 
@@ -278,6 +278,28 @@ thead th:nth-child(8), tbody td:nth-child(8){ width:120px; text-align:center; }
     {{ $telegrammesEnAttente->appends(request()->except('telegrammes_page'))->links() }}
 </div>
 </div> <!-- .telegrames -->
+
+<script>
+    (function(){
+        // Make table rows with data-href clickable, but keep buttons/links functional
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('tr[data-href]').forEach(function(row){
+                row.style.cursor = 'pointer';
+                row.addEventListener('click', function(e){
+                    // Do nothing if clicking on a link, button, or input inside the row
+                    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) {
+                        return;
+                    }
+                    var url = row.getAttribute('data-href');
+                    if (url) { window.location = url; }
+                });
+                // Allow keyboard activation (Enter) for accessibility
+                row.setAttribute('tabindex', '0');
+                row.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ var url = row.getAttribute('data-href'); if(url) window.location = url; } });
+            });
+        });
+    })();
+</script>
 @else
 {{-- CODE ACCÈS --}}
 <div class="mx-auto" style="max-width:500px">

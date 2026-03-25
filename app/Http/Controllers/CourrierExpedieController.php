@@ -52,9 +52,29 @@ class CourrierExpedieController extends Controller
     {
         $user = Auth::user();
 
-        $courriersAll = CourrierExpedie::with('copies')
-            ->orderByDesc('id')
-            ->get();
+        $query = CourrierExpedie::with('copies')->orderByDesc('id');
+
+        $search = $request->get('q');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        if (filled($search)) {
+            $query->where(function ($qb) use ($search) {
+                $qb->where('destinataire', 'like', '%' . $search . '%')
+                   ->orWhere('resume', 'like', '%' . $search . '%')
+                   ->orWhere('numero_lettre', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (filled($dateFrom)) {
+            $query->whereDate('date_expedition', '>=', $dateFrom);
+        }
+
+        if (filled($dateTo)) {
+            $query->whereDate('date_expedition', '<=', $dateTo);
+        }
+
+        $courriersAll = $query->get();
 
         $userServices = $this->normalizeArrayValues($user->service ?? null);
 

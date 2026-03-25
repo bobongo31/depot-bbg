@@ -71,7 +71,7 @@
                 </tr>
 
                 <tr>
-                    <th><i class="fas fa-comments text-muted me-2"></i>Commentaires :</th>
+                    <th><i class="fas fa-comments text-muted me-2"></i>Object :</th>
                     <td>{!! nl2br(e($reponse->commentaires)) !!}</td>
                 </tr>
 

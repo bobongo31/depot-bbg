@@ -628,6 +628,9 @@ body.modal-open-scrollblock {
 }
 
 
+
+
+
   </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-13LEHFNS9X"></script>
@@ -704,8 +707,17 @@ body.modal-open-scrollblock {
 
 @auth
 <form action="{{ route('recherche.globale') }}" method="GET" class="d-flex mb-3">
-    <input type="text" name="q" class="form-control me-2" placeholder="Rechercher..." required>
-    <button class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+    <input
+        type="text"
+        name="query"
+        class="form-control me-2"
+        placeholder="Rechercher..."
+        value="{{ request('query') }}"
+        required
+    >
+    <button type="submit" class="btn btn-outline-primary">
+        <i class="fas fa-search"></i>
+    </button>
 </form>
 @endauth
 
