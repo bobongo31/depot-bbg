@@ -271,6 +271,7 @@ Route::middleware(['auth', 'admin.role'])
         Route::post('/health/sync-alerts', [SystemAdminController::class, 'healthSyncAlerts'])->name('health.sync-alerts');
 
         Route::get('/logs', [SystemAdminController::class, 'logsIndex'])->name('logs.index');
+        Route::get('/logs/tail', [SystemAdminController::class, 'logsTail'])->name('logs.tail');
 
         Route::get('/schedules', [SystemAdminController::class, 'schedulesIndex'])->name('schedules.index');
         Route::post('/schedules/{taskKey}/run', [SystemAdminController::class, 'schedulesRun'])

@@ -11,7 +11,23 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.system.backups.store') }}">
                 @csrf
-                <button class="btn btn-primary">Créer une sauvegarde</button>
+                <div class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <select name="scope" class="form-select">
+                            <option value="db">Base de données</option>
+                            <option value="storage">Fichiers (storage/app)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto form-check">
+                        <input class="form-check-input" type="checkbox" name="copy" id="backup-copy" value="1" checked>
+                        <label class="form-check-label" for="backup-copy">Copier vers Documents/Bureau</label>
+                    </div>
+
+                    <div class="col-auto">
+                        <button class="btn btn-primary">Créer une sauvegarde</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

@@ -29,6 +29,31 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Type de restauration</label>
+                    <select name="restore_type" class="form-select">
+                        <option value="auto">Détection automatique (recommandé)</option>
+                        <option value="db">Base de données (SQL)</option>
+                        <option value="storage">Fichiers (storage/app)</option>
+                    </select>
+                    <div class="form-text">Choisir "Fichiers" pour forcer la restauration des archives ZIP.</div>
+                </div>
+
+                <div id="storage-warning" class="alert alert-danger d-none">
+                    <strong>Attention — restauration fichiers</strong>
+                    <div>
+                        La restauration des fichiers va extraire une archive et peut écraser des fichiers existants dans <code>storage/app</code>.
+                        Assurez-vous d'avoir une sauvegarde récente. Cette action est irréversible.
+                    </div>
+                </div>
+
+                <div id="storage-confirm" class="mb-3 d-none">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="confirm_overwrite" id="confirm_overwrite" value="1">
+                        <label class="form-check-label" for="confirm_overwrite">Je confirme vouloir écraser les fichiers existants dans <code>storage/app</code></label>
+                    </div>
+                </div>
+
                 <button class="btn btn-warning" onclick="return confirm('Confirmer la restauration ?')">
                     Restaurer
                 </button>
@@ -65,5 +90,34 @@
             </table>
         </div>
     </div>
+</div>
+
+@push('scripts')
+<script>
+    (function(){
+        const select = document.querySelector('select[name="restore_type"]');
+        const warn = document.getElementById('storage-warning');
+        const confirmBox = document.getElementById('storage-confirm');
+        if (!select) return;
+
+        function update() {
+            const v = select.value;
+            if (v === 'storage') {
+                warn.classList.remove('d-none');
+                confirmBox.classList.remove('d-none');
+            } else {
+                warn.classList.add('d-none');
+                confirmBox.classList.add('d-none');
+                const cb = document.getElementById('confirm_overwrite');
+                if (cb) cb.checked = false;
+            }
+        }
+
+        select.addEventListener('change', update);
+        update();
+    })();
+</script>
+</div>
+@endpush
 </div>
 @endsection

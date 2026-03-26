@@ -29,6 +29,15 @@
                             <td>
                                 <code>{{ $task['command'] }}</code>
                             </td>
+                            <td>
+                                @if(!empty($task['arguments']))
+                                    @foreach($task['arguments'] as $k => $v)
+                                        <span class="badge bg-secondary me-1">{{ is_string($k) ? $k . '=' . $v : $v }}</span>
+                                    @endforeach
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td>{{ $task['frequency'] }}</td>
                             <td>{{ $task['even_in_maintenance'] ? 'Oui' : 'Non' }}</td>
                             <td>

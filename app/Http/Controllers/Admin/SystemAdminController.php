@@ -60,8 +60,19 @@ class SystemAdminController extends Controller
 
     public function backupStore(Request $request): RedirectResponse
     {
+        $validated = $request->validate([
+            'scope' => ['nullable', 'string', 'in:db,storage'],
+            'copy' => ['nullable'],
+        ]);
+
+        $scope = $validated['scope'] ?? config('system_admin.backup.default_scope', 'db');
+
+        // If 'copy' input is present, treat it as explicit request to copy to targets.
+        // HTML checkbox will only be present when checked; if absent, we pass null to use config default.
+        $allowCopy = $request->has('copy') ? true : null;
+
         try {
-            $this->backupService->createBackup('manual', auth()->id(), 'Sauvegarde manuelle via interface');
+            $this->backupService->createBackup('manual', auth()->id(), 'Sauvegarde manuelle via interface', $scope, $allowCopy);
             return back()->with('success', 'Sauvegarde créée avec succès.');
         } catch (\Throwable $e) {
             return back()->with('error', $e->getMessage());
@@ -116,11 +127,35 @@ class SystemAdminController extends Controller
     {
         $validated = $request->validate([
             'backup_id' => ['required', 'exists:system_backups,id'],
+            'restore_type' => ['nullable', 'string', 'in:auto,db,storage'],
+            'confirm_overwrite' => ['nullable'],
         ]);
 
+        $backup = SystemBackup::findOrFail($validated['backup_id']);
+
+        // If user requested storage restore but has not yet confirmed overwrite,
+        // render a preview page listing files that would be overwritten.
+        $restoreType = $validated['restore_type'] ?? 'auto';
+        $force = null;
+        if ($restoreType === 'storage') {
+            // If it's a storage restore and user didn't confirm, show preview
+            if (!$request->has('confirm_overwrite')) {
+                try {
+                    $files = $this->backupService->listArchiveContents($backup);
+                } catch (\Throwable $e) {
+                    return back()->with('error', $e->getMessage());
+                }
+
+                return view('admin.system.restores.preview', compact('backup', 'files'));
+            }
+
+            $force = 'storage';
+        } elseif ($restoreType === 'db') {
+            $force = 'db';
+        }
+
         try {
-            $backup = SystemBackup::findOrFail($validated['backup_id']);
-            $this->backupService->restoreBackup($backup, auth()->id());
+            $this->backupService->restoreBackup($backup, auth()->id(), $force);
 
             return back()->with('success', 'Restauration terminée avec succès.');
         } catch (\Throwable $e) {
@@ -236,6 +271,16 @@ class SystemAdminController extends Controller
         $technicalLogLines = $this->auditService->tailLaravelLog(200);
 
         return view('admin.system.logs.index', compact('audits', 'technicalLogLines'));
+    }
+
+    /**
+     * Return the latest Laravel log lines as JSON for live tailing.
+     */
+    public function logsTail(Request $request)
+    {
+        $lines = $this->auditService->tailLaravelLog(200);
+
+        return response()->json(['lines' => $lines]);
     }
 
     public function schedulesIndex(): View
