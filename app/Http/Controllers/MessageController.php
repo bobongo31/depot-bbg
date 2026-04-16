@@ -60,7 +60,7 @@ public function store(Request $request)
     $request->validate([
         'receiver_id' => 'required|exists:users,id',
         'content' => 'required|string',
-        'annexes.*' => 'file|max:2048' // Taille max 2MB
+        'annexes.*' => 'file|max:200048' // Taille max 2MB
     ]);
 
     // Récupérer l'utilisateur récepteur
