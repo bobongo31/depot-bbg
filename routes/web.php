@@ -136,7 +136,9 @@ Route::get('/recherche', [RechercheController::class, 'search'])->name('recherch
 
     // ✅ Télégrammes
     Route::get('/telegrammes/create', [ReponseController::class, 'createTelegramme'])->name('telegramme.create');
+    Route::get('/telegrammes/{id}/edit', [ReponseController::class, 'editTelegramme'])->name('telegramme.edit');
     Route::post('/telegrammes/store', [ReponseController::class, 'storeTelegramme'])->name('telegramme.store');
+    Route::put('/telegramme/{id}', [ReponseController::class, 'updateTelegramme'])->name('telegramme.update');
     // Autosave draft for telegramme
     Route::post('/telegrammes/draft', [ReponseController::class, 'saveDraftTelegramme'])->name('telegramme.draft');
     Route::get('/telegrammes', [ReponseController::class, 'index'])->name('telegrammes.index');

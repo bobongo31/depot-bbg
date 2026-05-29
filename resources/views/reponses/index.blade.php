@@ -263,6 +263,11 @@ thead th:nth-child(8), tbody td:nth-child(8){ width:120px; text-align:center; }
            href="{{ route('reponses.create',['telegramme_id'=>$telegramme->id]) }}">
             <i class="fas fa-reply"></i>
         </a>
+                <a class="btn btn-outline-secondary btn-sm"
+                   href="{{ route('telegramme.edit', $telegramme->id) }}"
+                   title="Modifier le télégramme">
+                    <i class="fas fa-edit"></i>
+                </a>
     </td>
 </tr>
 @empty

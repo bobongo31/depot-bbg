@@ -617,6 +617,30 @@ public function index(Request $request)
         }
         return view('telegramme.create', compact('accuse_receptions', 'draft'));
     }
+
+    /**
+     * Affiche le formulaire d'édition d'un télégramme (réutilise la vue de création en mode pré-rempli).
+     */
+    public function editTelegramme($id)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('home')->with('error', 'Utilisateur non authentifié.');
+        }
+
+        $accuse_receptions = AccuseReception::orderByDesc('date_reception')->get();
+
+        $telegramme = Telegramme::with('annexes')->findOrFail($id);
+
+        // Autorisation : propriétaire ou admin/DG
+        if (!isset($telegramme->user_id) || ($telegramme->user_id !== $user->id && !$this->isAdmin($user))) {
+            return redirect()->route('telegrammes.index')->with('error', "Utilisateur non autorisé à modifier ce télégramme.");
+        }
+
+        $draft = $telegramme;
+        return view('telegramme.create', compact('accuse_receptions', 'draft'));
+    }
    
     /**
      * Stocke un télégramme dans la base de données et enregistre ses annexes.
@@ -700,8 +724,100 @@ public function index(Request $request)
         ->with('success', 'Télégramme enregistré avec succès !');
 }
 
+    /**
+     * Met à jour un télégramme existant et ses annexes.
+     */
+    public function updateTelegramme(Request $request, $id)
+    {
+        $user = auth()->user();
 
-    // Save draft for telegramme (autosave)
+        if (!$user) {
+            return redirect()->route('home')->with('error', 'Utilisateur non authentifié.');
+        }
+
+        $telegramme = Telegramme::with('annexes')->findOrFail($id);
+
+        // Autorisation : propriétaire ou admin/DG
+        if (!isset($telegramme->user_id) || ($telegramme->user_id !== $user->id && !$this->isAdmin($user))) {
+            return redirect()->route('reponses.index')->with('error', "Vous n'êtes pas autorisé à modifier ce télégramme.");
+        }
+
+        /* =========================
+         * 1. VALIDATION
+         * ========================= */
+        $validated = $request->validate([
+            'numero_enregistrement' => 'required|string',
+            'numero_reference'      => 'nullable|string',
+            'service_concerne'      => 'required|array|min:1',
+            'service_concerne.*'    => 'string',
+            'observation'           => 'nullable|string',
+            'commentaires'          => 'nullable|string',
+            'annexes'               => 'nullable|array',
+            'annexes.*'             => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:20048',
+        ]);
+
+        /* =========================
+         * 2. NORMALISATION SERVICES
+         * ========================= */
+        $services = array_values(array_unique(array_filter(
+            $validated['service_concerne']
+        )));
+
+        if (empty($services)) {
+            return back()
+                ->withErrors(['service_concerne' => 'Veuillez sélectionner au moins un service.'])
+                ->withInput();
+        }
+
+        /* =========================
+         * 3. MISE À JOUR DU TÉLÉGRAMME
+         * ========================= */
+        $telegramme->numero_enregistrement = $validated['numero_enregistrement'];
+        $telegramme->numero_reference      = $validated['numero_reference'] ?? null;
+        $telegramme->service_concerne      = json_encode($services, JSON_UNESCAPED_UNICODE);
+        $telegramme->observation           = $validated['observation'] ?? null;
+        $telegramme->commentaires          = $validated['commentaires'] ?? null;
+        $telegramme->save();
+
+        /* =========================
+         * 4. NOUVELLES ANNEXES
+         * ========================= */
+        if ($request->hasFile('annexes')) {
+            foreach ($request->file('annexes') as $file) {
+                if ($file->isValid()) {
+                    $path = $file->store('annexes', 'public');
+
+                    Annexe::create([
+                        'file_path'     => $path,
+                        'telegramme_id' => $telegramme->id,
+                    ]);
+                }
+            }
+        }
+
+        /* =========================
+         * 5. MISE À JOUR ACCUSÉ
+         * ========================= */
+        $accuse = AccuseReception::where(
+            'numero_enregistrement',
+            $validated['numero_enregistrement']
+        )->first();
+
+        if ($accuse) {
+            // Mettre à jour le statut si nécessaire
+            if ($accuse->statut !== 'traité') {
+                $accuse->statut = 'en attente';
+                $accuse->save();
+            }
+        }
+
+        /* =========================
+         * 6. FIN
+         * ========================= */
+        return redirect()
+            ->route('reponses.index')
+            ->with('success', 'Télégramme mis à jour avec succès !');
+    }
     public function saveDraftTelegramme(Request $request)
     {
         $data = $request->only(['numero_enregistrement','numero_reference','service_concerne','observation','commentaires','uploaded_paths','draft_id']);

@@ -17,7 +17,7 @@
 
 <div class="scroll-animated container">
     @if(session('code_acces_valide'))
-        <h2><i class="fas fa-paper-plane"></i> Envoyer un Télégramme</h2>
+        <h2><i class="fas fa-paper-plane"></i> {{ isset($draft) && $draft ? 'Modifier le Télégramme' : 'Envoyer un Télégramme' }}</h2>
 
         @if(session('success'))
             <div class="alert alert-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
@@ -33,7 +33,12 @@
             </div>
         @endif
 
-        <form action="{{ route('telegramme.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ isset($draft) && $draft ? route('telegramme.update', $draft->id) : route('telegramme.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @if(isset($draft) && $draft)
+                @method('PUT')
+                <input type="hidden" name="draft_id" value="{{ $draft->id }}">
+            @endif
             @csrf
 
             <!-- Numéro d'Enregistrement -->
@@ -42,10 +47,10 @@
                 <select id="select_numero_enregistrement" class="form-control">
                     <option value="">Sélectionner un numéro d'enregistrement</option>
                     @foreach($accuse_receptions as $accuse)
-                        <option value="{{ $accuse->numero_enregistrement }}">{{ $accuse->numero_enregistrement }}</option>
+                        <option value="{{ $accuse->numero_enregistrement }}" @selected(isset($draft) && $draft && $draft->numero_enregistrement === $accuse->numero_enregistrement)>{{ $accuse->numero_enregistrement }}</option>
                     @endforeach
                 </select>
-                <input type="text" id="manual_numero_enregistrement" class="form-control mt-2" name="numero_enregistrement" placeholder="Ou saisissez manuellement">
+                <input type="text" id="manual_numero_enregistrement" class="form-control mt-2" name="numero_enregistrement" placeholder="Ou saisissez manuellement" value="{{ $draft?->numero_enregistrement ?? '' }}">
             </div>
 
             <!-- Numéro de Référence -->
@@ -54,10 +59,10 @@
                 <select id="select_numero_reference" class="form-control">
                     <option value="">Sélectionner un numéro de référence</option>
                     @foreach($accuse_receptions as $accuse)
-                        <option value="{{ $accuse->numero_reference }}">{{ $accuse->numero_reference }}</option>
+                        <option value="{{ $accuse->numero_reference }}" @selected(isset($draft) && $draft && $draft->numero_reference === $accuse->numero_reference)>{{ $accuse->numero_reference }}</option>
                     @endforeach
                 </select>
-                <input type="text" id="manual_numero_reference" class="form-control mt-2" name="numero_reference" placeholder="Ou saisissez manuellement">
+                <input type="text" id="manual_numero_reference" class="form-control mt-2" name="numero_reference" placeholder="Ou saisissez manuellement" value="{{ $draft?->numero_reference ?? '' }}">
             </div>
 
             <!-- Directions et Services Concernés -->
@@ -84,6 +89,13 @@
                             'Audit interne'
                         ],
                     ];
+
+                    // Décoder les services depuis le draft s'il existe
+                    $selectedServices = [];
+                    if (isset($draft) && $draft && $draft->service_concerne) {
+                        $decoded = json_decode($draft->service_concerne, true);
+                        $selectedServices = is_array($decoded) ? $decoded : [];
+                    }
                 @endphp
 
 
@@ -108,13 +120,13 @@
             <!-- Expéditeur -->
             <div class="scroll-animated mb-3">
                 <label class="form-label"><i class="fas fa-user"></i> Expéditeur</label>
-                <textarea class="form-control" name="observation" rows="3" required></textarea>
+                <textarea class="form-control" name="observation" rows="3" required>{{ $draft?->observation ?? '' }}</textarea>
             </div>
 
             <!-- Résumé -->
             <div class="scroll-animated mb-3">
                 <label class="form-label"><i class="fas fa-align-left"></i> Résumé</label>
-                <textarea class="form-control" name="commentaires" rows="4" required></textarea>
+                <textarea class="form-control" name="commentaires" rows="4" required>{{ $draft?->commentaires ?? '' }}</textarea>
             </div>
 
             <!-- Annexes -->
@@ -123,12 +135,29 @@
                 <input type="file" class="form-control" name="annexes[]" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
             </div>
 
-            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Envoyer</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> 
+                {{ isset($draft) && $draft ? 'Mettre à jour' : 'Envoyer' }}
+            </button>
             <a href="{{ route('reponses.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Retour</a>
         </form>
 
         <!-- Scripts -->
         <script>
+            // Variables globales pour le préremplissage
+            const selectedServices = @json($selectedServices ?? []);
+            const directionsData = @json($directions);
+
+            // Fonction pour trouver la direction d'un service
+            function findDirectionForService(service) {
+                for (const [direction, services] of Object.entries(directionsData)) {
+                    if (services.includes(service)) {
+                        return direction;
+                    }
+                }
+                return null;
+            }
+
             // Synchronisation des numéros
             document.getElementById('select_numero_enregistrement').addEventListener('change', function () {
                 document.getElementById('manual_numero_enregistrement').value = this.value;
@@ -138,8 +167,6 @@
             });
 
             // Directions et Services dynamiques
-            const directionsData = @json($directions);
-
             function createServiceCheckboxes(direction) {
                 const container = document.createElement('div');
                 container.classList.add('services_group', 'mb-2');
@@ -150,8 +177,9 @@
                         const div = document.createElement('div');
                         div.classList.add('form-check');
 
+                        const isChecked = selectedServices.includes(service);
                         div.innerHTML = `
-                            <input class="form-check-input" type="checkbox" name="service_concerne[]" value="${service}" id="${id}">
+                            <input class="form-check-input" type="checkbox" name="service_concerne[]" value="${service}" id="${id}" ${isChecked ? 'checked' : ''}>
                             <label class="form-check-label" for="${id}">${service}</label>
                         `;
                         container.appendChild(div);
@@ -180,6 +208,47 @@
                 newGroup.querySelector('.select_direction').value = '';
                 newGroup.querySelector('.services_container').innerHTML = '';
                 document.getElementById('directions_services_container').appendChild(newGroup);
+            });
+
+            // Préremplissage des services au chargement
+            document.addEventListener('DOMContentLoaded', function() {
+                if (selectedServices.length > 0) {
+                    // Vider le conteneur
+                    const container = document.getElementById('directions_services_container');
+                    container.innerHTML = '';
+
+                    // Créer un groupe pour chaque direction unique
+                    const directionsUsed = new Set();
+                    selectedServices.forEach(service => {
+                        const direction = findDirectionForService(service);
+                        if (direction && !directionsUsed.has(direction)) {
+                            directionsUsed.add(direction);
+                            
+                            const group = document.createElement('div');
+                            group.classList.add('direction_service_group', 'mb-2');
+
+                            const select = document.createElement('select');
+                            select.classList.add('form-control', 'select_direction', 'mb-2');
+                            select.innerHTML = '<option value="">Sélectionner une direction</option>';
+                            
+                            for (const [dir, services] of Object.entries(directionsData)) {
+                                const option = document.createElement('option');
+                                option.value = dir;
+                                option.textContent = dir;
+                                option.selected = dir === direction;
+                                select.appendChild(option);
+                            }
+
+                            const servicesDiv = document.createElement('div');
+                            servicesDiv.classList.add('services_container');
+                            servicesDiv.appendChild(createServiceCheckboxes(direction));
+
+                            group.appendChild(select);
+                            group.appendChild(servicesDiv);
+                            container.appendChild(group);
+                        }
+                    });
+                }
             });
         </script>
     @else
