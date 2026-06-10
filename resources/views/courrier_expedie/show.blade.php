@@ -147,6 +147,17 @@
                        class="btn btn-warning">
                         <i class="fa-solid fa-pen"></i> Modifier
                     </a>
+
+                    <form action="{{ route('courrier_expedie.destroy', $courrierExpedie->id) }}"
+                          method="POST"
+                          onsubmit="return confirm('Voulez-vous supprimer ce courrier expédié ?')"
+                          style="display:inline-block;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa-solid fa-trash"></i> Supprimer
+                        </button>
+                    </form>
                 @endif
 
                 <a href="{{ route('courrier_expedie.index') }}"
